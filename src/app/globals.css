@@ -17,6 +17,8 @@
 
   --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-furonto), ui-sans-serif, system-ui, sans-serif;
+  
+  --animate-spin-y: spin-y 10s linear infinite;
 }
 
 @layer base {
@@ -72,4 +74,13 @@
 @keyframes marquee {
   0% { transform: translateX(0); }
   100% { transform: translateX(-100%); }
+}
+
+@keyframes spin-y {
+  from {
+    transform: rotateY(0deg);
+  }
+  to {
+    transform: rotateY(360deg);
+  }
 }

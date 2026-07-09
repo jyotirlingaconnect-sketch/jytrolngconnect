@@ -36,7 +36,7 @@ export function FleetShowcase() {
           <div className="absolute top-0 bottom-0 left-0 w-8 md:w-32 bg-gradient-to-r from-section-bg to-transparent z-10 pointer-events-none" />
           <div className="absolute top-0 bottom-0 right-0 w-8 md:w-32 bg-gradient-to-l from-section-bg to-transparent z-10 pointer-events-none" />
           
-          <div className="flex w-max animate-[marquee_25s_linear_infinite] group-hover:[animation-play-state:paused] gap-6 pr-6 pb-8">
+          <div className="flex w-max shrink-0 animate-[marquee_25s_linear_infinite] group-hover:[animation-play-state:paused] gap-6 pr-6 pb-8">
             {vehicles.map((vehicle, idx) => (
               <div
                 key={`set1-${vehicle.id}-${idx}`}
@@ -96,7 +96,7 @@ export function FleetShowcase() {
           </div>
 
           {/* Duplicate set for seamless infinite scrolling */}
-          <div className="flex w-max animate-[marquee_25s_linear_infinite] group-hover:[animation-play-state:paused] gap-6 pr-6 pb-8" aria-hidden="true">
+          <div className="flex w-max shrink-0 animate-[marquee_25s_linear_infinite] group-hover:[animation-play-state:paused] gap-6 pr-6 pb-8" aria-hidden="true">
             {vehicles.map((vehicle, idx) => (
               <div
                 key={`set2-${vehicle.id}-${idx}`}

@@ -3,13 +3,12 @@ import { Footer } from "@/components/Footer";
 import { supabase } from "@/lib/supabase";
 import Image from "next/image";
 
+import { GalleryClient } from "./GalleryClient";
+
 export const metadata = {
   title: "Gallery | Jyotirling Connect",
   description: "View our gallery of the sacred journey between Mahakaleshwar and Omkareshwar Jyotirlinga.",
 };
-
-// Next.js config to allow images from Supabase storage (we'll assume standard domains or just allow all for now)
-// We will use standard img tag or next/image with unoptimized if hostname is unknown.
 
 export default async function GalleryPage() {
   const { data: galleryItems } = await supabase
@@ -24,42 +23,26 @@ export default async function GalleryPage() {
     { id: "2", image_url: "https://placehold.co/400x600/FFE5B4/A63A1E?text=Omkareshwar", title: "Omkareshwar Jyotirlinga" },
     { id: "3", image_url: "https://placehold.co/600x600/FFE5B4/A63A1E?text=Narmada+River", title: "Narmada River Ghat" },
     { id: "4", image_url: "https://placehold.co/800x400/FFE5B4/A63A1E?text=Premium+Fleet", title: "Our Premium Fleet" },
+    { id: "5", image_url: "https://placehold.co/800x800/FFE5B4/A63A1E?text=Sacred+Puja", title: "Sacred Puja Rituals" },
+    { id: "6", image_url: "https://placehold.co/500x700/FFE5B4/A63A1E?text=Bhasma+Aarti", title: "Bhasma Aarti" },
+    { id: "7", image_url: "https://placehold.co/1000x500/FFE5B4/A63A1E?text=Scenic+Route", title: "The Scenic Route" },
   ];
 
   return (
     <>
       <Navbar />
-      <main className="flex min-h-[100dvh] flex-col pt-24 pb-16 bg-bg">
+      <main className="flex min-h-[100dvh] flex-col pt-24 pb-16 bg-bg overflow-hidden">
         <div className="container mx-auto px-4 md:px-6">
-          <div className="text-center mb-16 max-w-3xl mx-auto">
-            <h1 className="text-4xl md:text-5xl font-display font-bold text-ink mb-6">
+          <div className="text-center mb-12 md:mb-16 max-w-3xl mx-auto">
+            <h1 className="text-4xl md:text-6xl font-display font-bold text-ink mb-6">
               Gallery
             </h1>
-            <p className="text-lg text-ink-muted leading-relaxed">
+            <p className="text-lg md:text-xl text-ink-muted leading-relaxed">
               Glimpses of the divine journey. Explore the sacred temples, beautiful routes, and our comfortable vehicles.
             </p>
           </div>
 
-          <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
-            {items.map((item) => (
-              <div key={item.id} className="break-inside-avoid relative group rounded-xl overflow-hidden bg-surface shadow-sm hover:shadow-md transition-all">
-                <Image
-                  src={item.image_url}
-                  alt={item.title || "Gallery Image"}
-                  width={600}
-                  height={400}
-                  className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105"
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                />
-                {(item.title || item.description) && (
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
-                    {item.title && <h3 className="text-white font-display text-xl font-bold">{item.title}</h3>}
-                    {item.description && <p className="text-white/80 text-sm mt-2">{item.description}</p>}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
+          <GalleryClient initialItems={items} />
         </div>
       </main>
       <Footer />

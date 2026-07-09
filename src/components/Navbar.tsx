@@ -53,6 +53,7 @@ export function Navbar() {
     { name: "About", href: "/about" },
     { name: "Fleet", href: "/fleet" },
     { name: "Packages", href: "/packages" },
+    { name: "History", href: "/history" },
     { name: "Gallery", href: "/gallery" },
     { name: "Contact", href: "/contact" },
   ];

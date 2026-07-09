@@ -11,9 +11,14 @@ async function verifyAdminToken(token?: string) {
   try {
     const supabaseServer = createClient(supabaseUrl, supabaseAnonKey);
     const { data: { user }, error } = await supabaseServer.auth.getUser(token);
-    if (error || !user) return false;
+    if (error) {
+      console.error("Supabase getUser error:", error.message);
+      return false;
+    }
+    if (!user) return false;
     return true;
-  } catch {
+  } catch (err) {
+    console.error("verifyAdminToken exception:", err);
     return false;
   }
 }
@@ -26,7 +31,6 @@ export async function POST(request: Request): Promise<NextResponse> {
       body,
       request,
       onBeforeGenerateToken: async (pathname, clientPayload) => {
-        // Decode the payload to verify authorization token
         let token: string | undefined;
         try {
           if (clientPayload) {
@@ -42,19 +46,18 @@ export async function POST(request: Request): Promise<NextResponse> {
           throw new Error("Unauthorized: Only authenticated admins can upload images.");
         }
 
-        // Configure allowed content types and folder structure
         return {
-          allowedContentTypes: ["image/jpeg", "image/png", "image/webp", "image/jpg"],
+          allowedContentTypes: ["image/jpeg", "image/png", "image/webp", "image/jpg", "image/gif"],
           tokenPayload: JSON.stringify({ authorized: true }),
         };
       },
-      onUploadCompleted: async () => {
-        // This is called after the upload completes on Vercel's end
-      },
+      // Removed onUploadCompleted entirely because Vercel Blob Webhooks
+      // cannot reach localhost without ngrok/localtunnel, which causes the SDK to crash.
     });
 
     return NextResponse.json(jsonResponse);
   } catch (error) {
+    console.error("Vercel Blob Error:", error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Upload authorization failed" },
       { status: 400 }

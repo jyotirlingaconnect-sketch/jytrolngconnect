@@ -76,24 +76,48 @@ export async function uploadImageToBlob(
   // 3. Generate safe unique path/filename
   const optimizedPath = generateOptimizedFilename(file, folder);
 
-  // 4. Perform direct browser-to-blob upload
-  const blob = await upload(optimizedPath, file, {
-    access: "public",
-    handleUploadUrl: "/api/upload",
-    clientPayload: JSON.stringify({ token }),
-    onUploadProgress: (progressEvent) => {
-      if (onProgress) {
-        // progressEvent.percentage is the direct percentage out of 100
-        onProgress(progressEvent.percentage);
+  // 4. Perform upload via our own backend to avoid Vercel Blob client-side webhook hanging issues
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("pathname", optimizedPath);
+
+  // We use XMLHttpRequest to keep the progress bar working
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    
+    xhr.upload.onprogress = (event) => {
+      if (event.lengthComputable && onProgress) {
+        const percentage = (event.loaded / event.total) * 100;
+        onProgress(percentage);
       }
-    },
+    };
+
+    xhr.onload = () => {
+      if (xhr.status === 200) {
+        try {
+          const response = JSON.parse(xhr.responseText);
+          resolve(response.url);
+        } catch (err) {
+          reject(new Error("Invalid response from server"));
+        }
+      } else {
+        try {
+          const errResponse = JSON.parse(xhr.responseText);
+          reject(new Error(errResponse.error || "Upload failed"));
+        } catch (err) {
+          reject(new Error(`Upload failed with status ${xhr.status}`));
+        }
+      }
+    };
+
+    xhr.onerror = () => {
+      reject(new Error("Network error occurred during upload"));
+    };
+
+    xhr.open("POST", "/api/upload/server");
+    xhr.setRequestHeader("Authorization", `Bearer ${token}`);
+    xhr.send(formData);
   });
-
-  if (!blob.url) {
-    throw new Error("Failed to receive public URL from Vercel Blob Storage.");
-  }
-
-  return blob.url;
 }
 
 /**
