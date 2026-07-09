@@ -3,32 +3,39 @@
 import React, { useEffect, useState } from "react";
 import Lottie from "lottie-react";
 
+// Lottie JSON files are loosely typed by the library itself
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type LottieData = Record<string, any>;
+
 interface LottieAnimationProps {
   path?: string;
-  animationData?: any;
+  animationData?: LottieData;
   className?: string;
 }
 
 export default function LottieAnimation({ path, animationData, className }: LottieAnimationProps) {
-  const [data, setData] = useState<any>(animationData);
+  const [data, setData] = useState<LottieData | null>(animationData || null);
 
   useEffect(() => {
     if (path && !data) {
       fetch(path)
         .then((res) => {
           if (!res.ok) {
-            console.warn(`Lottie file not found at ${path}. Please add it to your public folder.`);
             return null;
           }
-          return res.json();
+          return res.json() as Promise<LottieData>;
         })
-        .then((json) => setData(json))
-        .catch((err) => console.error("Error loading lottie animation:", err));
+        .then((json) => {
+          if (json) setData(json);
+        })
+        .catch(() => {
+          // Animation failed to load — render nothing gracefully
+        });
     }
   }, [path, data]);
 
   if (!data) {
-    return <div className={className}></div>;
+    return <div className={className} aria-hidden="true" />;
   }
 
   return <Lottie animationData={data} className={className} />;

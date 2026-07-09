@@ -10,8 +10,18 @@ import { Textarea } from "@/components/ui/textarea";
 import { Trash2, CheckCircle, XCircle } from "lucide-react";
 import { toast } from "sonner";
 
+interface Testimonial {
+  id: string;
+  created_at: string;
+  name: string;
+  location?: string;
+  rating: number;
+  message: string;
+  is_approved: boolean;
+}
+
 export default function AdminTestimonialsPage() {
-  const [testimonials, setTestimonials] = useState<any[]>([]);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchTestimonials = async () => {
@@ -93,7 +103,7 @@ export default function AdminTestimonialsPage() {
                       <span className="text-xs text-ink-muted bg-surface border border-border px-2 py-0.5 rounded-full">{test.location}</span>
                       <div className="text-accent-secondary text-sm">{"★".repeat(test.rating)}</div>
                     </div>
-                    <p className="text-ink-muted italic">"{test.message}"</p>
+                    <p className="text-ink-muted italic">&ldquo;{test.message}&rdquo;</p>
                     <div className="text-xs text-ink-muted">
                       {new Date(test.created_at).toLocaleDateString()}
                     </div>

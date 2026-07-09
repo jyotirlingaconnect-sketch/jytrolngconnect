@@ -12,7 +12,7 @@ export const metadata = {
 // We will use standard img tag or next/image with unoptimized if hostname is unknown.
 
 export default async function GalleryPage() {
-  const { data: galleryItems, error } = await supabase
+  const { data: galleryItems } = await supabase
     .from("gallery")
     .select("*")
     .order("sort_order", { ascending: true })
@@ -43,12 +43,13 @@ export default async function GalleryPage() {
           <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
             {items.map((item) => (
               <div key={item.id} className="break-inside-avoid relative group rounded-xl overflow-hidden bg-surface shadow-sm hover:shadow-md transition-all">
-                {/* We use standard img to avoid next/image domain restrictions for unknown URLs */}
-                <img
+                <Image
                   src={item.image_url}
                   alt={item.title || "Gallery Image"}
+                  width={600}
+                  height={400}
                   className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105"
-                  loading="lazy"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 />
                 {(item.title || item.description) && (
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">

@@ -155,7 +155,7 @@ export default function AboutClient() {
                   </p>
                   <p className="text-xl text-ink-muted leading-relaxed font-medium">
                     Over the years, we have proudly assisted thousands of devotees
-                    in experiencing peaceful and luxurious journeys to India's most
+                    in experiencing peaceful and luxurious journeys to India&apos;s most
                     sacred destinations. We manage every aspect of your travel
                     so you can completely immerse yourself in devotion.
                   </p>
@@ -288,7 +288,7 @@ export default function AboutClient() {
                 </div>
                 <h3 className="text-3xl font-display font-bold text-ink mb-4">Our Vision</h3>
                 <p className="text-ink-muted text-lg font-medium leading-relaxed">
-                  To be India's most trusted and preferred spiritual travel partner, setting the gold standard for luxury pilgrimage tours while preserving the sanctity and tradition of every sacred destination.
+                  To be India&apos;s most trusted and preferred spiritual travel partner, setting the gold standard for luxury pilgrimage tours while preserving the sanctity and tradition of every sacred destination.
                 </p>
               </motion.div>
             </motion.div>

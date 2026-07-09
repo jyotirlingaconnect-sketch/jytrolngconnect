@@ -16,7 +16,7 @@ export default function PrivacyPolicyPage() {
             <h1 className="text-4xl md:text-5xl font-display font-bold text-ink mb-6">
               Privacy Policy
             </h1>
-            <p className="text-ink-muted">Last Updated: {new Date().toLocaleDateString()}</p>
+            <p className="text-ink-muted">Last Updated: July 2025</p>
           </div>
 
           <div className="prose prose-lg dark:prose-invert max-w-none text-ink-muted prose-headings:text-ink prose-headings:font-display">

@@ -8,11 +8,21 @@ import { ThemeToggle } from "./ThemeToggle";
 import { Button } from "./ui/button";
 import { Menu, X, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { supabase } from "@/lib/supabase";
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchLogo() {
+      const { data } = await supabase.from("website_settings").select("logo_url").limit(1).single();
+      if (data?.logo_url) setLogoUrl(data.logo_url);
+    }
+    fetchLogo();
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -25,9 +35,7 @@ export function Navbar() {
   // Close mobile menu on route change
   useEffect(() => {
     setIsMobileMenuOpen(false);
-    if (isMobileMenuOpen) {
-      document.body.style.overflow = '';
-    }
+    document.body.style.overflow = '';
   }, [pathname]);
 
   // Lock body scroll when mobile menu is open
@@ -62,9 +70,13 @@ export function Navbar() {
         <div className="container mx-auto px-4 md:px-6 flex items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group z-50 relative">
-            <div className="text-xl sm:text-2xl md:text-3xl font-display font-bold text-accent-primary transition-colors">
-              Jyotirling<span className="text-ink group-hover:text-accent-secondary transition-colors">Connect</span>
-            </div>
+            {logoUrl ? (
+              <img src={logoUrl} alt="Logo" className="h-8 sm:h-9 md:h-10 w-auto object-contain transition-opacity duration-300 hover:opacity-90" />
+            ) : (
+              <div className="text-xl sm:text-2xl md:text-3xl font-display font-bold text-accent-primary transition-colors">
+                Jyotirling<span className="text-ink group-hover:text-accent-secondary transition-colors">Connect</span>
+              </div>
+            )}
           </Link>
 
           {/* Desktop Nav */}

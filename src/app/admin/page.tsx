@@ -2,8 +2,17 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Package, Image as ImageIcon, BookOpen, MessageSquare } from "lucide-react";
+
+interface Booking {
+  id: string;
+  created_at: string;
+  full_name: string;
+  phone: string;
+  travel_date: string | null;
+  status: "pending" | "confirmed" | "completed" | "cancelled";
+}
 
 export default function AdminDashboardPage() {
   const [stats, setStats] = useState({
@@ -13,8 +22,9 @@ export default function AdminDashboardPage() {
     pendingBookings: 0,
     testimonials: 0,
   });
-  const [recentBookings, setRecentBookings] = useState<any[]>([]);
+  const [recentBookings, setRecentBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -44,8 +54,8 @@ export default function AdminDashboardPage() {
         });
 
         setRecentBookings(recentBk || []);
-      } catch (error) {
-        console.error("Error fetching stats:", error);
+      } catch {
+        setError(true);
       } finally {
         setLoading(false);
       }
@@ -54,7 +64,24 @@ export default function AdminDashboardPage() {
     fetchStats();
   }, []);
 
-  if (loading) return <div>Loading dashboard...</div>;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-24">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-10 h-10 rounded-full border-4 border-accent-primary border-t-transparent animate-spin" />
+          <p className="text-ink-muted text-sm">Loading dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center py-24">
+        <p className="text-error text-sm">Failed to load dashboard stats. Please refresh the page.</p>
+      </div>
+    );
+  }
 
   const statCards = [
     { title: "Total Packages", value: stats.packages, icon: Package, color: "text-blue-500", bg: "bg-blue-500/10" },
@@ -67,7 +94,7 @@ export default function AdminDashboardPage() {
     <div className="space-y-8">
       <div>
         <h1 className="text-3xl font-display font-bold text-ink mb-2">Dashboard Overview</h1>
-        <p className="text-ink-muted">Welcome back! Here is what's happening today.</p>
+        <p className="text-ink-muted">Welcome back! Here is what&apos;s happening today.</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

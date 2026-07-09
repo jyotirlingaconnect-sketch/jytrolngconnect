@@ -6,12 +6,32 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
+
+interface WebsiteSettings {
+  id: string;
+  website_name?: string;
+  tagline?: string;
+  logo_url?: string;
+  favicon_url?: string;
+  footer_text?: string;
+  copyright_text?: string;
+}
+
+import { ImageUploadArea } from "@/components/ImageUploadArea";
+
+interface ContactInfo {
+  id: string;
+  phone_numbers?: string[];
+  email?: string;
+  address?: string;
+  business_hours?: string;
+}
 
 export default function AdminSettingsPage() {
-  const [settings, setSettings] = useState<any>(null);
-  const [contact, setContact] = useState<any>(null);
+  const [settings, setSettings] = useState<WebsiteSettings | null>(null);
+  const [contact, setContact] = useState<ContactInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -56,6 +76,7 @@ export default function AdminSettingsPage() {
     const settingsUpdates = {
       website_name: formData.get("website_name"),
       tagline: formData.get("tagline"),
+      logo_url: settings?.logo_url || null,
       footer_text: formData.get("footer_text"),
       copyright_text: formData.get("copyright_text"),
     };
@@ -78,8 +99,9 @@ export default function AdminSettingsPage() {
         if (error) throw error;
       }
       toast.success("Settings updated successfully");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to update settings");
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : "Failed to update settings";
+      toast.error(msg);
     } finally {
       setSaving(false);
     }
@@ -107,6 +129,14 @@ export default function AdminSettingsPage() {
               <div className="space-y-2">
                 <Label htmlFor="tagline">Tagline</Label>
                 <Input id="tagline" name="tagline" defaultValue={settings?.tagline} />
+              </div>
+              <div className="space-y-2 pt-2">
+                <Label>Website Logo</Label>
+                <ImageUploadArea
+                  value={settings?.logo_url || ""}
+                  onChange={(url) => setSettings(prev => prev ? { ...prev, logo_url: url as string } : null)}
+                  folder="settings"
+                />
               </div>
               
               <div className="pt-4 border-t border-border space-y-4">

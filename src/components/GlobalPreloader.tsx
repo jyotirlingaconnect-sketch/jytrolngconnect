@@ -39,8 +39,8 @@ export function GlobalPreloader({ children }: { children: React.ReactNode }) {
       // Wait for fonts to be ready
       try {
         await document.fonts.ready;
-      } catch (e) {
-        console.warn("Font loading error", e);
+      } catch {
+        // Font loading failure is non-critical — layout still renders
       }
 
       // Preload images in parallel (browser handles queueing)

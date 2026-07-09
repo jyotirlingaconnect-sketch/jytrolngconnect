@@ -10,7 +10,7 @@ export const metadata = {
 };
 
 export default async function TestimonialsPage() {
-  const { data: testimonials, error } = await supabase
+  const { data: testimonials } = await supabase
     .from("testimonials")
     .select("*")
     .eq("is_approved", true)
@@ -68,7 +68,7 @@ export default async function TestimonialsPage() {
                     ))}
                   </div>
                   <p className="text-ink italic leading-relaxed mb-8 flex-grow">
-                    "{testimonial.message}"
+                    &ldquo;{testimonial.message}&rdquo;
                   </p>
                   <div className="flex items-center gap-4 mt-auto">
                     <div className="w-10 h-10 rounded-full bg-accent-primary/10 flex items-center justify-center text-accent-primary font-bold">

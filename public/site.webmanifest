@@ -1,0 +1,16 @@
+{
+  "name": "Jyotirling Connect",
+  "short_name": "JyotirlingConnect",
+  "description": "Premium devotional travel for pilgrims between Mahakaleshwar and Omkareshwar.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#C8B091",
+  "theme_color": "#A63A1E",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "any",
+      "type": "image/x-icon"
+    }
+  ]
+}

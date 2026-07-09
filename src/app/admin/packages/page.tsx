@@ -7,17 +7,17 @@ import { toast } from "sonner";
 import {
   Plus, Pencil, Trash2, X, Search, ChevronDown,
   Package, MapPin, Clock, Car, Users, Star,
-  Eye, EyeOff, TrendingUp, Award, Bookmark,
+  Eye, EyeOff, TrendingUp, Award,
   Calendar, Moon, DollarSign,
-  Save, Loader2, Check, Info, Tag, Zap, Globe,
-  Image as ImageIcon, Hash, ArrowUpDown, LayoutGrid,
+  Save, Loader2, Check, Info, Tag, Globe,
+  Image as ImageIcon, Hash, LayoutGrid,
   RefreshCw, Luggage, BadgeCheck, Flame, CircleCheck,
   CarFront, Bus, BusFront, Hotel, Coffee, Utensils, UtensilsCrossed,
-  ParkingCircle, MapPinned, Route, UserRound, Fuel, BriefcaseMedical, Droplets, Mountain, Upload,
-  ChevronRight, ChevronUp
+  ParkingCircle, MapPinned, Route, UserRound, Fuel, BriefcaseMedical, Droplets, Mountain,
+  ChevronUp
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { ImageUploadArea } from "@/components/ImageUploadArea";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -277,45 +277,14 @@ function TagInput({ tags, onChange, suggestions, placeholder }: { tags: string[]
 
 function GalleryInput({ images, onChange }: { images: string[]; onChange: (v: string[]) => void }) {
   const [urlInput, setUrlInput] = useState("");
-  const [uploading, setUploading] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const add = () => {
     const val = urlInput.trim();
     if (val && !images.includes(val)) { onChange([...images, val]); setUrlInput(""); }
   };
 
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
-    
-    setUploading(true);
-    const newImages = [...images];
-    
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-      const toastId = toast.loading(`Uploading ${file.name}...`);
-      try {
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-        const filePath = `gallery/${fileName}`;
-        const { error: uploadError } = await supabase.storage.from('packages').upload(filePath, file);
-        if (uploadError) throw uploadError;
-        const { data: { publicUrl } } = supabase.storage.from('packages').getPublicUrl(filePath);
-        newImages.push(publicUrl);
-        toast.success(`${file.name} uploaded!`, { id: toastId });
-      } catch (err: any) {
-        toast.error(`Failed to upload ${file.name}: ${err.message}`, { id: toastId });
-      }
-    }
-    
-    onChange(newImages);
-    setUploading(false);
-    if (fileInputRef.current) fileInputRef.current.value = "";
-  };
-
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       <div className="flex gap-2">
         <Field
           value={urlInput}
@@ -327,30 +296,13 @@ function GalleryInput({ images, onChange }: { images: string[]; onChange: (v: st
           className="px-4 rounded-xl bg-accent-primary/10 text-accent-primary text-sm font-medium hover:bg-accent-primary/20 transition-colors whitespace-nowrap border border-accent-primary/20">
           Add
         </button>
-        <label className="flex items-center justify-center px-4 rounded-xl bg-surface border border-border text-ink-muted text-sm font-medium hover:bg-surface/80 hover:text-ink transition-colors cursor-pointer whitespace-nowrap">
-          <input type="file" multiple accept="image/*" className="hidden" ref={fileInputRef} onChange={handleUpload} disabled={uploading} />
-          {uploading ? <Loader2 size={16} className="animate-spin mr-2" /> : <Upload size={16} className="mr-2" />}
-          {uploading ? "Uploading..." : "Upload"}
-        </label>
       </div>
-      {images.length > 0 && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-          {images.map((img, i) => (
-            <div key={i} className="relative group rounded-xl overflow-hidden border border-border aspect-video bg-surface">
-              <img src={img} alt={`Gallery ${i + 1}`} className="w-full h-full object-cover" onError={e => (e.currentTarget.style.display = "none")} />
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all flex items-center justify-center">
-                <button
-                  type="button"
-                  onClick={() => onChange(images.filter((_, idx) => idx !== i))}
-                  className="opacity-0 group-hover:opacity-100 w-8 h-8 rounded-full bg-error text-white flex items-center justify-center transition-all hover:scale-110"
-                >
-                  <X size={14} />
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+      <ImageUploadArea
+        value={images}
+        onChange={(v) => onChange(v as string[])}
+        folder="packages"
+        multiple
+      />
     </div>
   );
 }
@@ -382,7 +334,7 @@ function DestinationCard({ name, selected, onClick }: { name: string; selected: 
 function DayItineraryBuilder({ daysItinerary, onChange }: { daysItinerary: DayItinerary[]; onChange: (v: DayItinerary[]) => void }) {
   const [expandedDay, setExpandedDay] = useState<number | null>(1);
 
-  const updateDay = (dayIndex: number, field: keyof DayItinerary, value: any) => {
+  const updateDay = (dayIndex: number, field: keyof DayItinerary, value: string | string[] | number) => {
     const newItin = [...daysItinerary];
     newItin[dayIndex] = { ...newItin[dayIndex], [field]: value };
     onChange(newItin);
@@ -594,16 +546,19 @@ function PackageForm({
   // Sync days_itinerary when days change
   useEffect(() => {
     const targetDays = form.days || 1;
-    const currentItinerary = form.days_itinerary || [];
-    if (targetDays > currentItinerary.length) {
-      const newItinerary = [...currentItinerary];
-      for (let i = currentItinerary.length + 1; i <= targetDays; i++) {
-        newItinerary.push({ day: i, title: "", description: "", notes: "", places: [] });
+    setForm(prev => {
+      const currentItinerary = prev.days_itinerary || [];
+      if (targetDays > currentItinerary.length) {
+        const newItinerary = [...currentItinerary];
+        for (let i = currentItinerary.length + 1; i <= targetDays; i++) {
+          newItinerary.push({ day: i, title: "", description: "", notes: "", places: [] });
+        }
+        return { ...prev, days_itinerary: newItinerary };
+      } else if (targetDays < currentItinerary.length) {
+        return { ...prev, days_itinerary: currentItinerary.slice(0, targetDays) };
       }
-      setForm(prev => ({ ...prev, days_itinerary: newItinerary }));
-    } else if (targetDays < currentItinerary.length) {
-      setForm(prev => ({ ...prev, days_itinerary: currentItinerary.slice(0, targetDays) }));
-    }
+      return prev;
+    });
   }, [form.days]);
 
   const set = (key: keyof PackageData, val: unknown) => setForm(prev => ({ ...prev, [key]: val }));
@@ -863,40 +818,20 @@ function PackageForm({
           <div className="space-y-6">
             <div>
               <FieldLabel icon={ImageIcon}>Cover Image <span className="text-error">*</span></FieldLabel>
-              <div className="flex gap-2">
-                <Field
-                  value={form.cover_image || ""}
-                  onChange={e => set("cover_image", e.target.value)}
-                  placeholder="https://… (image URL)"
-                />
-                <label className="flex items-center justify-center px-4 rounded-xl bg-accent-primary/10 text-accent-primary text-sm font-medium hover:bg-accent-primary/20 transition-colors cursor-pointer border border-accent-primary/20 whitespace-nowrap">
-                  <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
-                    const file = e.target.files?.[0];
-                    if (!file) return;
-                    const toastId = toast.loading("Uploading image...");
-                    try {
-                      const fileExt = file.name.split('.').pop();
-                      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-                      const filePath = `packages/${fileName}`;
-                      const { error: uploadError } = await supabase.storage.from('packages').upload(filePath, file);
-                      if (uploadError) throw uploadError;
-                      const { data: { publicUrl } } = supabase.storage.from('packages').getPublicUrl(filePath);
-                      set("cover_image", publicUrl);
-                      toast.success("Image uploaded!", { id: toastId });
-                    } catch (err: any) {
-                      toast.error(`Upload failed: ${err.message}`, { id: toastId });
-                    }
-                  }} />
-                  <Upload size={16} className="mr-2" />
-                  Upload
-                </label>
-              </div>
-              {form.cover_image && (
-                <div className="mt-3 relative rounded-xl overflow-hidden border border-border aspect-video max-w-sm bg-surface">
-                  <img src={form.cover_image} alt="Cover preview" className="w-full h-full object-cover" onError={e => (e.currentTarget.style.display = "none")} />
-                  <span className="absolute bottom-2 right-2 text-xs bg-black/60 text-white px-2 py-0.5 rounded-full">Preview</span>
+              <div className="space-y-3">
+                <div className="flex gap-2">
+                  <Field
+                    value={form.cover_image || ""}
+                    onChange={e => set("cover_image", e.target.value)}
+                    placeholder="https://… (image URL)"
+                  />
                 </div>
-              )}
+                <ImageUploadArea
+                  value={form.cover_image || ""}
+                  onChange={v => set("cover_image", v)}
+                  folder="packages"
+                />
+              </div>
             </div>
             <div>
               <FieldLabel icon={LayoutGrid} optional>Gallery Images</FieldLabel>

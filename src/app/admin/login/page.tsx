@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -32,8 +32,9 @@ export default function AdminLoginPage() {
         toast.success("Login successful");
         router.push("/admin");
       }
-    } catch (error: any) {
-      toast.error(error.message || "Failed to login. Check credentials.");
+    } catch (error: unknown) {
+      const msg = error instanceof Error ? error.message : "Failed to login. Check credentials.";
+      toast.error(msg);
     } finally {
       setIsLoading(false);
     }

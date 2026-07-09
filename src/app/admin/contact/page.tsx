@@ -9,15 +9,25 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 
+interface ContactInfo {
+  id?: string;
+  phone_numbers?: string[];
+  whatsapp_number?: string;
+  email?: string;
+  address?: string;
+  business_hours?: string;
+  google_maps_link?: string;
+}
+
 export default function AdminContactInfoPage() {
-  const [contactInfo, setContactInfo] = useState<any>(null);
+  const [contactInfo, setContactInfo] = useState<ContactInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     const fetchContactInfo = async () => {
       setLoading(true);
-      const { data, error } = await supabase.from("contact_info").select("*").limit(1).single();
+      const { data } = await supabase.from("contact_info").select("*").limit(1).single();
       if (data) {
         setContactInfo(data);
       } else {

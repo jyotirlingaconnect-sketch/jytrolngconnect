@@ -73,8 +73,7 @@ function BookingForm() {
       
       toast.success("Booking request submitted! We will confirm your yatra shortly.");
       reset();
-    } catch (error) {
-      console.error(error);
+    } catch {
       toast.error("Failed to submit booking. Please try again.");
     } finally {
       setIsSubmitting(false);

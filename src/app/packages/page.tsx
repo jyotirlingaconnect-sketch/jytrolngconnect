@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/lib/supabase";
 import { Clock, MapPin, Car } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 export const metadata = {
   title: "Packages | Jyotirling Connect",
@@ -13,7 +14,7 @@ export const metadata = {
 };
 
 export default async function PackagesPage() {
-  const { data: packages, error } = await supabase
+  const { data: packages } = await supabase
     .from("packages")
     .select("*")
     .eq("is_available", true)
@@ -65,7 +66,7 @@ export default async function PackagesPage() {
               <Card key={pkg.id} interactive className="flex flex-col h-full overflow-hidden">
                 <div className="relative h-48 w-full bg-surface border-b border-border">
                   {pkg.images && pkg.images[0] ? (
-                    <img src={pkg.images[0]} alt={pkg.title} className="w-full h-full object-cover" />
+                    <Image src={pkg.images[0]} alt={pkg.title} fill className="object-cover" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center bg-accent-primary/10">
                       <span className="text-accent-primary">No Image</span>

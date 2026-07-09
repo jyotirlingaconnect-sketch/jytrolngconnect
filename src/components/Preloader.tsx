@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import LottieAnimation from "./LottieAnimation";
 
 const LOADING_MESSAGES = [
   "Preparing Your Sacred Journey...",

@@ -13,9 +13,11 @@ export function WhatsAppButton() {
     return () => clearTimeout(timer);
   }, []);
 
+  const phoneNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "919876543210";
+
   return (
     <a
-      href="https://wa.me/919876543210?text=Hari%20Om!%20I%20would%20like%20to%20enquire%20about%20your%20services."
+      href={`https://wa.me/${phoneNumber}?text=Hari%20Om!%20I%20would%20like%20to%20enquire%20about%20your%20services.`}
       target="_blank"
       rel="noopener noreferrer"
       className={cn(

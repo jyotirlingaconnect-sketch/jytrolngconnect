@@ -70,7 +70,7 @@ export function PremiumStatistics() {
             Trusted by <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-primary to-accent-secondary">Thousands</span>
           </h2>
           <p className="text-base md:text-lg text-ink-muted dark:text-white/60 font-light leading-relaxed">
-            Our commitment to your spiritual journey is reflected in the milestones we've achieved alongside our devotees.
+            Our commitment to your spiritual journey is reflected in the milestones we&apos;ve achieved alongside our devotees.
           </p>
         </motion.div>
 

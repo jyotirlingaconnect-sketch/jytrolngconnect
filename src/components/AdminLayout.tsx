@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "./ThemeToggle";
@@ -24,14 +25,12 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [session, setSession] = useState<any>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session && pathname !== "/admin/login") {
         router.push("/admin/login");
       } else {
-        setSession(session);
         setIsLoading(false);
       }
     });
@@ -39,7 +38,6 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
       if (!session && pathname !== "/admin/login") {
         router.push("/admin/login");
       }
@@ -53,7 +51,14 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
   }
 
   if (isLoading) {
-    return <div className="min-h-[100dvh] flex items-center justify-center bg-bg text-ink">Loading...</div>;
+    return (
+      <div className="min-h-[100dvh] flex items-center justify-center bg-bg">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-10 h-10 rounded-full border-4 border-accent-primary border-t-transparent animate-spin" />
+          <p className="text-ink-muted text-sm">Loading admin panel...</p>
+        </div>
+      </div>
+    );
   }
 
   const handleLogout = async () => {
@@ -78,7 +83,12 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
         <div className="font-display font-bold text-xl text-accent-primary">Admin Panel</div>
         <div className="flex items-center gap-4">
           <ThemeToggle />
-          <button onClick={() => setIsMobileOpen(!isMobileOpen)} className="text-ink">
+          <button 
+            onClick={() => setIsMobileOpen(!isMobileOpen)} 
+            className="text-ink"
+            aria-label={isMobileOpen ? "Close navigation menu" : "Open navigation menu"}
+            aria-expanded={isMobileOpen}
+          >
             {isMobileOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>

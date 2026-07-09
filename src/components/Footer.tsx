@@ -5,9 +5,22 @@ import { Phone, Mail, MapPin } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
+interface ContactInfo {
+  phone_numbers?: string[];
+  email?: string;
+  address?: string;
+}
+
+interface WebsiteSettings {
+  website_name?: string;
+  tagline?: string;
+  logo_url?: string;
+  copyright_text?: string;
+}
+
 export function Footer() {
-  const [contactInfo, setContactInfo] = useState<any>(null);
-  const [websiteSettings, setWebsiteSettings] = useState<any>(null);
+  const [contactInfo, setContactInfo] = useState<ContactInfo | null>(null);
+  const [websiteSettings, setWebsiteSettings] = useState<WebsiteSettings | null>(null);
 
   useEffect(() => {
     async function fetchFooterData() {
@@ -35,9 +48,13 @@ export function Footer() {
           {/* Brand */}
           <div className="md:col-span-1 space-y-4">
             <Link href="/" className="inline-block">
-              <div className="text-2xl font-display font-bold text-accent-primary">
-                {websiteName.replace("Connect", "")}<span className="text-ink">Connect</span>
-              </div>
+              {websiteSettings?.logo_url ? (
+                <img src={websiteSettings.logo_url} alt={websiteName} className="h-8 w-auto object-contain" />
+              ) : (
+                <div className="text-2xl font-display font-bold text-accent-primary">
+                  {websiteName.replace("Connect", "")}<span className="text-ink">Connect</span>
+                </div>
+              )}
             </Link>
             <p className="text-ink-muted text-sm leading-relaxed whitespace-pre-line">
               {tagline}
@@ -48,13 +65,19 @@ export function Footer() {
           <div>
             <h4 className="font-display text-lg font-semibold mb-4 text-ink">Quick Links</h4>
             <ul className="space-y-2">
-              {["Home", "About Us", "Fleet", "Packages", "Gallery"].map((link) => (
-                <li key={link}>
+              {[
+                { label: "Home", href: "/" },
+                { label: "About Us", href: "/about" },
+                { label: "Fleet", href: "/fleet" },
+                { label: "Packages", href: "/packages" },
+                { label: "Gallery", href: "/gallery" },
+              ].map((link) => (
+                <li key={link.label}>
                   <Link
-                    href={link === "Home" ? "/" : `/${link.toLowerCase().replace(" ", "-")}`}
+                    href={link.href}
                     className="text-ink-muted hover:text-accent-primary text-sm transition-colors"
                   >
-                    {link}
+                    {link.label}
                   </Link>
                 </li>
               ))}

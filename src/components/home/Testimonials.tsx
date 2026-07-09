@@ -75,7 +75,7 @@ export function Testimonials() {
               transition={{ delay: 0.2 }}
               className="text-lg text-ink-muted"
             >
-              Don't just take our word for it. Here is what our esteemed guests have to say about their journey.
+              Don&apos;t just take our word for it. Here is what our esteemed guests have to say about their journey.
             </motion.p>
           </div>
           
@@ -116,7 +116,7 @@ export function Testimonials() {
                   </div>
 
                   <p className="text-ink-muted leading-relaxed mb-8 italic relative z-10 text-lg">
-                    "{testimonial.text}"
+                    &ldquo;{testimonial.text}&rdquo;
                   </p>
 
                   <div className="flex items-center gap-4 mt-auto">

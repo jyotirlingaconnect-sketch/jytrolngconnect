@@ -2,6 +2,7 @@ import { HeroCanvas } from "@/components/HeroCanvas";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
+import type { Metadata } from "next";
 
 import { JourneyOverview } from "@/components/home/JourneyOverview";
 import { SpiritualExperience } from "@/components/home/SpiritualExperience";
@@ -14,6 +15,18 @@ import { TrustSection } from "@/components/home/TrustSection";
 import { FAQPreview } from "@/components/home/FAQPreview";
 import { CTASection } from "@/components/home/CTASection";
 import { GlobalPreloader } from "@/components/GlobalPreloader";
+
+export const metadata: Metadata = {
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    title: "Jyotirling Connect | Premium Pilgrimage Travel",
+    description:
+      "Book premium devotional travel between Mahakaleshwar (Ujjain) and Omkareshwar Jyotirlinga. Verified drivers, comfortable vehicles, and a divine experience.",
+    url: "/",
+  },
+};
 
 export default function Home() {
   return (

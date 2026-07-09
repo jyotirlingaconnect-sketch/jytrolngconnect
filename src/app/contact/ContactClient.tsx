@@ -28,8 +28,15 @@ const contactSchema = z.object({
 
 type ContactFormValues = z.infer<typeof contactSchema>;
 
+interface ContactInfo {
+  phone_numbers?: string[];
+  email?: string;
+  address?: string;
+  business_hours?: string;
+}
+
 interface ContactClientProps {
-  contactInfo: any;
+  contactInfo: ContactInfo | null;
 }
 
 const faqs = [
@@ -117,8 +124,7 @@ export default function ContactClient({ contactInfo }: ContactClientProps) {
       if (error) throw error;
       toast.success("Enquiry sent successfully! We will contact you soon.");
       reset();
-    } catch (error) {
-      console.error(error);
+    } catch {
       toast.error("Failed to send enquiry. Please try again or call us.");
     } finally {
       setIsSubmitting(false);
@@ -170,7 +176,7 @@ export default function ContactClient({ contactInfo }: ContactClientProps) {
                 </span>
               </h1>
               <p className="text-xl text-ink-muted leading-relaxed max-w-xl">
-                We're always here to help you plan a peaceful, comfortable, and memorable pilgrimage. Experience divine hospitality.
+                We&apos;re always here to help you plan a peaceful, comfortable, and memorable pilgrimage. Experience divine hospitality.
               </p>
               <div className="flex flex-wrap gap-4 pt-4">
                 <a href={`tel:${cleanPhone}`}>

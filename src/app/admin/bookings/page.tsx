@@ -4,11 +4,26 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Trash2, CheckCircle, XCircle } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
+interface Booking {
+  id: string;
+  created_at: string;
+  full_name: string;
+  phone: string;
+  email?: string;
+  travel_date?: string;
+  pickup_location?: string;
+  drop_location?: string;
+  vehicle_preference?: string;
+  no_of_passengers?: number;
+  message?: string;
+  status: "pending" | "confirmed" | "completed" | "cancelled";
+}
+
 export default function AdminBookingsPage() {
-  const [bookings, setBookings] = useState<any[]>([]);
+  const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchBookings = async () => {

@@ -6,13 +6,23 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Trash2, Plus, Image as ImageIcon } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { ImageUploadArea } from "@/components/ImageUploadArea";
+import { deleteImageFromBlob } from "@/lib/blob";
+
+interface GalleryImage {
+  id: string;
+  created_at: string;
+  image_url: string;
+  title?: string;
+  description?: string;
+  sort_order?: number;
+}
 
 export default function AdminGalleryPage() {
-  const [images, setImages] = useState<any[]>([]);
+  const [images, setImages] = useState<GalleryImage[]>([]);
   const [loading, setLoading] = useState(true);
-  const [uploading, setUploading] = useState(false);
 
   const fetchGallery = async () => {
     setLoading(true);
@@ -26,58 +36,36 @@ export default function AdminGalleryPage() {
     fetchGallery();
   }, []);
 
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setUploading(true);
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${Math.random()}.${fileExt}`;
-    const filePath = `gallery/${fileName}`;
-
+  const handleUploadComplete = async (url: string) => {
+    if (!url) return;
+    const fileName = url.split("/").pop()?.split("-")[0] || "Gallery Image";
     try {
-      // Create bucket if it doesn't exist, though we assume the client sets it up.
-      // For now we assume standard storage insert
-      const { error: uploadError } = await supabase.storage.from("images").upload(filePath, file);
-      
-      if (uploadError) {
-        // If storage is not setup, fallback to placeholder logic for now
-        console.warn("Storage upload failed, falling back to dummy url", uploadError);
-        const { error: dbError } = await supabase.from("gallery").insert([
-          { image_url: `https://placehold.co/600x400/FFE5B4/A63A1E?text=${encodeURIComponent(file.name)}`, title: file.name }
-        ]);
-        if (dbError) throw dbError;
-      } else {
-        const { data: { publicUrl } } = supabase.storage.from("images").getPublicUrl(filePath);
-        const { error: dbError } = await supabase.from("gallery").insert([
-          { image_url: publicUrl, title: file.name }
-        ]);
-        if (dbError) throw dbError;
-      }
-
-      toast.success("Image uploaded successfully");
+      const { error: dbError } = await supabase.from("gallery").insert([
+        { image_url: url, title: fileName }
+      ]);
+      if (dbError) throw dbError;
       fetchGallery();
-    } catch (error: any) {
-      toast.error(error.message);
-    } finally {
-      setUploading(false);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to save image in database");
     }
   };
 
   const handleDelete = async (id: string, url: string) => {
     if (!confirm("Are you sure you want to delete this image?")) return;
     
-    // Attempt to delete from storage if it's a supabase URL
-    if (url.includes("supabase.co")) {
-      const path = url.split("/").pop();
-      if (path) await supabase.storage.from("images").remove([`gallery/${path}`]);
-    }
+    const toastId = toast.loading("Deleting image...");
+    try {
+      // Attempt Vercel Blob deletion
+      await deleteImageFromBlob(url);
 
-    const { error } = await supabase.from("gallery").delete().eq("id", id);
-    if (error) toast.error(error.message);
-    else {
-      toast.success("Image deleted");
+      // Delete from Supabase
+      const { error } = await supabase.from("gallery").delete().eq("id", id);
+      if (error) throw error;
+      
+      toast.success("Image deleted", { id: toastId });
       fetchGallery();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to delete image", { id: toastId });
     }
   };
 
@@ -89,17 +77,24 @@ export default function AdminGalleryPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-3xl font-display font-bold text-ink mb-2">Gallery Management</h1>
-          <p className="text-ink-muted">Upload and manage images for the public gallery</p>
-        </div>
-        <div>
-          <input type="file" id="upload" accept="image/*" className="hidden" onChange={handleUpload} disabled={uploading} />
-          <Label htmlFor="upload" className="inline-flex h-11 px-6 py-2 items-center justify-center rounded-xl bg-accent-primary text-surface font-medium cursor-pointer hover:-translate-y-0.5 hover:shadow-md transition-all gap-2">
-            <Plus size={18} /> {uploading ? "Uploading..." : "Upload Image"}
-          </Label>
-        </div>
+      <div className="mb-8">
+        <h1 className="text-3xl font-display font-bold text-ink mb-2">Gallery Management</h1>
+        <p className="text-ink-muted">Upload and manage images for the public gallery</p>
+      </div>
+
+      {/* Drag & Drop Bulk Uploader */}
+      <div className="mb-10">
+        <ImageUploadArea
+          folder="gallery"
+          multiple
+          value={[]}
+          onChange={(urls) => {
+            // Since multiple is true, ImageUploadArea returns an array.
+            // In our custom flow, we fetch the last uploaded item
+            const lastUrl = urls[urls.length - 1];
+            if (lastUrl) handleUploadComplete(lastUrl);
+          }}
+        />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

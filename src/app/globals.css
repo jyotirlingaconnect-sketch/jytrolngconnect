@@ -68,3 +68,8 @@
   50% { transform: scale(0.95) rotate(-2deg); opacity: 0.8; }
   75% { transform: scale(1.02) rotate(1deg); opacity: 0.95; }
 }
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}

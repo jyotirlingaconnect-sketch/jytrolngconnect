@@ -60,7 +60,7 @@ export function SpiritualExperience() {
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent rounded-[2rem] pointer-events-none" />
                 <p className="text-lg md:text-xl italic font-serif leading-relaxed opacity-95 drop-shadow-md">
-                  "The journey was as peaceful as the destination. A truly premium spiritual experience."
+                  &ldquo;The journey was as peaceful as the destination. A truly premium spiritual experience.&rdquo;
                 </p>
                 <div className="mt-6 flex items-center gap-4">
                   <div className="relative">
