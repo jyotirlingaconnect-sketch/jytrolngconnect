@@ -1,0 +1,30 @@
+"use client";
+
+import { MessageCircle } from "lucide-react";
+import { useEffect, useState } from "react";
+import { cn } from "@/lib/utils";
+
+export function WhatsAppButton() {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    // Slight delay so it pops in after initial render
+    const timer = setTimeout(() => setIsVisible(true), 1000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <a
+      href="https://wa.me/919876543210?text=Hari%20Om!%20I%20would%20like%20to%20enquire%20about%20your%20services."
+      target="_blank"
+      rel="noopener noreferrer"
+      className={cn(
+        "fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg transition-all hover:-translate-y-1 hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-[#25D366] focus:ring-offset-2",
+        isVisible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
+      )}
+      aria-label="Chat on WhatsApp"
+    >
+      <MessageCircle size={28} />
+    </a>
+  );
+}

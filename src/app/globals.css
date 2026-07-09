@@ -1,26 +1,70 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --color-background: var(--bg);
+  --color-foreground: var(--ink);
+  --color-surface: var(--surface);
+  --color-section-bg: var(--section-bg);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-accent-primary: var(--accent-primary);
+  --color-accent-secondary: var(--accent-secondary);
+  --color-border: var(--border);
+  --color-success: var(--success);
+  --color-error: var(--error);
+
+  --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-furonto), ui-sans-serif, system-ui, sans-serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --bg: #C8B091;
+    --section-bg: #FFE5B4;
+    --surface: #EAD5BA;
+    --ink: #2B1710;
+    --ink-muted: #5C3D28;
+    --accent-primary: #A63A1E;
+    --accent-secondary: #B57F24;
+    --border: #B5997A;
+    --success: #3F7D53;
+    --error: #B0392A;
+  }
+
+  .dark {
+    --bg: #2A1B10;
+    --section-bg: #281a0f;
+    --surface: #3A2617;
+    --ink: #FDF3E7;
+    --ink-muted: #D3B89D;
+    --accent-primary: #E2582D;
+    --accent-secondary: #D4AF6A;
+    --border: #523824;
+    --success: #5FA772;
+    --error: #E0685A;
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-sans);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+@keyframes flicker {
+  0%, 100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  25% { transform: scale(1.05) rotate(2deg); opacity: 0.9; }
+  50% { transform: scale(0.95) rotate(-2deg); opacity: 0.8; }
+  75% { transform: scale(1.02) rotate(1deg); opacity: 0.95; }
 }
