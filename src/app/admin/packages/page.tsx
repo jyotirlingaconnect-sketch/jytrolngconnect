@@ -128,7 +128,7 @@ const emptyForm = (): Partial<PackageData> => ({
 
 // ─── Shared Primitive Components ─────────────────────────────────────────────
 
-const FieldLabel = ({ icon: Icon, children, optional }: { icon?: React.ElementType; children: React.ReactNode; optional?: boolean }) => (
+const FieldLabel = ({ icon: Icon, children, optional }: { icon?: any; children: React.ReactNode; optional?: boolean }) => (
   <label className="flex items-center gap-1.5 text-sm font-semibold text-ink mb-1.5">
     {Icon && <Icon size={14} className="text-accent-primary shrink-0" />}
     {children}
@@ -162,7 +162,6 @@ const Toggle = ({ checked, onChange, label }: { checked: boolean; onChange: (v: 
   <label className="flex items-center gap-3 cursor-pointer group select-none">
     <button
       type="button"
-      role="switch"
       aria-checked={checked}
       onClick={() => onChange(!checked)}
       className={cn(
@@ -179,7 +178,7 @@ const Toggle = ({ checked, onChange, label }: { checked: boolean; onChange: (v: 
   </label>
 );
 
-const SectionCard = ({ title, icon: Icon, children, className, id }: { title: string; icon: React.ElementType; children: React.ReactNode; className?: string; id?: string }) => (
+const SectionCard = ({ title, icon: Icon, children, className, id }: { title: string; icon: any; children: React.ReactNode; className?: string; id?: string }) => (
   <motion.div
     id={id}
     initial={{ opacity: 0, y: 16 }}
@@ -926,7 +925,7 @@ function PackageForm({
 
 // ─── Stats Card ───────────────────────────────────────────────────────────────
 
-function StatCard({ label, value, icon: Icon, color }: { label: string; value: number; icon: React.ElementType; color: string }) {
+function StatCard({ label, value, icon: Icon, color }: { label: string; value: number; icon: any; color: string }) {
   return (
     <div className="flex items-center gap-4 p-4 rounded-2xl border border-border bg-surface/40 backdrop-blur-sm">
       <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center shrink-0", color)}>

@@ -19,10 +19,10 @@ import LottieAnimation from "@/components/LottieAnimation";
 const contactSchema = z.object({
   full_name: z.string().min(2, "Name is required"),
   phone: z.string().min(10, "Valid phone number is required"),
-  email: z.string().email("Valid email is required").optional().or(z.literal("")),
+  email: z.string().email("Valid email is required"),
   subject: z.string().min(3, "Subject is required"),
-  travel_date: z.string().optional(),
-  passengers: z.string().optional(),
+  travel_date: z.string().min(1, "Travel date is required"),
+  passengers: z.string().min(1, "Number of travellers is required"),
   message: z.string().min(10, "Please provide a detailed message"),
 });
 
@@ -338,7 +338,7 @@ export default function ContactClient({ contactInfo }: ContactClientProps) {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <Label className="text-ink font-medium ml-1">Email Address</Label>
+                      <Label className="text-ink font-medium ml-1">Email Address *</Label>
                       <Input 
                         type="email" 
                         placeholder="john@example.com" 
@@ -348,12 +348,13 @@ export default function ContactClient({ contactInfo }: ContactClientProps) {
                       {errors.email && <p className="text-error text-sm ml-1">{errors.email.message}</p>}
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-ink font-medium ml-1">Travel Date</Label>
+                      <Label className="text-ink font-medium ml-1">Travel Date *</Label>
                       <Input 
                         type="date" 
                         className="h-14 bg-white/50 dark:bg-black/20 border-border/50 focus:border-accent-primary/50 focus:ring-accent-primary/20 rounded-2xl transition-all"
                         {...register("travel_date")} 
                       />
+                      {errors.travel_date && <p className="text-error text-sm ml-1">{errors.travel_date.message}</p>}
                     </div>
                   </div>
 
@@ -368,7 +369,7 @@ export default function ContactClient({ contactInfo }: ContactClientProps) {
                       {errors.subject && <p className="text-error text-sm ml-1">{errors.subject.message}</p>}
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-ink font-medium ml-1">Number of Travellers</Label>
+                      <Label className="text-ink font-medium ml-1">Number of Travellers *</Label>
                       <Input 
                         type="number" 
                         placeholder="2" 
@@ -376,6 +377,7 @@ export default function ContactClient({ contactInfo }: ContactClientProps) {
                         className="h-14 bg-white/50 dark:bg-black/20 border-border/50 focus:border-accent-primary/50 focus:ring-accent-primary/20 rounded-2xl transition-all"
                         {...register("passengers")} 
                       />
+                      {errors.passengers && <p className="text-error text-sm ml-1">{errors.passengers.message}</p>}
                     </div>
                   </div>
 

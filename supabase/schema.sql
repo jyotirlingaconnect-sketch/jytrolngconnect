@@ -108,8 +108,12 @@ CREATE TABLE IF NOT EXISTS public.bookings (
     drop_location TEXT,
     message TEXT,
     status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'confirmed', 'completed', 'cancelled')),
+    admin_notes TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+-- Safely add admin_notes if this schema is applied to an existing database
+ALTER TABLE public.bookings ADD COLUMN IF NOT EXISTS admin_notes TEXT;
 
 -- contact_info table
 CREATE TABLE IF NOT EXISTS public.contact_info (
@@ -202,3 +206,42 @@ INSERT INTO public.contact_info (phone_numbers, email, address, business_hours)
 SELECT ARRAY['+91 98765 43210'], 'info@jyotirlingconnect.com', 'Near Mahakaleshwar Temple, Ujjain, Madhya Pradesh 456006', 'Monday - Sunday
 9:00 AM - 8:00 PM'
 WHERE NOT EXISTS (SELECT 1 FROM public.contact_info);
+
+-- fleet table
+CREATE TABLE IF NOT EXISTS public.fleet (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name TEXT NOT NULL,
+    brand TEXT NOT NULL,
+    category TEXT NOT NULL,
+    short_description TEXT,
+    description TEXT,
+    min_passengers INTEGER,
+    max_passengers INTEGER,
+    perfect_for TEXT[],
+    tags TEXT[],
+    features TEXT[],
+    cover_image TEXT,
+    gallery_images TEXT[],
+    starting_price NUMERIC,
+    price_per_km NUMERIC,
+    price_per_day NUMERIC,
+    driver_charges NUMERIC,
+    display_order INTEGER DEFAULT 0,
+    is_available BOOLEAN DEFAULT true,
+    is_featured BOOLEAN DEFAULT false,
+    is_popular BOOLEAN DEFAULT false,
+    show_on_website BOOLEAN DEFAULT true,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Enable RLS for fleet
+ALTER TABLE public.fleet ENABLE ROW LEVEL SECURITY;
+
+-- Create policies for public read access (fleet)
+DROP POLICY IF EXISTS "Public read access to fleet" ON public.fleet;
+CREATE POLICY "Public read access to fleet" ON public.fleet FOR SELECT USING (show_on_website = true);
+
+-- Allow authenticated admins to do all operations on fleet
+DROP POLICY IF EXISTS "Admin all access fleet" ON public.fleet;
+CREATE POLICY "Admin all access fleet" ON public.fleet FOR ALL USING (auth.role() = 'authenticated');

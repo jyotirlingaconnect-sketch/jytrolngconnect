@@ -125,10 +125,16 @@ export function Footer() {
           </div>
         </div>
         
-        <div className="mt-12 pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-ink-muted">
-            {copyright}
-          </p>
+        <div className="mt-12 pt-8 border-t border-border flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div className="flex flex-col gap-1.5">
+            <p className="text-sm text-ink-muted">
+              {copyright}
+            </p>
+            <div className="text-xs text-ink-muted/70">
+              <p>Made By :- Animesh Ansh Yadav</p>
+              <p>Email :- <a href="mailto:animeshansh10@gmail.com" className="hover:text-accent-primary transition-colors">animeshansh10@gmail.com</a></p>
+            </div>
+          </div>
           <div className="flex items-center gap-4 text-sm text-ink-muted">
             <span>Atithi Devo Bhava</span>
             <span className="text-accent-secondary">ॐ</span>

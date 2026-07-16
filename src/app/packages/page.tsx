@@ -13,6 +13,8 @@ export const metadata = {
   description: "Browse our travel packages for Jyotirlinga Yatra.",
 };
 
+export const dynamic = "force-dynamic";
+
 export default async function PackagesPage() {
   const { data: packages } = await supabase
     .from("packages")
@@ -65,8 +67,8 @@ export default async function PackagesPage() {
             {items.map((pkg) => (
               <Card key={pkg.id} interactive className="flex flex-col h-full overflow-hidden">
                 <div className="relative h-48 w-full bg-surface border-b border-border">
-                  {pkg.images && pkg.images[0] ? (
-                    <Image src={pkg.images[0]} alt={pkg.title} fill className="object-cover" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
+                  {pkg.cover_image || (pkg.images && pkg.images[0]) ? (
+                    <Image src={pkg.cover_image || pkg.images[0]} alt={pkg.title} fill className="object-cover" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center bg-accent-primary/10">
                       <span className="text-accent-primary">No Image</span>

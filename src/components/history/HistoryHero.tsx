@@ -4,9 +4,29 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { Button } from "../ui/button";
 import { Language } from "@/data/history-data";
+import React, { Suspense, Component, ReactNode } from "react";
+import dynamic from "next/dynamic";
+
+const OmCanvas = dynamic(() => import("./OmCanvas"), { ssr: false });
 
 interface HistoryHeroProps {
   language: Language;
+}
+
+class ModelErrorBoundary extends Component<{children: ReactNode, fallback: ReactNode}, {hasError: boolean}> {
+  constructor(props: {children: ReactNode, fallback: ReactNode}) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+  render() {
+    if (this.state.hasError) {
+      return this.props.fallback;
+    }
+    return this.props.children;
+  }
 }
 
 export function HistoryHero({ language }: HistoryHeroProps) {
@@ -80,21 +100,42 @@ export function HistoryHero({ language }: HistoryHeroProps) {
             </div>
           </motion.div>
 
-          {/* Right Glowing Image */}
+          {/* Right Glowing 3D Image */}
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1, delay: 0.2 }}
-            className="relative flex justify-center items-center h-[300px] md:h-[500px]"
+            className="relative flex justify-center items-center h-[320px] sm:h-[420px] md:h-[500px]"
           >
-            <div className="relative w-full max-w-[400px] aspect-square rounded-full overflow-hidden shadow-2xl border-4 border-accent-primary/20" style={{ perspective: "1000px" }}>
-              <img 
-                src="/history/golden-om.png" 
-                alt="3D Golden Om Icon" 
-                className="w-full h-full object-contain p-8 animate-spin-y mix-blend-screen"
-                style={{ transformStyle: "preserve-3d" }}
-              />
-              <div className="absolute inset-0 bg-accent-primary/20 mix-blend-overlay" />
+            <div 
+              className="relative w-full max-w-[400px] aspect-square rounded-full overflow-hidden shadow-[0_0_80px_-20px_rgba(212,175,55,0.4)] border-4 border-accent-primary/30" 
+              style={{ background: "radial-gradient(circle, rgba(212,175,55,0.15) 0%, rgba(0,0,0,0) 70%)" }}
+            >
+              <ModelErrorBoundary 
+                fallback={
+                  <img 
+                    src="/history/3d-om.svg" 
+                    alt="3D Golden Om Icon" 
+                    className="w-full h-full object-contain p-8 animate-spin-y"
+                    style={{ transformStyle: "preserve-3d" }}
+                  />
+                }
+              >
+                <Suspense fallback={
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-20 h-20 rounded-full border-t-2 border-r-2 border-accent-primary animate-spin shadow-[0_0_15px_rgba(212,175,55,0.4)]"></div>
+                    <div className="absolute flex items-center justify-center w-full h-full">
+                       <img src="/history/3d-om.svg" className="w-10 h-10 opacity-70 animate-pulse" alt="Loading Model..." />
+                    </div>
+                  </div>
+                }>
+                  <OmCanvas />
+                </Suspense>
+              </ModelErrorBoundary>
+
+              {/* Premium visual effects: divine aura and glow */}
+              <div className="absolute inset-0 bg-accent-primary/10 mix-blend-overlay pointer-events-none" />
+              <div className="absolute inset-0 shadow-[inset_0_0_50px_rgba(212,175,55,0.2)] rounded-full pointer-events-none" />
             </div>
           </motion.div>
           
@@ -103,3 +144,4 @@ export function HistoryHero({ language }: HistoryHeroProps) {
     </section>
   );
 }
+

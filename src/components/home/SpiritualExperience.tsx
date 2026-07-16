@@ -1,9 +1,11 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle2, ArrowRight, User } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useState, useEffect } from "react";
+import { useGalleryImages } from "./cta/useGalleryImages";
 
 export function SpiritualExperience() {
   const benefits = [
@@ -12,6 +14,19 @@ export function SpiritualExperience() {
     "Clean & Sanitized Vehicles",
     "Flexible Stoppages",
   ];
+
+  const { images } = useGalleryImages();
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  useEffect(() => {
+    if (images.length === 0) return;
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prev) => (prev + 1) % images.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [images]);
+
+  const fallbackUrl = "https://images.unsplash.com/photo-1623910385966-eb18a2872338?q=80&w=2000&auto=format&fit=crop";
 
   return (
     <section className="py-16 md:py-20 bg-transparent relative z-20 overflow-hidden">
@@ -38,13 +53,25 @@ export function SpiritualExperience() {
               {/* Outer Glow */}
               <div className="absolute inset-0 bg-gradient-to-tr from-accent-primary/20 to-accent-secondary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-xl z-0" />
               
-              <Image 
-                src="https://images.unsplash.com/photo-1623910385966-eb18a2872338?q=80&w=2000&auto=format&fit=crop" 
-                alt="Premium Temple Experience" 
-                fill
-                className="object-cover transition-transform duration-700 group-hover:scale-105 z-0"
-                unoptimized
-              />
+              <AnimatePresence>
+                <motion.div
+                  key={images.length > 0 ? images[currentImageIndex].id : "fallback"}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 1, ease: "easeInOut" }}
+                  className="absolute inset-0"
+                >
+                  <Image 
+                    src={images.length > 0 ? images[currentImageIndex].image_url : fallbackUrl} 
+                    alt={images.length > 0 ? (images[currentImageIndex].title || "Premium Temple Experience") : "Premium Temple Experience"} 
+                    fill
+                    className="object-cover transition-transform duration-700 group-hover:scale-105 z-0"
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                    unoptimized={images.length > 0 ? images[currentImageIndex].image_url.includes('placehold.co') : true}
+                  />
+                </motion.div>
+              </AnimatePresence>
               
               {/* Elegant Gradient Overlay */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent z-10" />

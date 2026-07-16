@@ -17,7 +17,8 @@ import {
   Phone,
   LogOut,
   Menu,
-  X
+  X,
+  Car
 } from "lucide-react";
 
 export function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -69,6 +70,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
   const navItems = [
     { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
     { name: "Packages", href: "/admin/packages", icon: Package },
+    { name: "Fleet", href: "/admin/fleet", icon: Car },
     { name: "Gallery", href: "/admin/gallery", icon: ImageIcon },
     { name: "Bookings", href: "/admin/bookings", icon: BookOpen },
     { name: "Testimonials", href: "/admin/testimonials", icon: MessageSquare },
