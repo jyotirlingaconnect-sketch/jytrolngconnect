@@ -60,7 +60,7 @@ export function GlobalPreloader({ children }: { children: React.ReactNode }) {
             resolve(false);
           };
           
-          img.src = `/frames/frame_${numStr}.png`;
+          img.src = `/frames/frame_${numStr}.webp`;
         });
       });
 
@@ -86,17 +86,16 @@ export function GlobalPreloader({ children }: { children: React.ReactNode }) {
         )}
       </AnimatePresence>
 
-      {/* Conditionally Mount the Entire Website Only After Ready */}
-      {isReady && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1, ease: "easeOut" }}
-          className="w-full"
-        >
-          {children}
-        </motion.div>
-      )}
+      {/* Always mount children — opacity/pointer-events hide them until ready */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: isReady ? 1 : 0 }}
+        transition={{ duration: 1, ease: "easeOut" }}
+        className="w-full"
+        style={{ pointerEvents: isReady ? "auto" : "none" }}
+      >
+        {children}
+      </motion.div>
     </>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Phone, Mail, MapPin } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
@@ -49,7 +50,7 @@ export function Footer() {
           <div className="md:col-span-1 space-y-4">
             <Link href="/" className="inline-block">
               {websiteSettings?.logo_url ? (
-                <img src={websiteSettings.logo_url} alt={websiteName} className="h-8 w-auto object-contain" />
+                <Image src={websiteSettings.logo_url} alt={websiteName} width={200} height={32} className="h-8 w-auto object-contain" />
               ) : (
                 <div className="text-2xl font-display font-bold text-accent-primary">
                   {websiteName.replace("Connect", "")}<span className="text-ink">Connect</span>

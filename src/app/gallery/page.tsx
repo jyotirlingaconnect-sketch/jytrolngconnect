@@ -10,7 +10,7 @@ export const metadata = {
   description: "View our gallery of the sacred journey between Mahakaleshwar and Omkareshwar Jyotirlinga.",
 };
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export default async function GalleryPage() {
   const { data: galleryItems } = await supabase

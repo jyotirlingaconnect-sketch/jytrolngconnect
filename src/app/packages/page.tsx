@@ -13,7 +13,7 @@ export const metadata = {
   description: "Browse our travel packages for Jyotirlinga Yatra.",
 };
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export default async function PackagesPage() {
   const { data: packages } = await supabase

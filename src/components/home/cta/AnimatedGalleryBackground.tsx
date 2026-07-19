@@ -6,8 +6,8 @@ import Image from "next/image";
 import { GalleryItem } from "./useGalleryImages";
 
 // We want a large grid so we have enough tiles to scroll infinitely
-const ROW_COUNT = 10;
-const COL_COUNT = 15;
+const ROW_COUNT = 4;
+const COL_COUNT = 8;
 const TILE_WIDTH = 320;
 const TILE_HEIGHT = 220;
 const TILE_GAP = 32;

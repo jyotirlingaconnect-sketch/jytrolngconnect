@@ -39,7 +39,7 @@ export function HeroCanvas() {
         return new Promise((resolve) => {
           const img = new Image();
           const numStr = String(i).padStart(3, "0");
-          img.src = `/frames/frame_${numStr}.png`;
+          img.src = `/frames/frame_${numStr}.webp`;
           
           img.onload = () => {
             loaded++;
@@ -141,7 +141,7 @@ export function HeroCanvas() {
       {prefersReducedMotion ? (
         <div 
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url(/frames/frame_000.png)` }}
+          style={{ backgroundImage: `url(/frames/frame_000.webp)` }}
         />
       ) : (
         <canvas
