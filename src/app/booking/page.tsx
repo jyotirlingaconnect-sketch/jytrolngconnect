@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, Suspense } from "react";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -380,10 +381,12 @@ function BookingForm() {
                     
                     {/* Compact Horizontal Layout */}
                     <div className="p-3 flex items-center gap-3 z-10 relative">
-                      <img 
-                        src={opt.image} 
-                        alt={opt.name} 
-                        className="w-16 h-12 rounded-lg object-cover flex-shrink-0" 
+                      <Image
+                        src={opt.image}
+                        alt={opt.name}
+                        width={64}
+                        height={48}
+                        className="w-16 h-12 rounded-lg object-cover flex-shrink-0"
                       />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between">
@@ -570,17 +573,7 @@ function BookingForm() {
 }
 
 export default function BookingPage() {
-  const [contactInfo, setContactInfo] = useState<any>(null);
-
-  useEffect(() => {
-    async function fetchContact() {
-      const { data } = await supabase.from("contact_info").select("*").limit(1).single();
-      if (data) setContactInfo(data);
-    }
-    fetchContact();
-  }, []);
-
-  const phoneSupport = contactInfo?.phone_numbers?.[0] || "+91 98765 43210";
+  const phoneSupport = "+91 98765 43210";
 
   return (
     <>

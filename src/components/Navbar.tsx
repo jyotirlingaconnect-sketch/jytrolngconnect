@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "./ThemeToggle";
@@ -72,7 +73,7 @@ export function Navbar() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group z-50 relative">
             {logoUrl ? (
-              <img src={logoUrl} alt="Logo" className="h-8 sm:h-9 md:h-10 w-auto object-contain transition-opacity duration-300 hover:opacity-90" />
+              <Image src={logoUrl} alt="Logo" width={200} height={40} className="h-8 sm:h-9 md:h-10 w-auto object-contain transition-opacity duration-300 hover:opacity-90" />
             ) : (
               <div className="text-xl sm:text-2xl md:text-3xl font-display font-bold text-accent-primary transition-colors">
                 Jyotirling<span className="text-ink group-hover:text-accent-secondary transition-colors">Connect</span>

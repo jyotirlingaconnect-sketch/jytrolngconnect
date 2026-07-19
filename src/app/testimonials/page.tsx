@@ -9,7 +9,7 @@ export const metadata = {
   description: "Read what our pilgrims say about their Jyotirlinga Yatra experience with us.",
 };
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export default async function TestimonialsPage() {
   const { data: testimonials } = await supabase

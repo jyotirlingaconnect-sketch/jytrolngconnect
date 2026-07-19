@@ -54,7 +54,7 @@ export function PremiumStatistics() {
       />
 
       {/* Subtle Noise Texture */}
-      <div className="absolute inset-0 opacity-10 dark:opacity-[0.03] mix-blend-overlay bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]" />
+      <div className="absolute inset-0 opacity-10 dark:opacity-[0.03] mix-blend-overlay" />
 
       <div className="container mx-auto px-4 md:px-6 relative z-10">
         

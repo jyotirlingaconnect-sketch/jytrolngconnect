@@ -24,7 +24,7 @@ export interface LocalizedContent {
 export const historyDestinations: DestinationContent[] = [
   {
     id: "mahakaleshwar",
-    image: "/history/mahakaleshwar.jpg",
+    image: "/history/mahakaleshwar.webp",
     en: {
       name: "Mahakaleshwar Temple",
       overview: "One of the twelve Jyotirlingas, Mahakaleshwar in Ujjain is a revered sanctuary dedicated to Lord Shiva, known for its powerful spiritual aura and the unique Bhasma Aarti.",
@@ -62,7 +62,7 @@ export const historyDestinations: DestinationContent[] = [
   },
   {
     id: "kal-bhairav",
-    image: "/history/kal-bhairav.jpg",
+    image: "/history/kal-bhairav.webp",
     en: {
       name: "Kal Bhairav Temple",
       overview: "Located on the banks of the Shipra River, the Kal Bhairav Temple is a prominent center for the Shaivite sect, famous for the unique offering of liquor to the deity.",
@@ -98,7 +98,7 @@ export const historyDestinations: DestinationContent[] = [
   },
   {
     id: "omkareshwar",
-    image: "/history/omkareshwar.jpg",
+    image: "/history/omkareshwar.webp",
     en: {
       name: "Omkareshwar Temple",
       overview: "Set on the sacred Om-shaped Mandhata island in the Narmada River, Omkareshwar is a serene and magnificent Jyotirlinga that draws millions of pilgrims every year.",
@@ -136,7 +136,7 @@ export const historyDestinations: DestinationContent[] = [
   },
   {
     id: "mamleshwar",
-    image: "/history/mamleshwar.jpg",
+    image: "/history/mamleshwar.webp",
     en: {
       name: "Mamleshwar Temple",
       overview: "Located on the southern bank of the Narmada River, Mamleshwar is the spiritual twin of Omkareshwar, holding equal status as half of the fourth Jyotirlinga.",
@@ -172,7 +172,7 @@ export const historyDestinations: DestinationContent[] = [
   },
   {
     id: "maheshwar",
-    image: "/history/maheshwar.jpg",
+    image: "/history/maheshwar.webp",
     en: {
       name: "Maheshwar Fort",
       overview: "Rising majestically over the Narmada River, Maheshwar Fort is a stunning blend of history, architecture, and spirituality, deeply associated with Queen Ahilyabai Holkar.",
@@ -208,7 +208,7 @@ export const historyDestinations: DestinationContent[] = [
   },
   {
     id: "mandu",
-    image: "/history/mandu.jpg",
+    image: "/history/mandu.webp",
     en: {
       name: "Mandu Fort",
       overview: "An ancient fortress city renowned for its Afghan architecture, Mandu stands as a grand testament to the romance between Prince Baz Bahadur and Rani Roopmati.",
@@ -244,7 +244,7 @@ export const historyDestinations: DestinationContent[] = [
   },
   {
     id: "khajrana",
-    image: "/history/khajrana.jpg",
+    image: "/history/khajrana.webp",
     en: {
       name: "Khajrana Ganesh Temple",
       overview: "One of the most revered and visited temples in Indore, Khajrana Ganesh is a center of deep faith where devotees come to seek blessings for prosperity and success.",

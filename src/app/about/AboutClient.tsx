@@ -162,7 +162,7 @@ export default function AboutClient() {
                 <div className="flex justify-center">
                    <div className="relative w-full max-w-[380px] aspect-[4/5] rounded-[2.5rem] border border-white/50 dark:border-white/10 bg-white/40 dark:bg-white/10 backdrop-blur-2xl flex items-center justify-center shadow-[0_20px_50px_rgba(0,0,0,0.1)] overflow-hidden group-hover:scale-105 transition-transform duration-700">
                       <Image
-                        src="/founder.jpg"
+                        src="/founder.webp"
                         alt="Aadarsh Singh Sengar - Founder"
                         width={600}
                         height={800}
