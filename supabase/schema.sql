@@ -245,3 +245,18 @@ CREATE POLICY "Public read access to fleet" ON public.fleet FOR SELECT USING (sh
 -- Allow authenticated admins to do all operations on fleet
 DROP POLICY IF EXISTS "Admin all access fleet" ON public.fleet;
 CREATE POLICY "Admin all access fleet" ON public.fleet FOR ALL USING (auth.role() = 'authenticated');
+
+-- Keep-Alive RPC function
+CREATE OR REPLACE FUNCTION public.ping()
+RETURNS text
+LANGUAGE sql
+SECURITY DEFINER
+AS $$
+  SELECT 'pong'::text;
+$$;
+
+-- Grant execute permissions to public roles so it can be called via REST/PostgREST
+GRANT EXECUTE ON FUNCTION public.ping() TO anon;
+GRANT EXECUTE ON FUNCTION public.ping() TO authenticated;
+GRANT EXECUTE ON FUNCTION public.ping() TO service_role;
+

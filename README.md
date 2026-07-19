@@ -272,6 +272,44 @@ Main Tables
 
 ---
 
+# ⏰ Supabase Keep-Alive
+
+### Preventing Database Pausing on Free Tier
+
+Supabase's Free Tier projects automatically pause after 1 week of inactivity. To prevent this project's database from sleeping, an automated keep-alive system is integrated using GitHub Actions.
+
+#### How It Works
+The keep-alive system calls a custom Postgres function (RPC) `ping()` in the Supabase database. Calling this RPC runs a real lightweight SQL command inside the database engine, generating activity and keeping the database active without altering any production data.
+- **Workflow Action**: Calls the `ping()` RPC endpoint via a lightweight Node.js script.
+- **RPC Function**: `public.ping()` returns `'pong'` and executes with `SECURITY DEFINER` privileges.
+- **Side Effects**: None.
+
+#### Workflow Schedule
+- Runs automatically **every 5 days** at 00:00 UTC.
+- Can be manually executed at any time.
+
+#### Required GitHub Secrets
+The workflow uses the following Repository Secrets (configured in Settings > Secrets and variables > Actions):
+- `SUPABASE_URL`: The URL of your Supabase project (e.g., `https://your-project-id.supabase.co`).
+- `SUPABASE_ANON_KEY`: The API key associated with your Supabase project (the Client/Anon key).
+
+#### How to Manually Trigger the Workflow
+1. Go to the **Actions** tab in your GitHub repository.
+2. Select **Supabase Keep-Alive** from the workflows list on the left.
+3. Click the **Run workflow** dropdown menu on the right.
+4. Select the target branch and click the green **Run workflow** button.
+
+#### How to Modify the Schedule
+To change the cron schedule, edit [.github/workflows/supabase-keepalive.yml](file:///.github/workflows/supabase-keepalive.yml):
+```yaml
+on:
+  schedule:
+    # Example: Run every 3 days instead of 5 days:
+    - cron: '0 0 */3 * *'
+```
+
+---
+
 # 🔒 Security
 
 - Supabase Authentication
