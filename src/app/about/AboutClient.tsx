@@ -5,7 +5,9 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import Image from "next/image";
 import LottieAnimation from "@/components/LottieAnimation";
+import OmModel from "@/components/OmModel";
 import {
   Star,
   ShieldCheck,
@@ -83,7 +85,7 @@ export default function AboutClient() {
                   className="mt-6 text-xl text-ink-muted leading-relaxed font-medium max-w-xl"
                 >
                   Jyotirling Connect is proudly operated under
-                  <strong className="text-ink font-bold"> Aadharsh Property and Construction</strong>,
+                  <strong className="text-ink font-bold"> Aadarsh Property and Construction</strong>,
                   serving devotees with dedication for over
                   <strong className="text-ink font-bold"> 10+ years.</strong>
                   <br />
@@ -115,12 +117,9 @@ export default function AboutClient() {
                 {/* Decorative background glow for Lottie */}
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-white/40 dark:bg-white/5 rounded-full blur-[80px] pointer-events-none" />
                 
-                <div className="relative rounded-[2.5rem] border border-white/40 dark:border-white/10 bg-white/20 dark:bg-white/5 backdrop-blur-3xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] p-8 md:p-12 overflow-hidden group hover:bg-white/30 dark:hover:bg-white/10 transition-colors duration-500">
+                <div className="relative rounded-[2.5rem] p-8 md:p-12 overflow-hidden group transition-colors duration-500 bg-transparent">
                   <div className="absolute inset-0 bg-gradient-to-tr from-accent-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-                  <LottieAnimation
-                    path="/lottie/temple-prayer.json"
-                    className="w-[380px] max-w-full relative z-10 drop-shadow-2xl"
-                  />
+                  <OmModel className="w-[380px] h-[380px] max-w-full relative z-10 drop-shadow-2xl" />
                 </div>
               </motion.div>
             </div>
@@ -150,22 +149,35 @@ export default function AboutClient() {
                   </h2>
                   <p className="text-xl text-ink-muted leading-relaxed font-medium mb-6">
                     Jyotirling Connect is a premium pilgrimage travel service
-                    operated under <strong className="text-ink font-bold">Aadharsh Property and Construction</strong>,
-                    a respected organization with more than <strong className="text-ink font-bold">10 years of experience</strong>.
+                    backed by <strong className="text-ink font-bold">Aadarsh Property and Construction</strong>,
+                    a trusted organization with over <strong className="text-ink font-bold">10 years of experience</strong>.
                   </p>
                   <p className="text-xl text-ink-muted leading-relaxed font-medium">
-                    Over the years, we have proudly assisted thousands of devotees
-                    in experiencing peaceful and luxurious journeys to India&apos;s most
-                    sacred destinations. We manage every aspect of your travel
-                    so you can completely immerse yourself in devotion.
+                    We have helped thousands of devotees experience peaceful and
+                    comfortable journeys to India&apos;s most sacred destinations.
+                    By handling all travel arrangements, we allow you to focus
+                    entirely on your spiritual experience.
                   </p>
                 </div>
                 <div className="flex justify-center">
-                   <div className="w-full max-w-[280px] aspect-square rounded-full border border-white/50 dark:border-white/10 bg-white/40 dark:bg-white/10 backdrop-blur-2xl flex items-center justify-center shadow-[0_20px_50px_rgba(0,0,0,0.1)] p-8 group-hover:scale-105 transition-transform duration-700">
-                      <LottieAnimation
-                        path="/lottie/divine-light.json"
-                        className="w-full h-full drop-shadow-xl"
+                   <div className="relative w-full max-w-[380px] aspect-[4/5] rounded-[2.5rem] border border-white/50 dark:border-white/10 bg-white/40 dark:bg-white/10 backdrop-blur-2xl flex items-center justify-center shadow-[0_20px_50px_rgba(0,0,0,0.1)] overflow-hidden group-hover:scale-105 transition-transform duration-700">
+                      <Image
+                        src="/founder.jpg"
+                        alt="Aadarsh Singh Sengar - Founder"
+                        width={600}
+                        height={800}
+                        className="w-full h-full object-cover"
                       />
+                      
+                      {/* Name Overlay */}
+                      <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent p-6 pt-16 flex flex-col items-center justify-end">
+                        <h3 className="text-white font-display text-2xl font-bold tracking-wide text-center">
+                          Aadarsh Singh Sengar
+                        </h3>
+                        <p className="text-white/80 font-medium text-sm mt-1 uppercase tracking-widest text-center">
+                          Founder
+                        </p>
+                      </div>
                    </div>
                 </div>
               </div>
