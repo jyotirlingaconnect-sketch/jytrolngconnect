@@ -19,6 +19,8 @@ A modern Full Stack Travel Management Platform built with Next.js, TypeScript, S
 
 </p>
 
+</div>
+
 ---
 
 ## 🌐 Live Demo
@@ -450,40 +452,23 @@ Contributions are welcome.
 
 # 👨‍💻 Author
 
-## Animesh Ansh Yadav
+**Animesh Ansh Yadav**  
+*Full Stack Developer*
 
-Full Stack Developer
-
-📧 animeshansh10@gmail.com
-
-GitHub
-
-https://github.com/siefer2005
-
-LinkedIn
-
-(Add LinkedIn URL)
-
-Portfolio
-
-(Add Portfolio URL)
+- 📧 **Email:** [animeshansh10@gmail.com](mailto:animeshansh10@gmail.com)
+- 🐙 **GitHub:** [@siefer2005](https://github.com/siefer2005)
+- 💼 **LinkedIn:** [Add LinkedIn URL](#)
+- 🌐 **Portfolio:** [Add Portfolio URL](#)
 
 ---
 
 # ⭐ Support
 
-If you found this project helpful,
-
-please consider giving it a ⭐ on GitHub.
-
-It really helps!
+If you found this project helpful, please consider giving it a ⭐ on GitHub. It really helps!
 
 ---
 
 <div align="center">
-
-Made with ❤️ using
-
-Next.js • Supabase • TypeScript • TailwindCSS • GSAP • Framer Motion
-
+  <p>Made with ❤️ using</p>
+  <p><b>Next.js • Supabase • TypeScript • TailwindCSS • GSAP • Framer Motion</b></p>
 </div>
