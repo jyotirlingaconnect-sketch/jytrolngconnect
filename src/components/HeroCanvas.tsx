@@ -137,7 +137,7 @@ export function HeroCanvas() {
   const isLoading = imagesLoaded < FRAME_COUNT;
 
   return (
-    <div ref={containerRef} className="relative w-full h-[100dvh] overflow-hidden bg-bg">
+    <div ref={containerRef} className="relative w-full h-[85dvh] sm:h-[90dvh] md:h-[100dvh] overflow-hidden bg-bg">
       {prefersReducedMotion ? (
         <div 
           className="absolute inset-0 bg-cover bg-center"
@@ -158,16 +158,16 @@ export function HeroCanvas() {
       <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60 z-0 pointer-events-none" />
 
       {/* Hero Content positioned statically inside the pinned container */}
-      <div ref={textRef} className="absolute inset-0 flex flex-col items-center justify-center z-10 text-center px-4 transition-transform duration-75">
-        <h1 className="font-display text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 drop-shadow-lg opacity-90 transition-opacity">
+      <div ref={textRef} className="absolute inset-0 flex flex-col items-center justify-center z-10 text-center px-4 sm:px-6 transition-transform duration-75">
+        <h1 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-3 sm:mb-4 md:mb-6 drop-shadow-lg opacity-90 transition-opacity leading-tight">
           A Journey of Devotion
         </h1>
-        <p className="text-lg md:text-xl text-[#FDEBD3] max-w-2xl mb-10 drop-shadow-md">
+        <p className="text-sm sm:text-base md:text-lg lg:text-xl text-[#FDEBD3] max-w-xs sm:max-w-lg md:max-w-2xl mb-6 md:mb-10 drop-shadow-md">
           Experience a divine pilgrimage from Mahakaleshwar to Omkareshwar with our premium, comfortable, and trusted travel services.
         </p>
         <a 
           href="/booking"
-          className="inline-flex h-14 items-center justify-center whitespace-nowrap rounded-xl bg-accent-primary px-8 text-base font-medium text-surface shadow-md transition-all hover:-translate-y-1 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary pointer-events-auto"
+          className="inline-flex h-12 md:h-14 items-center justify-center whitespace-nowrap rounded-xl bg-accent-primary px-6 md:px-8 text-sm md:text-base font-medium text-surface shadow-md transition-all hover:-translate-y-1 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary pointer-events-auto min-w-[160px]"
         >
           Book Your Yatra
         </a>

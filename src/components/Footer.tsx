@@ -44,10 +44,10 @@ export function Footer() {
 
   return (
     <footer className="bg-section-bg transition-colors duration-700 border-t border-border mt-auto">
-      <div className="container mx-auto px-4 md:px-6 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+      <div className="container mx-auto px-4 md:px-6 py-8 md:py-12">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
           {/* Brand */}
-          <div className="md:col-span-1 space-y-4">
+          <div className="col-span-2 md:col-span-1 space-y-4">
             <Link href="/" className="inline-block">
               {websiteSettings?.logo_url ? (
                 <Image src={websiteSettings.logo_url} alt={websiteName} width={200} height={32} className="h-8 w-auto object-contain" />
@@ -57,14 +57,14 @@ export function Footer() {
                 </div>
               )}
             </Link>
-            <p className="text-ink-muted text-sm leading-relaxed whitespace-pre-line">
+            <p className="text-ink-muted text-sm leading-relaxed whitespace-pre-line max-w-[280px]">
               {tagline}
             </p>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h4 className="font-display text-lg font-semibold mb-4 text-ink">Quick Links</h4>
+            <h4 className="font-display text-base md:text-lg font-semibold mb-3 text-ink">Quick Links</h4>
             <ul className="space-y-2">
               {[
                 { label: "Home", href: "/" },
@@ -87,7 +87,7 @@ export function Footer() {
 
           {/* Support */}
           <div>
-            <h4 className="font-display text-lg font-semibold mb-4 text-ink">Support</h4>
+            <h4 className="font-display text-base md:text-lg font-semibold mb-3 text-ink">Support</h4>
             <ul className="space-y-2">
               {["Contact Us", "Privacy Policy", "Terms & Conditions"].map((link) => (
                 <li key={link}>
@@ -103,8 +103,8 @@ export function Footer() {
           </div>
 
           {/* Contact */}
-          <div>
-            <h4 className="font-display text-lg font-semibold mb-4 text-ink">Contact Us</h4>
+          <div className="col-span-2 md:col-span-1 mt-2 md:mt-0">
+            <h4 className="font-display text-base md:text-lg font-semibold mb-3 text-ink">Contact Us</h4>
             <ul className="space-y-3">
               <li className="flex items-start gap-3 text-sm text-ink-muted">
                 <MapPin size={18} className="text-accent-primary shrink-0 mt-0.5" />
@@ -126,7 +126,7 @@ export function Footer() {
           </div>
         </div>
         
-        <div className="mt-12 pt-8 border-t border-border flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div className="mt-8 pt-6 md:mt-10 md:pt-8 border-t border-border flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div className="flex flex-col gap-1.5">
             <p className="text-sm text-ink-muted">
               {copyright}

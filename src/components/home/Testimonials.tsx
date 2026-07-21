@@ -54,17 +54,17 @@ export function Testimonials() {
   }, [emblaApi, onSelect]);
 
   return (
-    <section className="py-24 bg-section-bg transition-colors duration-700 relative overflow-hidden">
+    <section className="py-12 md:py-20 bg-section-bg transition-colors duration-700 relative overflow-hidden">
       <div className="absolute top-1/2 right-0 -translate-y-1/2 w-[500px] h-[500px] bg-accent-secondary/5 rounded-full blur-[100px] pointer-events-none" />
 
       <div className="container mx-auto px-4 md:px-6 relative z-10">
-        <div className="flex flex-col md:flex-row items-end justify-between mb-16 gap-6">
+        <div className="flex flex-col md:flex-row items-end justify-between mb-8 md:mb-12 gap-4">
           <div className="max-w-2xl">
             <motion.h2 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="text-4xl md:text-5xl font-display font-bold text-ink mb-4"
+              className="text-3xl md:text-5xl font-display font-bold text-ink mb-3"
             >
               Words from Pilgrims
             </motion.h2>
@@ -82,13 +82,15 @@ export function Testimonials() {
           <div className="flex gap-4">
             <button 
               onClick={scrollPrev}
-              className="w-12 h-12 rounded-full border border-border bg-surface flex items-center justify-center text-ink hover:bg-accent-primary hover:text-white hover:border-accent-primary transition-colors"
+              className="min-w-[44px] min-h-[44px] w-12 h-12 rounded-full border border-border bg-surface flex items-center justify-center text-ink hover:bg-accent-primary hover:text-white hover:border-accent-primary transition-colors focus-visible:ring-2 focus-visible:ring-accent-primary focus-visible:outline-none"
+              aria-label="Previous testimonial"
             >
               <ChevronLeft size={24} />
             </button>
             <button 
               onClick={scrollNext}
-              className="w-12 h-12 rounded-full border border-border bg-surface flex items-center justify-center text-ink hover:bg-accent-primary hover:text-white hover:border-accent-primary transition-colors"
+              className="min-w-[44px] min-h-[44px] w-12 h-12 rounded-full border border-border bg-surface flex items-center justify-center text-ink hover:bg-accent-primary hover:text-white hover:border-accent-primary transition-colors focus-visible:ring-2 focus-visible:ring-accent-primary focus-visible:outline-none"
+              aria-label="Next testimonial"
             >
               <ChevronRight size={24} />
             </button>
@@ -106,7 +108,7 @@ export function Testimonials() {
           <div className="embla__container flex">
             {testimonials.map((testimonial) => (
               <div className="embla__slide flex-[0_0_100%] min-w-0 md:flex-[0_0_50%] lg:flex-[0_0_40%] pl-4" key={testimonial.id}>
-                <div className="h-full p-8 rounded-3xl bg-surface/50 backdrop-blur-md border border-border/50 shadow-lg hover:shadow-xl transition-shadow relative group">
+                <div className="h-full p-5 md:p-8 rounded-3xl bg-surface/50 backdrop-blur-md border border-border/50 shadow-lg hover:shadow-xl transition-shadow relative group">
                   <Quote className="absolute top-8 right-8 text-accent-secondary/20 w-16 h-16 group-hover:scale-110 transition-transform duration-500" />
                   
                   <div className="flex gap-1 mb-6">

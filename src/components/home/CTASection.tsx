@@ -15,7 +15,7 @@ export function CTASection() {
   // We'll just render it as is, or you could conditionally swap AnimatedGalleryBackground for a static one.
 
   return (
-    <section className="relative py-32 overflow-hidden min-h-[800px] flex items-center bg-ink">
+    <section className="relative py-16 md:py-24 overflow-hidden min-h-[400px] md:min-h-[600px] flex items-center bg-ink">
       {!loading && !shouldReduceMotion && (
         <AnimatedGalleryBackground images={images} />
       )}

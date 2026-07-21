@@ -12,9 +12,9 @@ export function TrustSection() {
   ];
 
   return (
-    <section className="py-12 bg-white/5 border-y border-border backdrop-blur-sm">
+    <section className="py-8 md:py-12 bg-white/5 border-y border-border backdrop-blur-sm">
       <div className="container mx-auto px-4 md:px-6">
-        <div className="flex flex-wrap justify-center gap-8 md:gap-16 items-center">
+        <div className="flex flex-wrap justify-center gap-6 md:gap-12 items-center">
           {badges.map((badge, idx) => (
             <motion.div
               key={idx}

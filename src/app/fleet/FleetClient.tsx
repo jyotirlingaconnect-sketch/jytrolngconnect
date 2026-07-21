@@ -43,15 +43,15 @@ export function FleetClient() {
   }, []);
 
   return (
-    <div className="flex flex-col min-h-screen bg-bg relative overflow-hidden pt-24 pb-20">
+    <div className="flex flex-col min-h-screen bg-bg relative overflow-hidden pt-20 pb-14 md:pt-24 md:pb-20">
       {/* Background Ambience */}
       <div className="absolute top-0 left-0 w-full h-[600px] bg-gradient-to-b from-accent-primary/5 to-transparent pointer-events-none" />
       <div className="absolute top-1/4 right-0 w-[500px] h-[500px] bg-accent-secondary/5 rounded-full blur-[150px] pointer-events-none" />
       <div className="absolute bottom-1/4 left-0 w-[600px] h-[600px] bg-accent-primary/5 rounded-full blur-[150px] pointer-events-none" />
 
       {/* Hero Section */}
-      <section className="container mx-auto px-4 md:px-6 mb-24 relative z-10">
-        <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
+      <section className="container mx-auto px-4 md:px-6 mb-12 md:mb-20 relative z-10">
+        <div className="flex flex-col lg:flex-row items-center gap-8 md:gap-12 lg:gap-16">
           <motion.div 
             initial={{ opacity: 0, x: -40 }}
             animate={{ opacity: 1, x: 0 }}
@@ -62,7 +62,7 @@ export function FleetClient() {
               <CheckCircle2 className="w-4 h-4 text-accent-primary" />
               <span className="text-sm font-semibold text-accent-primary uppercase tracking-wider">Premium Pilgrimage Fleet</span>
             </div>
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-display font-bold text-ink mb-6 leading-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold text-ink mb-6 leading-tight">
               Travel in Comfort, <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-primary to-accent-secondary">
                 Safety & Luxury
@@ -100,7 +100,7 @@ export function FleetClient() {
       </section>
 
       {/* Vehicle Showcase */}
-      <section className="container mx-auto px-4 md:px-6 mb-24 relative z-10">
+      <section className="container mx-auto px-4 md:px-6 mb-12 md:mb-20 relative z-10">
         {loading ? (
           <div className="flex justify-center items-center py-20">
             <div className="w-12 h-12 rounded-full border-4 border-accent-primary border-t-transparent animate-spin" />
@@ -111,7 +111,7 @@ export function FleetClient() {
             <p className="mt-2">Please check back later or contact us directly.</p>
           </div>
         ) : (
-          <div className="flex flex-col gap-12 lg:gap-16">
+          <div className="flex flex-col gap-8 md:gap-12">
             {fleets.map((vehicle) => (
               <motion.div
                 key={vehicle.id}
@@ -156,7 +156,7 @@ export function FleetClient() {
                 </div>
 
                 {/* Content Side */}
-                <div className="w-full lg:w-7/12 p-6 lg:p-8 flex flex-col justify-center relative z-20">
+                <div className="w-full lg:w-7/12 p-5 md:p-8 flex flex-col justify-center relative z-20">
                   <div className="flex justify-between items-start mb-3">
                     <h2 className="text-2xl md:text-3xl font-display font-bold text-ink group-hover:text-accent-primary transition-colors duration-300">
                       {vehicle.name}
@@ -234,7 +234,7 @@ export function FleetClient() {
 
       {/* Compare Vehicles Table */}
       {!loading && fleets.length > 0 && (
-        <section className="container mx-auto px-4 md:px-6 mb-32 relative z-10">
+        <section className="container mx-auto px-4 md:px-6 mb-12 md:mb-20 relative z-10">
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -284,7 +284,7 @@ export function FleetClient() {
 
       {/* Why Choose Our Fleet */}
       <section className="container mx-auto px-4 md:px-6 relative z-10">
-        <div className="text-center mb-16 max-w-3xl mx-auto">
+        <div className="text-center mb-8 md:mb-12 max-w-3xl mx-auto">
           <h2 className="text-3xl md:text-5xl font-display font-bold text-ink mb-4">Why Choose Our Fleet</h2>
           <p className="text-lg text-ink-muted">We go above and beyond to ensure your journey is safe, comfortable, and memorable.</p>
         </div>

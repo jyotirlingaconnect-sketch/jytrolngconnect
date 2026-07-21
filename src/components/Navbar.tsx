@@ -65,24 +65,24 @@ export function Navbar() {
         className={cn(
           "fixed left-0 right-0 top-0 z-50 transition-all duration-300 ease-in-out",
           isScrolled
-            ? "bg-bg/80 backdrop-blur-xl shadow-sm border-b border-border/50 py-3 md:py-4"
-            : "bg-transparent py-5 md:py-6"
+            ? "bg-bg/80 backdrop-blur-xl shadow-sm border-b border-border/50 py-2 md:py-3"
+            : "bg-transparent py-3 md:py-5"
         )}
       >
-        <div className="container mx-auto px-4 md:px-6 flex items-center justify-between">
+        <div className="container mx-auto px-4 lg:px-6 max-w-[1600px] flex items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group z-50 relative">
             {logoUrl ? (
-              <Image src={logoUrl} alt="Logo" width={200} height={40} className="h-8 sm:h-9 md:h-10 w-auto object-contain transition-opacity duration-300 hover:opacity-90" />
+              <Image src={logoUrl} alt="Logo" width={200} height={40} className="h-7 sm:h-8 md:h-10 w-auto object-contain transition-opacity duration-300 hover:opacity-90" />
             ) : (
-              <div className="text-xl sm:text-2xl md:text-3xl font-display font-bold text-accent-primary transition-colors">
+              <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-display font-bold text-accent-primary transition-colors shrink-0">
                 Jyotirling<span className="text-ink group-hover:text-accent-secondary transition-colors">Connect</span>
               </div>
             )}
           </Link>
 
-          {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center gap-8">
+          {/* Desktop Nav — hidden until lg (1024px) */}
+          <nav className="hidden lg:flex items-center gap-5 xl:gap-8">
             {navLinks.map((link) => (
               <Link
                 key={link.name}
@@ -103,20 +103,20 @@ export function Navbar() {
             ))}
           </nav>
 
-          {/* Desktop Actions */}
-          <div className="hidden md:flex items-center gap-5">
+          {/* Desktop Actions — hidden until lg (1024px) */}
+          <div className="hidden lg:flex items-center gap-4">
             <ThemeToggle />
             <Button asChild className="rounded-xl shadow-md hover:shadow-lg transition-all hover:-translate-y-0.5">
               <Link href="/booking">Book Your Yatra</Link>
             </Button>
           </div>
 
-          {/* Mobile Toggle & Theme */}
-          <div className="flex md:hidden items-center gap-3 z-50 relative">
+          {/* Mobile Toggle & Theme — visible until lg (1024px) */}
+          <div className="flex lg:hidden items-center gap-2 sm:gap-3 z-50 relative">
             <ThemeToggle />
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="text-ink p-2 -mr-2 hover:bg-surface/50 rounded-lg transition-colors"
+              className="text-ink p-2 -mr-1 min-w-[44px] min-h-[44px] flex items-center justify-center hover:bg-surface/50 rounded-lg transition-colors"
               aria-label="Toggle Menu"
               aria-expanded={isMobileMenuOpen}
             >
@@ -156,7 +156,7 @@ export function Navbar() {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed top-0 right-0 bottom-0 w-[85vw] max-w-[400px] bg-bg border-l border-border/50 z-40 md:hidden shadow-2xl flex flex-col pt-24 pb-8 px-6 overflow-y-auto overscroll-contain"
+              className="fixed top-0 right-0 bottom-0 w-[80vw] max-w-[360px] bg-bg border-l border-border/50 z-40 lg:hidden shadow-2xl flex flex-col pt-20 pb-8 px-5 overflow-y-auto overscroll-contain"
             >
               <div className="flex flex-col space-y-2 flex-grow">
                 {navLinks.map((link, i) => (

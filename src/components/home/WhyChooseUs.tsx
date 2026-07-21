@@ -28,7 +28,7 @@ const features = [
 
 export function WhyChooseUs() {
   return (
-    <section className="py-16 md:py-20 relative overflow-hidden bg-transparent z-10">
+    <section className="py-10 md:py-16 relative overflow-hidden bg-transparent z-10">
       
       {/* SVG Gradient Defs for Luxury Icons (Lottie Alternative) */}
       <svg width="0" height="0" className="absolute">
@@ -52,7 +52,7 @@ export function WhyChooseUs() {
       <div className="container mx-auto px-4 md:px-6 relative z-10">
         
         {/* Premium Heading Area */}
-        <div className="text-center max-w-3xl mx-auto mb-14 flex flex-col items-center">
+        <div className="text-center max-w-3xl mx-auto mb-10 md:mb-14 flex flex-col items-center">
           <motion.div 
             initial={{ opacity: 0, y: -10 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -69,7 +69,7 @@ export function WhyChooseUs() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
-            className="text-3xl md:text-4xl lg:text-5xl font-display font-bold text-ink dark:text-white mb-4 tracking-tight drop-shadow-sm"
+            className="text-2xl md:text-3xl lg:text-5xl font-display font-bold text-ink dark:text-white mb-4 tracking-tight drop-shadow-sm"
           >
             Why Travel With <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-primary to-accent-secondary">Us</span>
           </motion.h2>
@@ -86,7 +86,7 @@ export function WhyChooseUs() {
         </div>
 
         {/* Premium Glassmorphism Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
           {features.map((feature, i) => (
             <motion.div
               key={i}
@@ -97,13 +97,13 @@ export function WhyChooseUs() {
               whileHover={{ y: -10, scale: 1.02, rotateX: 2 }}
               className="group relative perspective-1000"
             >
-              <div className="relative h-full w-full rounded-[2.5rem] p-6 md:p-8 flex flex-col items-center text-center overflow-hidden bg-white/30 dark:bg-white/[0.03] backdrop-blur-2xl border border-white/60 dark:border-white/10 shadow-[0_20px_40px_-10px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.5)] transition-all duration-500 group-hover:border-accent-secondary/50 group-hover:shadow-[0_30px_60px_-15px_rgba(212,175,106,0.3)] group-hover:bg-white/50 dark:group-hover:bg-white/[0.08]">
+              <div className="relative h-full w-full rounded-[2.5rem] p-5 md:p-7 flex flex-col items-center text-center overflow-hidden bg-white/30 dark:bg-white/[0.03] backdrop-blur-2xl border border-white/60 dark:border-white/10 shadow-[0_20px_40px_-10px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.5)] transition-all duration-500 group-hover:border-accent-secondary/50 group-hover:shadow-[0_30px_60px_-15px_rgba(212,175,106,0.3)] group-hover:bg-white/50 dark:group-hover:bg-white/[0.08]">
                 
                 {/* Dynamic Inner Glow */}
                 <div className="absolute inset-0 bg-gradient-to-b from-accent-secondary/0 via-accent-secondary/0 to-accent-secondary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
                 
                 {/* Lottie Container (Floating Glass Circle) */}
-                <div className="relative mb-6 mt-2">
+                <div className="relative mb-4 mt-1">
                   {/* Outer Ambient Glow */}
                   <div className="absolute inset-0 bg-accent-secondary/30 dark:bg-[#F5C451]/20 rounded-full blur-2xl scale-150 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
                   
@@ -111,7 +111,7 @@ export function WhyChooseUs() {
                   <motion.div 
                     whileHover={{ y: -5 }}
                     transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                    className="relative w-20 h-20 rounded-full bg-white/60 dark:bg-white/5 border border-white/80 dark:border-white/20 flex items-center justify-center backdrop-blur-md shadow-inner group-hover:border-accent-secondary/60 transition-colors duration-500"
+                    className="relative w-16 h-16 rounded-full bg-white/60 dark:bg-white/5 border border-white/80 dark:border-white/20 flex items-center justify-center backdrop-blur-md shadow-inner group-hover:border-accent-secondary/60 transition-colors duration-500"
                   >
                     {/* Inner Rotating Aura */}
                     <div className="absolute inset-0 rounded-full border border-dashed border-accent-secondary/30 animate-[spin_10s_linear_infinite] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />

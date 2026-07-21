@@ -13,7 +13,7 @@ export function PremiumStatistics() {
   ];
 
   return (
-    <section className="py-16 md:py-20 relative overflow-hidden bg-section-bg text-ink z-10 transition-colors duration-700">
+    <section className="py-10 md:py-16 relative overflow-hidden bg-section-bg text-ink z-10 transition-colors duration-700">
       {/* SVG Gradient Defs for Luxury Icons */}
       <svg width="0" height="0" className="absolute">
         <defs>
@@ -64,9 +64,9 @@ export function PremiumStatistics() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-          className="text-center max-w-3xl mx-auto mb-14"
+          className="text-center max-w-3xl mx-auto mb-8 md:mb-12"
         >
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold mb-4 tracking-tight drop-shadow-sm text-ink dark:text-white">
+          <h2 className="text-2xl md:text-4xl lg:text-5xl font-display font-bold mb-4 tracking-tight drop-shadow-sm text-ink dark:text-white">
             Trusted by <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-primary to-accent-secondary">Thousands</span>
           </h2>
           <p className="text-base md:text-lg text-ink-muted dark:text-white/60 font-light leading-relaxed">
@@ -75,7 +75,7 @@ export function PremiumStatistics() {
         </motion.div>
 
         {/* Floating Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
           {stats.map((stat, idx) => (
             <motion.div
               key={idx}
@@ -84,15 +84,15 @@ export function PremiumStatistics() {
               viewport={{ once: true, margin: "-50px" }}
               transition={{ delay: idx * 0.15, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
               whileHover={{ y: -8, scale: 1.02 }}
-              className="group relative flex flex-col items-center text-center p-6 md:p-8 rounded-[2rem] bg-white/30 dark:bg-white/[0.03] backdrop-blur-xl border border-white/50 dark:border-white/10 shadow-lg dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.5)] transition-all duration-300 hover:bg-white/50 dark:hover:bg-white/[0.06] hover:border-accent-primary/40 dark:hover:border-[#F5C451]/30 overflow-hidden"
+              className="group relative flex flex-col items-center text-center p-5 md:p-7 rounded-[2rem] bg-white/30 dark:bg-white/[0.03] backdrop-blur-xl border border-white/50 dark:border-white/10 shadow-lg dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.5)] transition-all duration-300 hover:bg-white/50 dark:hover:bg-white/[0.06] hover:border-accent-primary/40 dark:hover:border-[#F5C451]/30 overflow-hidden"
             >
               {/* Card Inner Glow Effect on Hover */}
               <div className="absolute inset-0 bg-gradient-to-b from-accent-primary/0 via-accent-primary/0 to-accent-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
               {/* Luxury SVG Icon Container */}
-              <div className="relative mb-6">
+              <div className="relative mb-4">
                 <div className="absolute inset-0 bg-accent-primary/20 dark:bg-[#F5C451]/20 rounded-full blur-xl scale-150 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                <div className="relative w-16 h-16 rounded-2xl bg-white/60 dark:bg-white/5 border border-white/60 dark:border-white/10 flex items-center justify-center backdrop-blur-md shadow-inner group-hover:border-accent-primary/40 transition-colors duration-500">
+                <div className="relative w-14 h-14 rounded-2xl bg-white/60 dark:bg-white/5 border border-white/60 dark:border-white/10 flex items-center justify-center backdrop-blur-md shadow-inner group-hover:border-accent-primary/40 transition-colors duration-500">
                   <stat.icon 
                     size={32} 
                     strokeWidth={1.5} 

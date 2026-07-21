@@ -29,13 +29,13 @@ export function SpiritualExperience() {
   const fallbackUrl = "https://images.unsplash.com/photo-1623910385966-eb18a2872338?q=80&w=2000&auto=format&fit=crop";
 
   return (
-    <section className="py-16 md:py-20 bg-transparent relative z-20 overflow-hidden">
+    <section className="py-10 md:py-16 bg-transparent relative z-20 overflow-hidden">
       {/* Immersive ambient glows */}
       <div className="absolute top-1/3 right-0 w-[600px] h-[600px] bg-accent-secondary/5 rounded-full blur-[150px] pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-accent-primary/5 rounded-full blur-[150px] pointer-events-none" />
 
       <div className="container mx-auto px-4 md:px-6 relative z-10">
-        <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
+        <div className="flex flex-col lg:flex-row items-center gap-8 md:gap-12 lg:gap-16">
           
           {/* Image Side - Floating Premium Card */}
           <motion.div 
@@ -48,7 +48,7 @@ export function SpiritualExperience() {
             <motion.div 
               whileHover={{ scale: 1.02, rotateY: 2, rotateX: -2 }}
               transition={{ duration: 0.5, ease: "easeOut" }}
-              className="relative w-full aspect-[4/5] rounded-[2.5rem] overflow-hidden shadow-[0_30px_60px_-15px_rgba(0,0,0,0.5)] border border-white/10 group"
+              className="relative w-full aspect-[4/3] sm:aspect-[4/4] lg:aspect-[4/5] rounded-[2.5rem] overflow-hidden shadow-[0_30px_60px_-15px_rgba(0,0,0,0.5)] border border-white/10 group"
             >
               {/* Outer Glow */}
               <div className="absolute inset-0 bg-gradient-to-tr from-accent-primary/20 to-accent-secondary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-xl z-0" />
@@ -83,13 +83,13 @@ export function SpiritualExperience() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.4, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                className="absolute bottom-8 left-6 right-6 md:left-8 md:right-8 bg-white/10 backdrop-blur-2xl border border-white/20 p-6 md:p-8 rounded-[2rem] text-white shadow-2xl z-20 transform transition-transform duration-500 group-hover:-translate-y-2"
+                className="absolute bottom-4 sm:bottom-6 left-4 right-4 sm:left-6 sm:right-6 md:left-8 md:right-8 bg-white/10 backdrop-blur-2xl border border-white/20 p-4 sm:p-6 md:p-8 rounded-[2rem] text-white shadow-2xl z-20 transform transition-transform duration-500 group-hover:-translate-y-2"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent rounded-[2rem] pointer-events-none" />
-                <p className="text-lg md:text-xl italic font-serif leading-relaxed opacity-95 drop-shadow-md">
+                <p className="text-base md:text-lg italic font-serif leading-relaxed opacity-95 drop-shadow-md">
                   &ldquo;The journey was as peaceful as the destination. A truly premium spiritual experience.&rdquo;
                 </p>
-                <div className="mt-6 flex items-center gap-4">
+                <div className="mt-4 flex items-center gap-3">
                   <div className="relative">
                     <div className="absolute inset-0 bg-accent-primary/40 rounded-full blur-md animate-pulse" />
                     <div className="w-12 h-12 bg-white/20 backdrop-blur-md border border-white/30 rounded-full flex items-center justify-center relative z-10">
@@ -113,24 +113,24 @@ export function SpiritualExperience() {
             transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
             className="w-full lg:w-1/2"
           >
-            <div className="p-8 md:p-12 rounded-[2.5rem] bg-white/5 backdrop-blur-xl border border-white/10 shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] relative overflow-hidden">
+            <div className="p-6 md:p-10 rounded-[2.5rem] bg-white/5 backdrop-blur-xl border border-white/10 shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)] relative overflow-hidden">
               {/* Inner subtle glow */}
               <div className="absolute inset-0 bg-gradient-to-bl from-white/5 to-transparent pointer-events-none" />
               
               <div className="relative z-10">
-                <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-white mb-6 leading-tight drop-shadow-lg">
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold text-white mb-4 md:mb-6 leading-tight drop-shadow-lg">
                   Elevate Your <br className="hidden md:block"/>
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#D4AF6A] to-[#FDEBD3]">Spiritual Experience</span>
                 </h2>
                 
-                <p className="text-lg text-white/80 leading-relaxed font-light mb-10 drop-shadow-sm">
+                <p className="text-base text-white/80 leading-relaxed font-light mb-6 md:mb-10 drop-shadow-sm">
                   We believe your pilgrimage should be free from logistical worries. 
                   Immerse yourself in devotion while we provide a luxury, seamless travel experience 
                   tailored to your highest spiritual needs.
                 </p>
                 
                 {/* Glass Benefit Chips */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-12">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8 md:mb-12">
                   {benefits.map((benefit, idx) => (
                     <motion.div 
                       key={idx}
@@ -139,7 +139,7 @@ export function SpiritualExperience() {
                       viewport={{ once: true }}
                       transition={{ delay: 0.2 + (0.1 * idx), duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
                       whileHover={{ y: -4, scale: 1.02 }}
-                      className="group flex items-center gap-4 p-4 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 hover:bg-white/10 hover:border-white/20 hover:shadow-lg transition-all duration-300 cursor-default"
+                      className="group flex items-center gap-3 p-3 md:p-4 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 hover:bg-white/10 hover:border-white/20 hover:shadow-lg transition-all duration-300 cursor-default"
                     >
                       <div className="relative">
                         <div className="absolute inset-0 bg-accent-primary/30 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300" />

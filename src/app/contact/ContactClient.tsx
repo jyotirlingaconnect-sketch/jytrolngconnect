@@ -154,11 +154,11 @@ export default function ContactClient({ contactInfo }: ContactClientProps) {
         <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-accent-primary/10 blur-[120px] mix-blend-multiply dark:mix-blend-screen" />
       </div>
 
-      <main className="flex min-h-[100dvh] flex-col pt-32 pb-24 overflow-hidden">
+      <main className="flex min-h-[100dvh] flex-col pt-24 md:pt-28 pb-12 md:pb-20 overflow-hidden">
         
         {/* Hero Section */}
-        <section className="container mx-auto px-4 md:px-6 max-w-7xl mb-24">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+        <section className="container mx-auto px-4 md:px-6 max-w-7xl mb-10 md:mb-16">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             <motion.div 
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
@@ -169,7 +169,7 @@ export default function ContactClient({ contactInfo }: ContactClientProps) {
                 <div className="w-2 h-2 rounded-full bg-accent-primary animate-pulse" />
                 <span className="text-sm font-medium text-ink-muted tracking-wide uppercase">Premium Support</span>
               </div>
-              <h1 className="text-5xl md:text-6xl lg:text-7xl font-display font-bold text-ink leading-[1.1]">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold text-ink leading-[1.1]">
                 Get in Touch <br/>
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-primary to-accent-secondary">
                   With Us
@@ -197,7 +197,7 @@ export default function ContactClient({ contactInfo }: ContactClientProps) {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 1, ease: "easeOut" }}
-              className="relative h-[400px] lg:h-[500px] flex items-center justify-center"
+              className="relative h-[250px] md:h-[400px] lg:h-[450px] flex items-center justify-center"
             >
               <div className="absolute inset-0 bg-gradient-to-tr from-accent-primary/5 to-accent-secondary/5 rounded-full blur-3xl" />
               <LottieAnimation path="/lottie/customer-support.json" className="w-full h-full max-w-[500px]" />
@@ -206,7 +206,7 @@ export default function ContactClient({ contactInfo }: ContactClientProps) {
         </section>
 
         {/* Quick Contact Cards */}
-        <section className="container mx-auto px-4 md:px-6 max-w-7xl mb-32">
+        <section className="container mx-auto px-4 md:px-6 max-w-7xl mb-10 md:mb-20">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
               { title: "Call Us", value: phone, link: `tel:${cleanPhone}`, icon: Phone, lottie: "phone.json" },
@@ -239,7 +239,7 @@ export default function ContactClient({ contactInfo }: ContactClientProps) {
         </section>
 
         {/* Form and Details Split */}
-        <section className="container mx-auto px-4 md:px-6 max-w-7xl mb-32" id="booking-form">
+        <section className="container mx-auto px-4 md:px-6 max-w-7xl mb-10 md:mb-20" id="booking-form">
           <div className="grid lg:grid-cols-12 gap-12 lg:gap-8">
             
             {/* Contact Details (Left on desktop) */}
@@ -320,7 +320,7 @@ export default function ContactClient({ contactInfo }: ContactClientProps) {
                       <Label className="text-ink font-medium ml-1">Full Name *</Label>
                       <Input 
                         placeholder="John Doe" 
-                        className="h-14 bg-white/50 dark:bg-black/20 border-border/50 focus:border-accent-primary/50 focus:ring-accent-primary/20 rounded-2xl transition-all"
+                        className="h-12 md:h-14 bg-white/50 dark:bg-black/20 border-border/50 focus:border-accent-primary/50 focus:ring-accent-primary/20 rounded-2xl transition-all"
                         {...register("full_name")} 
                       />
                       {errors.full_name && <p className="text-error text-sm ml-1">{errors.full_name.message}</p>}
@@ -329,7 +329,7 @@ export default function ContactClient({ contactInfo }: ContactClientProps) {
                       <Label className="text-ink font-medium ml-1">Phone Number *</Label>
                       <Input 
                         placeholder="+91 XXXXX XXXXX" 
-                        className="h-14 bg-white/50 dark:bg-black/20 border-border/50 focus:border-accent-primary/50 focus:ring-accent-primary/20 rounded-2xl transition-all"
+                        className="h-12 md:h-14 bg-white/50 dark:bg-black/20 border-border/50 focus:border-accent-primary/50 focus:ring-accent-primary/20 rounded-2xl transition-all"
                         {...register("phone")} 
                       />
                       {errors.phone && <p className="text-error text-sm ml-1">{errors.phone.message}</p>}
@@ -342,7 +342,7 @@ export default function ContactClient({ contactInfo }: ContactClientProps) {
                       <Input 
                         type="email" 
                         placeholder="john@example.com" 
-                        className="h-14 bg-white/50 dark:bg-black/20 border-border/50 focus:border-accent-primary/50 focus:ring-accent-primary/20 rounded-2xl transition-all"
+                        className="h-12 md:h-14 bg-white/50 dark:bg-black/20 border-border/50 focus:border-accent-primary/50 focus:ring-accent-primary/20 rounded-2xl transition-all"
                         {...register("email")} 
                       />
                       {errors.email && <p className="text-error text-sm ml-1">{errors.email.message}</p>}
@@ -351,7 +351,7 @@ export default function ContactClient({ contactInfo }: ContactClientProps) {
                       <Label className="text-ink font-medium ml-1">Travel Date *</Label>
                       <Input 
                         type="date" 
-                        className="h-14 bg-white/50 dark:bg-black/20 border-border/50 focus:border-accent-primary/50 focus:ring-accent-primary/20 rounded-2xl transition-all"
+                        className="h-12 md:h-14 bg-white/50 dark:bg-black/20 border-border/50 focus:border-accent-primary/50 focus:ring-accent-primary/20 rounded-2xl transition-all"
                         {...register("travel_date")} 
                       />
                       {errors.travel_date && <p className="text-error text-sm ml-1">{errors.travel_date.message}</p>}
@@ -363,7 +363,7 @@ export default function ContactClient({ contactInfo }: ContactClientProps) {
                       <Label className="text-ink font-medium ml-1">Subject *</Label>
                       <Input 
                         placeholder="Package Enquiry" 
-                        className="h-14 bg-white/50 dark:bg-black/20 border-border/50 focus:border-accent-primary/50 focus:ring-accent-primary/20 rounded-2xl transition-all"
+                        className="h-12 md:h-14 bg-white/50 dark:bg-black/20 border-border/50 focus:border-accent-primary/50 focus:ring-accent-primary/20 rounded-2xl transition-all"
                         {...register("subject")} 
                       />
                       {errors.subject && <p className="text-error text-sm ml-1">{errors.subject.message}</p>}
@@ -374,7 +374,7 @@ export default function ContactClient({ contactInfo }: ContactClientProps) {
                         type="number" 
                         placeholder="2" 
                         min="1"
-                        className="h-14 bg-white/50 dark:bg-black/20 border-border/50 focus:border-accent-primary/50 focus:ring-accent-primary/20 rounded-2xl transition-all"
+                        className="h-12 md:h-14 bg-white/50 dark:bg-black/20 border-border/50 focus:border-accent-primary/50 focus:ring-accent-primary/20 rounded-2xl transition-all"
                         {...register("passengers")} 
                       />
                       {errors.passengers && <p className="text-error text-sm ml-1">{errors.passengers.message}</p>}
@@ -385,17 +385,17 @@ export default function ContactClient({ contactInfo }: ContactClientProps) {
                     <Label className="text-ink font-medium ml-1">Your Message *</Label>
                     <Textarea 
                       placeholder="Tell us about your specific requirements, preferred vehicles, or VIP Darshan needs..." 
-                      className="min-h-[140px] resize-none bg-white/50 dark:bg-black/20 border-border/50 focus:border-accent-primary/50 focus:ring-accent-primary/20 rounded-2xl transition-all p-4"
+                      className="min-h-[100px] resize-none bg-white/50 dark:bg-black/20 border-border/50 focus:border-accent-primary/50 focus:ring-accent-primary/20 rounded-xl transition-all p-3"
                       {...register("message")}
                     />
-                    {errors.message && <p className="text-error text-sm ml-1">{errors.message.message}</p>}
+                    {errors.message && <p className="text-error text-xs ml-1">{errors.message.message}</p>}
                   </div>
 
-                  <Button 
-                    type="submit" 
-                    className="w-full h-16 text-lg font-medium rounded-2xl bg-gradient-to-r from-accent-primary to-accent-secondary hover:opacity-90 transition-opacity text-white shadow-xl shadow-accent-primary/20 overflow-hidden relative group" 
-                    disabled={isSubmitting}
-                  >
+                    <Button 
+                      type="submit" 
+                      className="w-full h-12 md:h-14 text-lg font-medium rounded-2xl bg-gradient-to-r from-accent-primary to-accent-secondary hover:opacity-90 transition-opacity text-white shadow-xl shadow-accent-primary/20 overflow-hidden relative group" 
+                      disabled={isSubmitting}
+                    >
                     <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out" />
                     <span className="relative z-10">{isSubmitting ? "Sending Request..." : "Send Request"}</span>
                   </Button>
@@ -406,8 +406,8 @@ export default function ContactClient({ contactInfo }: ContactClientProps) {
         </section>
 
         {/* Why Contact Us Grid */}
-        <section className="container mx-auto px-4 md:px-6 max-w-7xl mb-32">
-          <div className="text-center mb-16">
+        <section className="container mx-auto px-4 md:px-6 max-w-7xl mb-10 md:mb-20">
+          <div className="text-center mb-8 md:mb-12">
             <h2 className="text-3xl md:text-5xl font-display font-bold text-ink mb-6">Our Promise</h2>
             <p className="text-lg text-ink-muted max-w-2xl mx-auto">
               We go beyond transportation. We deliver a complete spiritual experience with premium hospitality.
@@ -435,8 +435,8 @@ export default function ContactClient({ contactInfo }: ContactClientProps) {
         </section>
 
         {/* FAQs */}
-        <section className="container mx-auto px-4 md:px-6 max-w-4xl mb-32">
-          <div className="text-center mb-12">
+        <section className="container mx-auto px-4 md:px-6 max-w-4xl mb-10 md:mb-20">
+          <div className="text-center mb-6 md:mb-10">
             <h2 className="text-3xl md:text-5xl font-display font-bold text-ink mb-6">Frequently Asked Questions</h2>
           </div>
           <div className="space-y-4">
@@ -452,7 +452,7 @@ export default function ContactClient({ contactInfo }: ContactClientProps) {
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="relative overflow-hidden rounded-[3rem] p-12 md:p-20 text-center bg-gradient-to-br from-accent-primary/10 via-surface to-accent-secondary/10 border border-white/20 dark:border-white/5"
+            className="relative overflow-hidden rounded-[3rem] p-8 md:p-14 text-center bg-gradient-to-br from-accent-primary/10 via-surface to-accent-secondary/10 border border-white/20 dark:border-white/5"
           >
             <div className="relative z-10 space-y-8 max-w-2xl mx-auto">
               <h2 className="text-4xl md:text-5xl font-display font-bold text-ink leading-tight">

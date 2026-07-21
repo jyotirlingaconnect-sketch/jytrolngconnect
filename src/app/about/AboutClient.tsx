@@ -42,7 +42,7 @@ export default function AboutClient() {
     <>
       <Navbar />
 
-      <main className="min-h-[100dvh] pt-20 pb-16 overflow-hidden">
+      <main className="min-h-[100dvh] pt-16 md:pt-20 pb-10 md:pb-16 overflow-hidden">
         
         {/* Global Ambient Glow */}
         <div className="fixed inset-0 pointer-events-none z-[-1] overflow-hidden">
@@ -51,9 +51,9 @@ export default function AboutClient() {
         </div>
 
         {/* Hero Section */}
-        <section className="relative py-12 lg:py-16">
+        <section className="relative py-8 md:py-12 lg:py-16">
           <div className="container mx-auto px-4 md:px-6 relative z-10">
-            <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+            <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
               
               {/* Left Content */}
               <motion.div
@@ -72,7 +72,7 @@ export default function AboutClient() {
 
                 <motion.h1
                   variants={fadeUp}
-                  className="mt-6 text-5xl lg:text-6xl font-display font-bold text-ink leading-[1.1] tracking-tight"
+                  className="mt-6 text-4xl md:text-5xl lg:text-6xl font-display font-bold text-ink leading-[1.1] tracking-tight"
                 >
                   Your Trusted
                   <span className="block mt-2 bg-gradient-to-r from-accent-primary to-accent-secondary bg-clip-text text-transparent pb-2">
@@ -119,7 +119,7 @@ export default function AboutClient() {
                 
                 <div className="relative rounded-[2.5rem] p-8 md:p-12 overflow-hidden group transition-colors duration-500 bg-transparent">
                   <div className="absolute inset-0 bg-gradient-to-tr from-accent-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-                  <OmModel className="w-[380px] h-[380px] max-w-full relative z-10 drop-shadow-2xl" />
+                  <OmModel className="w-[280px] h-[280px] md:w-[380px] md:h-[380px] max-w-full relative z-10 drop-shadow-2xl" />
                 </div>
               </motion.div>
             </div>
@@ -130,14 +130,14 @@ export default function AboutClient() {
         <div className="w-full h-px bg-gradient-to-r from-transparent via-ink/10 dark:via-white/10 to-transparent my-8" />
 
         {/* About Company */}
-        <section className="py-16 relative">
+        <section className="py-10 md:py-14 relative">
           <div className="container mx-auto px-4 md:px-6">
             <motion.div
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, margin: "-100px" }}
               variants={fadeUp}
-              className="rounded-[3rem] border border-white/40 dark:border-white/10 bg-white/30 dark:bg-white/5 backdrop-blur-2xl p-10 md:p-16 shadow-[0_16px_64px_rgba(0,0,0,0.08)] dark:shadow-[0_16px_64px_rgba(0,0,0,0.4)] relative overflow-hidden group"
+              className="rounded-[3rem] border border-white/40 dark:border-white/10 bg-white/30 dark:bg-white/5 backdrop-blur-2xl p-7 md:p-12 shadow-[0_16px_64px_rgba(0,0,0,0.08)] dark:shadow-[0_16px_64px_rgba(0,0,0,0.4)] relative overflow-hidden group"
             >
               <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent dark:from-white/5 pointer-events-none" />
               <div className="absolute inset-0 shadow-[inset_0_0_20px_rgba(255,255,255,0.3)] dark:shadow-[inset_0_0_20px_rgba(255,255,255,0.05)] pointer-events-none rounded-[3rem]" />
@@ -186,7 +186,7 @@ export default function AboutClient() {
         </section>
 
         {/* Core Offerings */}
-        <section className="py-16">
+        <section className="py-10 md:py-14">
           <div className="container mx-auto px-4 md:px-6">
              <motion.div
               initial="hidden"
@@ -228,9 +228,9 @@ export default function AboutClient() {
         <div className="w-full h-px bg-gradient-to-r from-transparent via-ink/10 dark:via-white/10 to-transparent my-8" />
 
         {/* Why Choose Us */}
-        <section className="py-16 relative">
+        <section className="py-10 md:py-14 relative">
           <div className="container mx-auto px-4 md:px-6">
-            <div className="text-center max-w-3xl mx-auto mb-16">
+            <div className="text-center max-w-3xl mx-auto mb-8 md:mb-12">
               <h2 className="text-4xl md:text-5xl font-display font-bold text-ink mb-6">
                 Why Choose Us?
               </h2>
@@ -275,7 +275,7 @@ export default function AboutClient() {
         </section>
 
         {/* Mission & Vision */}
-        <section className="py-16">
+        <section className="py-10 md:py-14">
           <div className="container mx-auto px-4 md:px-6">
             <motion.div
               initial="hidden"
@@ -284,7 +284,7 @@ export default function AboutClient() {
               variants={staggerContainer}
               className="grid md:grid-cols-2 gap-8"
             >
-              <motion.div variants={fadeUp} className="group rounded-[3rem] bg-gradient-to-br from-white/40 to-white/10 dark:from-white/10 dark:to-transparent border border-white/50 dark:border-white/10 p-10 md:p-12 backdrop-blur-3xl shadow-[0_16px_50px_rgba(0,0,0,0.06)] hover:shadow-[0_24px_60px_rgba(0,0,0,0.1)] transition-all duration-500">
+              <motion.div variants={fadeUp} className="group rounded-[3rem] bg-gradient-to-br from-white/40 to-white/10 dark:from-white/10 dark:to-transparent border border-white/50 dark:border-white/10 p-7 md:p-10 backdrop-blur-3xl shadow-[0_16px_50px_rgba(0,0,0,0.06)] hover:shadow-[0_24px_60px_rgba(0,0,0,0.1)] transition-all duration-500">
                 <div className="w-16 h-16 bg-white/60 dark:bg-white/10 rounded-2xl flex items-center justify-center border border-white/50 dark:border-white/20 mb-8 shadow-lg group-hover:scale-110 transition-transform duration-500">
                   <Target className="w-8 h-8 text-accent-primary" />
                 </div>
@@ -294,7 +294,7 @@ export default function AboutClient() {
                 </p>
               </motion.div>
 
-              <motion.div variants={fadeUp} className="group rounded-[3rem] bg-gradient-to-br from-white/40 to-white/10 dark:from-white/10 dark:to-transparent border border-white/50 dark:border-white/10 p-10 md:p-12 backdrop-blur-3xl shadow-[0_16px_50px_rgba(0,0,0,0.06)] hover:shadow-[0_24px_60px_rgba(0,0,0,0.1)] transition-all duration-500">
+              <motion.div variants={fadeUp} className="group rounded-[3rem] bg-gradient-to-br from-white/40 to-white/10 dark:from-white/10 dark:to-transparent border border-white/50 dark:border-white/10 p-7 md:p-10 backdrop-blur-3xl shadow-[0_16px_50px_rgba(0,0,0,0.06)] hover:shadow-[0_24px_60px_rgba(0,0,0,0.1)] transition-all duration-500">
                 <div className="w-16 h-16 bg-white/60 dark:bg-white/10 rounded-2xl flex items-center justify-center border border-white/50 dark:border-white/20 mb-8 shadow-lg group-hover:scale-110 transition-transform duration-500">
                   <Eye className="w-8 h-8 text-accent-primary" />
                 </div>
@@ -308,14 +308,14 @@ export default function AboutClient() {
         </section>
 
         {/* Customer Commitment */}
-        <section className="py-16 relative">
+        <section className="py-10 md:py-14 relative">
           <div className="container mx-auto px-4 md:px-6">
             <motion.div
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
               variants={fadeUp}
-              className="rounded-[3rem] bg-white/30 dark:bg-white/5 border border-white/50 dark:border-white/10 backdrop-blur-3xl p-10 md:p-16 text-center shadow-[0_20px_80px_rgba(0,0,0,0.08)] dark:shadow-[0_20px_80px_rgba(0,0,0,0.4)] relative overflow-hidden"
+              className="rounded-[3rem] bg-white/30 dark:bg-white/5 border border-white/50 dark:border-white/10 backdrop-blur-3xl p-7 md:p-12 text-center shadow-[0_20px_80px_rgba(0,0,0,0.08)] dark:shadow-[0_20px_80px_rgba(0,0,0,0.4)] relative overflow-hidden"
             >
               <div className="absolute inset-0 shadow-[inset_0_0_40px_rgba(255,255,255,0.4)] dark:shadow-[inset_0_0_40px_rgba(255,255,255,0.05)] pointer-events-none rounded-[3rem]" />
               
@@ -328,7 +328,7 @@ export default function AboutClient() {
                   { title: "Absolute Hygiene", desc: "Vehicles are deep-cleaned and sanitized before every trip." },
                   { title: "Customer Delight", desc: "Your peace of mind and comfort are our highest priorities." },
                 ].map((item, idx) => (
-                  <div key={idx} className="flex flex-col gap-4 p-8 rounded-[2rem] bg-white/40 dark:bg-white/10 border border-white/50 dark:border-white/20 shadow-lg hover:-translate-y-2 transition-transform duration-300">
+                  <div key={idx} className="flex flex-col gap-4 p-5 md:p-8 rounded-[2rem] bg-white/40 dark:bg-white/10 border border-white/50 dark:border-white/20 shadow-lg hover:-translate-y-2 transition-transform duration-300">
                     <CheckCircle className="w-10 h-10 text-accent-primary" />
                     <div>
                       <h4 className="text-xl font-bold text-ink mb-2">{item.title}</h4>
@@ -342,19 +342,19 @@ export default function AboutClient() {
         </section>
 
         {/* CTA Section */}
-        <section className="py-16">
+        <section className="py-10 md:py-14">
           <div className="container mx-auto px-4 md:px-6">
             <motion.div
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
               variants={fadeUp}
-              className="relative rounded-[3rem] overflow-hidden bg-gradient-to-r from-accent-primary to-accent-secondary p-12 md:p-16 text-center shadow-[0_30px_100px_rgba(166,58,30,0.3)]"
+              className="relative rounded-[3rem] overflow-hidden bg-gradient-to-r from-accent-primary to-accent-secondary p-8 md:p-12 text-center shadow-[0_30px_100px_rgba(166,58,30,0.3)]"
             >
               <div className="absolute inset-0 bg-[url('/noise.png')] opacity-20 mix-blend-overlay pointer-events-none" />
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-white/20 rounded-full blur-[80px] pointer-events-none" />
               
-              <h2 className="relative z-10 text-4xl md:text-5xl font-display font-bold text-white mb-6 tracking-tight">
+              <h2 className="relative z-10 text-3xl md:text-5xl font-display font-bold text-white mb-6 tracking-tight">
                 Begin Your Sacred Journey
               </h2>
               <p className="relative z-10 text-white/90 max-w-2xl mx-auto text-xl mb-10 leading-relaxed font-medium">
