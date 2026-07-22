@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { supabase } from "@/lib/supabase";
@@ -40,7 +41,7 @@ const bookingSchema = z.object({
     message: "Travel date cannot be in the past",
   }),
   no_of_passengers: z.string().min(1, "Required"),
-  vehicle_preference: z.string().min(1, "Please select a vehicle"),
+  vehicle_preference: z.string().optional().or(z.literal("")),
   pickup_location: z.string().min(2, "Pickup location is required"),
   drop_location: z.string().min(2, "Drop location is required"),
   message: z.string().optional(),
@@ -48,37 +49,7 @@ const bookingSchema = z.object({
 
 type BookingFormValues = z.infer<typeof bookingSchema>;
 
-// Premium vehicle specifications
-const vehicleOptions = [
-  {
-    id: "Ertiga",
-    name: "Maruti Suzuki Ertiga",
-    capacity: "6 Seater",
-    description: "Comfortable and budget-friendly SUV for small families.",
-    image: "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=600&auto=format&fit=crop",
-  },
-  {
-    id: "Innova Crysta",
-    name: "Toyota Innova Crysta",
-    capacity: "7 Seater",
-    description: "Premium comfort, extra legroom, and superior luxury suspension.",
-    image: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=600&auto=format&fit=crop",
-  },
-  {
-    id: "Force Traveller",
-    name: "Force Traveller",
-    capacity: "12-17 Seater",
-    description: "Spacious seating ideal for larger pilgrimage group yatras.",
-    image: "https://images.unsplash.com/photo-1522046428448-6a58bcba9830?q=80&w=600&auto=format&fit=crop",
-  },
-  {
-    id: "Bus Booking",
-    name: "Premium Tourist Bus",
-    capacity: "20-45 Seater",
-    description: "Large luxury coaches for group yatra organizations and big families.",
-    image: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=600&auto=format&fit=crop",
-  },
-];
+
 
 // Inline elegant animated route/map vector illustration simulating Lottie
 function TravelAnimation() {
@@ -157,13 +128,20 @@ function BookingForm() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [contactInfo, setContactInfo] = useState<any>(null);
+  const [vehicles, setVehicles] = useState<any[]>([]);
+
+  const { data: session, status } = useSession();
+  const [userProfile, setUserProfile] = useState<any>(null);
 
   useEffect(() => {
-    async function fetchContact() {
-      const { data } = await supabase.from("contact_info").select("*").limit(1).single();
-      if (data) setContactInfo(data);
+    async function fetchData() {
+      const { data: contact } = await supabase.from("contact_info").select("*").limit(1).single();
+      if (contact) setContactInfo(contact);
+
+      const { data: fleet } = await supabase.from("fleet").select("*").eq("show_on_website", true).order("display_order", { ascending: true });
+      if (fleet) setVehicles(fleet);
     }
-    fetchContact();
+    fetchData();
   }, []);
 
   const phoneSupport = contactInfo?.phone_numbers?.[0] || "+91 98765 43210";
@@ -187,6 +165,7 @@ function BookingForm() {
     register,
     handleSubmit,
     setValue,
+    getValues,
     watch,
     reset,
     formState: { errors },
@@ -205,12 +184,34 @@ function BookingForm() {
     }
   });
 
+  useEffect(() => {
+    async function fetchProfile() {
+      if (status === "authenticated" && session?.user?.email) {
+        const { data } = await supabase.from("users").select("*").eq("email", session.user.email).single();
+        if (data) {
+          setUserProfile(data);
+          const currentValues = getValues();
+          if (!currentValues.full_name && data.name) setValue("full_name", data.name, { shouldValidate: true });
+          if (!currentValues.email && data.email) setValue("email", data.email, { shouldValidate: true });
+          if (!currentValues.phone && data.phone) setValue("phone", data.phone, { shouldValidate: true });
+        }
+      }
+    }
+    fetchProfile();
+  }, [status, session, setValue, getValues]);
+
   // Watch fields to render dynamic summary card
   const watchedFields = watch();
 
   const onSubmit = async (data: BookingFormValues) => {
     setIsSubmitting(true);
     try {
+      if (status === "authenticated" && session?.user?.email) {
+        if (!userProfile?.phone || userProfile.phone !== data.phone) {
+          await supabase.from("users").update({ phone: data.phone }).eq("email", session.user.email);
+        }
+      }
+
       const { error } = await supabase.from("bookings").insert([
         {
           full_name: data.full_name,
@@ -223,6 +224,8 @@ function BookingForm() {
           drop_location: data.drop_location,
           message: data.message || null,
           status: "pending",
+          user_id: (session?.user as any)?.id || null,
+          user_email: session?.user?.email || data.email || null,
         },
       ]);
 
@@ -258,52 +261,52 @@ function BookingForm() {
 
           {/* Section 1: Personal Information */}
           <div className="relative z-10">
-            <h3 className="text-base font-display font-bold text-white mb-4 flex items-center gap-2">
+            <h3 className="text-base font-display font-bold text-black dark:text-white mb-4 flex items-center gap-2">
               <span className="w-1 h-5 bg-accent-primary rounded-full animate-pulse" />
               1. Personal Information
             </h3>
 
             <div className="grid md:grid-cols-2 gap-4">
               <div className="space-y-1">
-                <label htmlFor="full_name" className="text-white/70 text-xs font-medium">Full Name *</label>
+                <label htmlFor="full_name" className="text-black/70 dark:text-white/70 text-xs font-medium">Full Name *</label>
                 <div className="relative">
-                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40"><User size={16} /></span>
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-black/40 dark:text-white/40"><User size={16} /></span>
                   <input 
                     id="full_name" 
                     type="text" 
                     placeholder="Enter your name" 
                     {...register("full_name")}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-white placeholder-white/20 focus:outline-none focus:ring-2 focus:ring-accent-primary focus:border-transparent transition-all text-sm"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-black dark:text-white placeholder-black/20 dark:placeholder-white/20 focus:outline-none focus:ring-2 focus:ring-accent-primary focus:border-transparent transition-all text-sm"
                   />
                 </div>
                 {errors.full_name && <p className="text-red-400 text-[11px] mt-0.5">{errors.full_name.message}</p>}
               </div>
 
               <div className="space-y-1">
-                <label htmlFor="phone" className="text-white/70 text-xs font-medium">Phone Number *</label>
+                <label htmlFor="phone" className="text-black/70 dark:text-white/70 text-xs font-medium">Phone Number *</label>
                 <div className="relative">
-                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40"><Phone size={16} /></span>
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-black/40 dark:text-white/40"><Phone size={16} /></span>
                   <input 
                     id="phone" 
                     type="text" 
                     placeholder="+91 XXXXX XXXXX" 
                     {...register("phone")}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-white placeholder-white/20 focus:outline-none focus:ring-2 focus:ring-accent-primary focus:border-transparent transition-all text-sm"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-black dark:text-white placeholder-black/20 dark:placeholder-white/20 focus:outline-none focus:ring-2 focus:ring-accent-primary focus:border-transparent transition-all text-sm"
                   />
                 </div>
                 {errors.phone && <p className="text-red-400 text-[11px] mt-0.5">{errors.phone.message}</p>}
               </div>
 
               <div className="space-y-1 md:col-span-2">
-                <label htmlFor="email" className="text-white/70 text-xs font-medium">Email Address (Optional)</label>
+                <label htmlFor="email" className="text-black/70 dark:text-white/70 text-xs font-medium">Email Address (Optional)</label>
                 <div className="relative">
-                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40"><Mail size={16} /></span>
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-black/40 dark:text-white/40"><Mail size={16} /></span>
                   <input 
                     id="email" 
                     type="email" 
                     placeholder="name@example.com" 
                     {...register("email")}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-white placeholder-white/20 focus:outline-none focus:ring-2 focus:ring-accent-primary focus:border-transparent transition-all text-sm"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-black dark:text-white placeholder-black/20 dark:placeholder-white/20 focus:outline-none focus:ring-2 focus:ring-accent-primary focus:border-transparent transition-all text-sm"
                   />
                 </div>
                 {errors.email && <p className="text-red-400 text-[11px] mt-0.5">{errors.email.message}</p>}
@@ -315,37 +318,37 @@ function BookingForm() {
 
           {/* Section 2: Travel Details */}
           <div className="relative z-10">
-            <h3 className="text-base font-display font-bold text-white mb-4 flex items-center gap-2">
+            <h3 className="text-base font-display font-bold text-black dark:text-white mb-4 flex items-center gap-2">
               <span className="w-1 h-5 bg-accent-primary rounded-full animate-pulse" />
               2. Travel Details
             </h3>
 
             <div className="grid md:grid-cols-2 gap-4">
               <div className="space-y-1">
-                <label htmlFor="travel_date" className="text-white/70 text-xs font-medium">Travel Date *</label>
+                <label htmlFor="travel_date" className="text-black/70 dark:text-white/70 text-xs font-medium">Travel Date *</label>
                 <div className="relative">
-                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40"><Calendar size={16} /></span>
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-black/40 dark:text-white/40"><Calendar size={16} /></span>
                   <input 
                     id="travel_date" 
                     type="date" 
                     {...register("travel_date")}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-white placeholder-white/20 focus:outline-none focus:ring-2 focus:ring-accent-primary focus:border-transparent transition-all text-sm [color-scheme:dark]"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-black dark:text-white placeholder-black/20 dark:placeholder-white/20 focus:outline-none focus:ring-2 focus:ring-accent-primary focus:border-transparent transition-all text-sm [color-scheme:dark]"
                   />
                 </div>
                 {errors.travel_date && <p className="text-red-400 text-[11px] mt-0.5">{errors.travel_date.message}</p>}
               </div>
 
               <div className="space-y-1">
-                <label htmlFor="no_of_passengers" className="text-white/70 text-xs font-medium">Number of Passengers *</label>
+                <label htmlFor="no_of_passengers" className="text-black/70 dark:text-white/70 text-xs font-medium">Number of Passengers *</label>
                 <div className="relative">
-                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40"><Users size={16} /></span>
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-black/40 dark:text-white/40"><Users size={16} /></span>
                   <input 
                     id="no_of_passengers" 
                     type="number" 
                     min="1" 
                     placeholder="e.g. 4" 
                     {...register("no_of_passengers")}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-white placeholder-white/20 focus:outline-none focus:ring-2 focus:ring-accent-primary focus:border-transparent transition-all text-sm"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-black dark:text-white placeholder-black/20 dark:placeholder-white/20 focus:outline-none focus:ring-2 focus:ring-accent-primary focus:border-transparent transition-all text-sm"
                   />
                 </div>
                 {errors.no_of_passengers && <p className="text-red-400 text-[11px] mt-0.5">{errors.no_of_passengers.message}</p>}
@@ -357,20 +360,26 @@ function BookingForm() {
 
           {/* Section 3: Premium Vehicle Selection Cards (Compact Horizontal Layout) */}
           <div className="relative z-10">
-            <h3 className="text-base font-display font-bold text-white mb-4 flex items-center gap-2">
+            <h3 className="text-base font-display font-bold text-black dark:text-white mb-4 flex items-center gap-2">
               <span className="w-1 h-5 bg-accent-primary rounded-full animate-pulse" />
-              3. Select Vehicle *
+              3. Select Vehicle (Optional)
             </h3>
 
             <input type="hidden" {...register("vehicle_preference")} />
 
             <div className="grid md:grid-cols-2 gap-3">
-              {vehicleOptions.map((opt) => {
-                const isSelected = watchedFields.vehicle_preference === opt.id;
+              {vehicles.map((opt) => {
+                const isSelected = watchedFields.vehicle_preference === opt.name;
                 return (
                   <div
                     key={opt.id}
-                    onClick={() => setValue("vehicle_preference", opt.id, { shouldValidate: true })}
+                    onClick={() => {
+                      if (isSelected) {
+                        setValue("vehicle_preference", "", { shouldValidate: true });
+                      } else {
+                        setValue("vehicle_preference", opt.name, { shouldValidate: true });
+                      }
+                    }}
                     className={`group cursor-pointer rounded-xl overflow-hidden border transition-all duration-300 relative ${
                       isSelected 
                         ? "border-accent-primary bg-accent-primary/10 shadow-[0_0_15px_rgba(212,175,106,0.15)] scale-[1.01]" 
@@ -381,19 +390,23 @@ function BookingForm() {
                     
                     {/* Compact Horizontal Layout */}
                     <div className="p-3 flex items-center gap-3 z-10 relative">
-                      <Image
-                        src={opt.image}
-                        alt={opt.name}
-                        width={64}
-                        height={48}
-                        className="w-16 h-12 rounded-lg object-cover flex-shrink-0"
-                      />
+                      {opt.cover_image && (
+                        <Image
+                          src={opt.cover_image}
+                          alt={opt.name}
+                          width={64}
+                          height={48}
+                          className="w-16 h-12 rounded-lg object-cover flex-shrink-0"
+                        />
+                      )}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between">
-                          <span className="font-bold text-white text-xs truncate">{opt.name}</span>
-                          <span className="text-[10px] text-accent-primary font-semibold whitespace-nowrap ml-1">{opt.capacity}</span>
+                          <span className="font-bold text-black dark:text-white text-xs truncate">{opt.name}</span>
+                          <span className="text-[10px] text-accent-primary font-semibold whitespace-nowrap ml-1">
+                            {opt.min_passengers && opt.max_passengers ? `${opt.min_passengers}-${opt.max_passengers} Seater` : opt.category}
+                          </span>
                         </div>
-                        <p className="text-[10px] text-white/50 truncate mt-0.5 leading-none">{opt.description}</p>
+                        <p className="text-[10px] text-black/50 dark:text-white/50 truncate mt-0.5 leading-none">{opt.short_description || opt.description}</p>
                       </div>
                       <div className={`w-4 h-4 rounded-full border flex-shrink-0 flex items-center justify-center transition-all ${
                         isSelected ? "border-accent-primary bg-accent-primary" : "border-white/20"
@@ -412,37 +425,37 @@ function BookingForm() {
 
           {/* Section 4: Journey Details */}
           <div className="relative z-10">
-            <h3 className="text-base font-display font-bold text-white mb-4 flex items-center gap-2">
+            <h3 className="text-base font-display font-bold text-black dark:text-white mb-4 flex items-center gap-2">
               <span className="w-1 h-5 bg-accent-primary rounded-full animate-pulse" />
               4. Journey Details
             </h3>
 
             <div className="grid md:grid-cols-2 gap-4 mb-4">
               <div className="space-y-1">
-                <label htmlFor="pickup_location" className="text-white/70 text-xs font-medium">Pickup Location *</label>
+                <label htmlFor="pickup_location" className="text-black/70 dark:text-white/70 text-xs font-medium">Pickup Location *</label>
                 <div className="relative">
-                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40"><MapPin size={16} /></span>
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-black/40 dark:text-white/40"><MapPin size={16} /></span>
                   <input 
                     id="pickup_location" 
                     type="text" 
                     placeholder="e.g. Indore Airport" 
                     {...register("pickup_location")}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-white placeholder-white/20 focus:outline-none focus:ring-2 focus:ring-accent-primary focus:border-transparent transition-all text-sm"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-black dark:text-white placeholder-black/20 dark:placeholder-white/20 focus:outline-none focus:ring-2 focus:ring-accent-primary focus:border-transparent transition-all text-sm"
                   />
                 </div>
                 {errors.pickup_location && <p className="text-red-400 text-[11px] mt-0.5">{errors.pickup_location.message}</p>}
               </div>
 
               <div className="space-y-1">
-                <label htmlFor="drop_location" className="text-white/70 text-xs font-medium">Drop Location *</label>
+                <label htmlFor="drop_location" className="text-black/70 dark:text-white/70 text-xs font-medium">Drop Location *</label>
                 <div className="relative">
-                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40"><MapPin size={16} /></span>
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-black/40 dark:text-white/40"><MapPin size={16} /></span>
                   <input 
                     id="drop_location" 
                     type="text" 
                     placeholder="e.g. Omkareshwar" 
                     {...register("drop_location")}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-white placeholder-white/20 focus:outline-none focus:ring-2 focus:ring-accent-primary focus:border-transparent transition-all text-sm"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-black dark:text-white placeholder-black/20 dark:placeholder-white/20 focus:outline-none focus:ring-2 focus:ring-accent-primary focus:border-transparent transition-all text-sm"
                   />
                 </div>
                 {errors.drop_location && <p className="text-red-400 text-[11px] mt-0.5">{errors.drop_location.message}</p>}
@@ -450,15 +463,15 @@ function BookingForm() {
             </div>
 
             <div className="space-y-1">
-              <label htmlFor="message" className="text-white/70 text-xs font-medium">Special Requirements (Optional)</label>
+              <label htmlFor="message" className="text-black/70 dark:text-white/70 text-xs font-medium">Special Requirements (Optional)</label>
               <div className="relative">
-                <span className="absolute left-3.5 top-3 text-white/40"><MessageSquare size={16} /></span>
+                <span className="absolute left-3.5 top-3 text-black/40 dark:text-white/40"><MessageSquare size={16} /></span>
                 <textarea 
                   id="message" 
                   rows={2}
                   placeholder="Specific instructions, additional stops, or route preferences..." 
                   {...register("message")}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-white placeholder-white/20 focus:outline-none focus:ring-2 focus:ring-accent-primary focus:border-transparent transition-all text-sm resize-none"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-black dark:text-white placeholder-black/20 dark:placeholder-white/20 focus:outline-none focus:ring-2 focus:ring-accent-primary focus:border-transparent transition-all text-sm resize-none"
                 />
               </div>
             </div>
@@ -479,44 +492,44 @@ function BookingForm() {
         >
           <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none" />
           
-          <h3 className="text-base font-display font-bold text-white mb-6 pb-4 border-b border-white/10 tracking-wide flex items-center gap-2">
+          <h3 className="text-base font-display font-bold text-black dark:text-white mb-6 pb-4 border-b border-white/10 tracking-wide flex items-center gap-2">
             <Car className="text-accent-primary" size={20} />
             Yatra Summary
           </h3>
 
           <div className="space-y-4">
             <div className="flex justify-between items-start gap-4">
-              <span className="text-white/60 text-sm">Vehicle:</span>
-              <span className="text-white font-semibold text-right text-sm">
+              <span className="text-black/60 dark:text-white/60 text-sm">Vehicle:</span>
+              <span className="text-black dark:text-white font-semibold text-right text-sm">
                 {watchedFields.vehicle_preference || <span className="text-accent-primary/60 italic font-light">Not selected</span>}
               </span>
             </div>
             
             <div className="flex justify-between items-center gap-4">
-              <span className="text-white/60 text-sm">Travel Date:</span>
-              <span className="text-white font-semibold text-sm">
-                {watchedFields.travel_date ? new Date(watchedFields.travel_date).toLocaleDateString(undefined, { dateStyle: "medium" }) : <span className="text-white/40 font-light">--/--/----</span>}
+              <span className="text-black/60 dark:text-white/60 text-sm">Travel Date:</span>
+              <span className="text-black dark:text-white font-semibold text-sm">
+                {watchedFields.travel_date ? new Date(watchedFields.travel_date).toLocaleDateString(undefined, { dateStyle: "medium" }) : <span className="text-black/40 dark:text-white/40 font-light">--/--/----</span>}
               </span>
             </div>
 
             <div className="flex justify-between items-center gap-4">
-              <span className="text-white/60 text-sm">Passengers:</span>
-              <span className="text-white font-semibold text-sm">
-                {watchedFields.no_of_passengers || <span className="text-white/40 font-light">--</span>}
+              <span className="text-black/60 dark:text-white/60 text-sm">Passengers:</span>
+              <span className="text-black dark:text-white font-semibold text-sm">
+                {watchedFields.no_of_passengers || <span className="text-black/40 dark:text-white/40 font-light">--</span>}
               </span>
             </div>
 
             <div className="flex justify-between items-start gap-4">
-              <span className="text-white/60 text-sm">Pickup:</span>
-              <span className="text-white font-semibold text-right text-sm max-w-[150px] truncate">
-                {watchedFields.pickup_location || <span className="text-white/40 font-light">--</span>}
+              <span className="text-black/60 dark:text-white/60 text-sm">Pickup:</span>
+              <span className="text-black dark:text-white font-semibold text-right text-sm max-w-[150px] truncate">
+                {watchedFields.pickup_location || <span className="text-black/40 dark:text-white/40 font-light">--</span>}
               </span>
             </div>
 
             <div className="flex justify-between items-start gap-4">
-              <span className="text-white/60 text-sm">Destination:</span>
-              <span className="text-white font-semibold text-right text-sm max-w-[150px] truncate">
-                {watchedFields.drop_location || <span className="text-white/40 font-light">--</span>}
+              <span className="text-black/60 dark:text-white/60 text-sm">Destination:</span>
+              <span className="text-black dark:text-white font-semibold text-right text-sm max-w-[150px] truncate">
+                {watchedFields.drop_location || <span className="text-black/40 dark:text-white/40 font-light">--</span>}
               </span>
             </div>
           </div>
@@ -548,7 +561,7 @@ function BookingForm() {
                 <div className="w-8 h-8 rounded-full bg-accent-primary/20 flex items-center justify-center text-accent-primary flex-shrink-0">
                   <Icon size={16} />
                 </div>
-                <span className="text-white/80 font-medium text-xs leading-tight">{badge.name}</span>
+                <span className="text-black/80 dark:text-white/80 font-medium text-xs leading-tight">{badge.name}</span>
               </div>
             );
           })}
@@ -556,10 +569,10 @@ function BookingForm() {
 
         {/* Support Section */}
         <div className="text-center p-4.5 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md">
-          <p className="text-white/60 text-xs">Need help planning your customized tour?</p>
+          <p className="text-black/60 dark:text-white/60 text-xs">Need help planning your customized tour?</p>
           <a 
             href={`tel:${phoneSupport.replace(/\s+/g, "")}`}
-            className="inline-flex items-center gap-2 mt-2 text-accent-primary font-bold hover:text-white transition-colors text-sm"
+            className="inline-flex items-center gap-2 mt-2 text-accent-primary font-bold hover:text-black dark:text-white transition-colors text-sm"
           >
             <Phone size={14} />
             {phoneSupport}
@@ -601,11 +614,11 @@ export default function BookingPage() {
                 Devoted Premium Travel
               </div>
               
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold text-white leading-[1.1] mb-3">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold text-black dark:text-white leading-[1.1] mb-3">
                 Book Your Sacred Journey
               </h1>
               
-              <p className="text-sm md:text-base text-white/80 leading-relaxed mb-5">
+              <p className="text-sm md:text-base text-black/80 dark:text-white/80 leading-relaxed mb-5">
                 Reserve your pilgrimage with comfort, safety, and premium hospitality. 
                 Let us handle the journey while you focus entirely on your devotion.
               </p>
@@ -619,7 +632,7 @@ export default function BookingPage() {
                 </Link>
                 <a 
                   href={`tel:${phoneSupport.replace(/\s+/g, "")}`}
-                  className="inline-flex items-center justify-center px-6 py-3 bg-white/10 backdrop-blur-md border border-white/20 text-white font-bold rounded-full text-sm transition-all hover:bg-white/20 hover:scale-[1.02]"
+                  className="inline-flex items-center justify-center px-6 py-3 bg-white/10 backdrop-blur-md border border-white/20 text-black dark:text-white font-bold rounded-full text-sm transition-all hover:bg-white/20 hover:scale-[1.02]"
                 >
                   Contact Support
                 </a>
@@ -636,7 +649,7 @@ export default function BookingPage() {
           </div>
 
           {/* Form and Summary Container */}
-          <Suspense fallback={<div className="text-center py-20 text-white/50">Loading form...</div>}>
+          <Suspense fallback={<div className="text-center py-20 text-black/50 dark:text-white/50">Loading form...</div>}>
             <BookingForm />
           </Suspense>
 

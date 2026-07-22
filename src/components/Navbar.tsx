@@ -7,6 +7,9 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "./ThemeToggle";
 import { Button } from "./ui/button";
+import { ProtectedAction } from "@/components/auth/ProtectedAction";
+import { ProfileDropdown } from "@/components/auth/ProfileDropdown";
+import { useSession } from "next-auth/react";
 import { Menu, X, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
@@ -16,6 +19,7 @@ export function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const { status } = useSession();
 
   useEffect(() => {
     async function fetchLogo() {
@@ -106,14 +110,16 @@ export function Navbar() {
           {/* Desktop Actions — hidden until lg (1024px) */}
           <div className="hidden lg:flex items-center gap-4">
             <ThemeToggle />
-            <Button asChild className="rounded-xl shadow-md hover:shadow-lg transition-all hover:-translate-y-0.5">
-              <Link href="/booking">Book Your Yatra</Link>
-            </Button>
+            <ProtectedAction href="/booking" className="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground h-9 px-4 py-2 rounded-xl shadow-md hover:shadow-lg transition-all hover:-translate-y-0.5">
+              Book Your Yatra
+            </ProtectedAction>
+            {status === "authenticated" && <ProfileDropdown />}
           </div>
 
           {/* Mobile Toggle & Theme — visible until lg (1024px) */}
           <div className="flex lg:hidden items-center gap-2 sm:gap-3 z-50 relative">
             <ThemeToggle />
+            {status === "authenticated" && <ProfileDropdown />}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="text-ink p-2 -mr-1 min-w-[44px] min-h-[44px] flex items-center justify-center hover:bg-surface/50 rounded-lg transition-colors"
@@ -186,9 +192,9 @@ export function Navbar() {
                 transition={{ delay: 0.4, duration: 0.3 }}
                 className="pt-8 mt-auto"
               >
-                <Button asChild className="w-full h-14 text-lg rounded-xl shadow-lg shadow-accent-primary/20">
-                  <Link href="/booking">Book Your Yatra</Link>
-                </Button>
+                <ProtectedAction href="/booking" className="inline-flex items-center justify-center whitespace-nowrap font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground px-8 py-2 w-full h-14 text-lg rounded-xl shadow-lg shadow-accent-primary/20">
+                  Book Your Yatra
+                </ProtectedAction>
                 <p className="text-center text-xs text-ink-muted mt-6 uppercase tracking-wider font-semibold">
                   Premium Pilgrimage Services
                 </p>

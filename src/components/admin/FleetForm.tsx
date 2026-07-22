@@ -115,6 +115,10 @@ export function FleetForm({ initialData }: FleetFormProps) {
     try {
       const files = Array.from(e.target.files);
       const newUrls: string[] = [];
+      
+      // Get the current session to pass the auth token to the Vercel Blob api route
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
 
       for (const file of files) {
         // We use @vercel/blob/client for client-side uploads. 
@@ -122,6 +126,7 @@ export function FleetForm({ initialData }: FleetFormProps) {
         const blob = await upload(file.name, file, {
           access: 'public',
           handleUploadUrl: '/api/upload',
+          clientPayload: JSON.stringify({ token }),
         });
         newUrls.push(blob.url);
       }

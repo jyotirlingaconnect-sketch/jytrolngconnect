@@ -4,39 +4,45 @@ import { motion } from "framer-motion";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { useCallback, useEffect, useState } from "react";
-import { ChevronLeft, ChevronRight, Quote } from "lucide-react";
+import { ChevronLeft, ChevronRight, Quote, Car, Map, User } from "lucide-react";
 import Image from "next/image";
+import { supabase } from "@/lib/supabase";
 
-const testimonials = [
-  {
-    id: 1,
-    name: "Rajesh Kumar",
-    location: "Mumbai",
-    rating: 5,
-    text: "The journey from Ujjain to Omkareshwar was incredibly smooth. The driver was polite, punctual, and knew the routes perfectly. Highly recommended for family trips.",
-    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200&auto=format&fit=crop"
-  },
-  {
-    id: 2,
-    name: "Priya Sharma",
-    location: "Delhi",
-    rating: 5,
-    text: "Premium experience! The Innova was spotless, AC worked perfectly, and the ride was completely bump-free. They truly understand the needs of pilgrims.",
-    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200&auto=format&fit=crop"
-  },
-  {
-    id: 3,
-    name: "Amit Patel",
-    location: "Ahmedabad",
-    rating: 5,
-    text: "Booked them for my parents' anniversary trip. The team ensured their absolute comfort. Safe driving, great hospitality, and complete peace of mind.",
-    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=200&auto=format&fit=crop"
-  }
-];
+interface Testimonial {
+  id: string;
+  name: string;
+  city?: string;
+  overall_rating: number;
+  experience: string;
+  profile_image_url?: string;
+  package_name?: string;
+  fleet_name?: string;
+}
 
 export function Testimonials() {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 5000 })]);
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchTestimonials = async () => {
+    // Only fetch approved testimonials that we have consent to publish
+    const { data, error } = await supabase
+      .from('testimonials')
+      .select('id, name, city, overall_rating, experience, profile_image_url, package_name, fleet_name')
+      .eq('status', 'approved')
+      .eq('consent_to_publish', true)
+      .order('created_at', { ascending: false });
+      
+    if (!error && data) {
+      setTestimonials(data);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchTestimonials();
+  }, []);
 
   const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi]);
   const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi]);
@@ -52,6 +58,10 @@ export function Testimonials() {
     emblaApi.on("select", onSelect);
     emblaApi.on("reInit", onSelect);
   }, [emblaApi, onSelect]);
+
+  if (loading) return null; // Or a skeleton loader
+  
+  if (testimonials.length === 0) return null; // Hide section if no testimonials
 
   return (
     <section className="py-12 md:py-20 bg-section-bg transition-colors duration-700 relative overflow-hidden">
@@ -108,32 +118,51 @@ export function Testimonials() {
           <div className="embla__container flex">
             {testimonials.map((testimonial) => (
               <div className="embla__slide flex-[0_0_100%] min-w-0 md:flex-[0_0_50%] lg:flex-[0_0_40%] pl-4" key={testimonial.id}>
-                <div className="h-full p-5 md:p-8 rounded-3xl bg-surface/50 backdrop-blur-md border border-border/50 shadow-lg hover:shadow-xl transition-shadow relative group">
+                <div className="h-full p-5 md:p-8 rounded-3xl bg-surface/50 backdrop-blur-md border border-border/50 shadow-lg hover:shadow-xl transition-shadow relative group flex flex-col">
                   <Quote className="absolute top-8 right-8 text-accent-secondary/20 w-16 h-16 group-hover:scale-110 transition-transform duration-500" />
                   
                   <div className="flex gap-1 mb-6">
-                    {Array.from({ length: testimonial.rating }).map((_, i) => (
+                    {Array.from({ length: testimonial.overall_rating || 5 }).map((_, i) => (
                       <span key={i} className="text-accent-secondary text-xl">★</span>
                     ))}
                   </div>
 
-                  <p className="text-ink-muted leading-relaxed mb-8 italic relative z-10 text-lg">
-                    &ldquo;{testimonial.text}&rdquo;
+                  <p className="text-ink-muted leading-relaxed mb-6 italic relative z-10 text-lg flex-1">
+                    &ldquo;{testimonial.experience}&rdquo;
                   </p>
+                  
+                  <div className="flex flex-col gap-2 mb-6 border-t border-border/50 pt-4">
+                    {testimonial.package_name && (
+                      <div className="flex items-center gap-2 text-sm text-ink-muted">
+                        <Map size={14} className="text-accent-primary" /> {testimonial.package_name}
+                      </div>
+                    )}
+                    {testimonial.fleet_name && (
+                      <div className="flex items-center gap-2 text-sm text-ink-muted">
+                        <Car size={14} className="text-accent-primary" /> {testimonial.fleet_name}
+                      </div>
+                    )}
+                  </div>
 
-                  <div className="flex items-center gap-4 mt-auto">
-                    <div className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-accent-secondary/30">
-                      <Image 
-                        src={testimonial.image} 
-                        alt={testimonial.name}
-                        fill
-                        className="object-cover"
-                        unoptimized
-                      />
+                  <div className="flex items-center gap-4 mt-auto bg-surface/80 p-3 rounded-2xl border border-border/50">
+                    <div className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-accent-secondary/30 bg-bg flex items-center justify-center shrink-0">
+                      {testimonial.profile_image_url ? (
+                        <Image 
+                          src={testimonial.profile_image_url} 
+                          alt={testimonial.name}
+                          fill
+                          className="object-cover"
+                          unoptimized
+                        />
+                      ) : (
+                        <User className="text-ink-muted w-6 h-6" />
+                      )}
                     </div>
-                    <div>
-                      <h4 className="font-bold text-ink">{testimonial.name}</h4>
-                      <p className="text-sm text-ink-muted">{testimonial.location}</p>
+                    <div className="min-w-0">
+                      <h4 className="font-bold text-ink truncate">{testimonial.name}</h4>
+                      {testimonial.city && (
+                        <p className="text-sm text-ink-muted truncate">{testimonial.city}</p>
+                      )}
                     </div>
                   </div>
                 </div>

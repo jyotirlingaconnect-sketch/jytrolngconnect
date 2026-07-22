@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Poppins } from "next/font/google";
 import localFont from "next/font/local";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { AuthProviders } from "@/components/auth/Providers";
 import { Toaster } from "sonner";
 import "./globals.css";
 
@@ -104,7 +105,9 @@ export default function RootLayout({
         className={`${poppins.variable} ${furonto.variable} antialiased min-h-[100dvh] flex flex-col overflow-x-hidden`}
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          {children}
+          <AuthProviders>
+            {children}
+          </AuthProviders>
           <Toaster richColors position="top-right" />
         </ThemeProvider>
       </body>

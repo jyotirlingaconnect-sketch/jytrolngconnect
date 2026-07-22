@@ -1,9 +1,9 @@
 "use client";
-
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { cn } from "@/lib/utils";
+import { ProtectedAction } from "@/components/auth/ProtectedAction";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -165,12 +165,14 @@ export function HeroCanvas() {
         <p className="text-sm sm:text-base md:text-lg lg:text-xl text-[#FDEBD3] max-w-xs sm:max-w-lg md:max-w-2xl mb-6 md:mb-10 drop-shadow-md">
           Experience a divine pilgrimage from Mahakaleshwar to Omkareshwar with our premium, comfortable, and trusted travel services.
         </p>
-        <a 
-          href="/booking"
-          className="inline-flex h-12 md:h-14 items-center justify-center whitespace-nowrap rounded-xl bg-accent-primary px-6 md:px-8 text-sm md:text-base font-medium text-surface shadow-md transition-all hover:-translate-y-1 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary pointer-events-auto min-w-[160px]"
-        >
-          Book Your Yatra
-        </a>
+        <div className="flex flex-row items-center justify-center gap-3 flex-wrap">
+          <ProtectedAction 
+            href="/booking"
+            className="inline-flex h-12 md:h-14 items-center justify-center whitespace-nowrap rounded-xl bg-accent-primary px-6 md:px-8 text-sm md:text-base font-medium text-surface shadow-md transition-all hover:-translate-y-1 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary pointer-events-auto min-w-[160px]"
+          >
+            Book Your Yatra
+          </ProtectedAction>
+        </div>
       </div>
     </div>
   );

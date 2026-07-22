@@ -6,7 +6,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { Users, Snowflake, Briefcase, ChevronLeft, ChevronRight } from "lucide-react";
 
-import { vehicles } from "@/lib/fleet-data";
+import { vehicles as staticVehicles } from "@/lib/fleet-data";
+import { supabase } from "@/lib/supabase";
 
 export function FleetShowcase() {
   const x = useMotionValue(0);
@@ -17,6 +18,45 @@ export function FleetShowcase() {
   const [isMobile, setIsMobile] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [vehicles, setVehicles] = useState<any[]>(staticVehicles);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchFleet() {
+      try {
+        const { data, error } = await supabase
+          .from("fleet")
+          .select("*")
+          .eq("is_available", true)
+          .eq("show_on_website", true)
+          .order("display_order", { ascending: true });
+        
+        if (data && data.length > 0 && !error) {
+          const mappedVehicles = data.map((v: any) => ({
+            id: v.id,
+            name: v.name,
+            capacity: `${v.min_passengers}–${v.max_passengers} Guests`,
+            image: v.cover_image || staticVehicles[0]?.image || "",
+            desc: v.short_description || v.description,
+            specs: {
+              ac: v.features?.find((f: string) => f.toLowerCase().includes("ac") || f.toLowerCase().includes("air")) || "Air Conditioned",
+              luggage: "Spacious",
+              bestFor: v.perfect_for?.[0] || v.category || "General Travel"
+            },
+            features: v.features || [],
+            price: v.starting_price ? `₹${v.starting_price}` : "",
+            popular: v.is_popular
+          }));
+          setVehicles(mappedVehicles);
+        }
+      } catch (err) {
+        console.error("Error fetching fleet:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchFleet();
+  }, []);
 
   useEffect(() => {
     const updateWidthAndMedia = () => {
@@ -38,7 +78,7 @@ export function FleetShowcase() {
       clearTimeout(timeout);
       window.removeEventListener("resize", updateWidthAndMedia);
     };
-  }, [x]);
+  }, [x, vehicles]);
 
   // Track active item index for mobile pagination indicators
   useMotionValueEvent(x, "change", (latest) => {

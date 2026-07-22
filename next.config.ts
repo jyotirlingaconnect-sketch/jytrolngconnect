@@ -42,6 +42,16 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "placehold.co",
       },
+      {
+        // Google user profile photos
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+      },
+      {
+        // Google profile photos alternate CDN
+        protocol: "https",
+        hostname: "googleusercontent.com",
+      },
     ],
   },
 
