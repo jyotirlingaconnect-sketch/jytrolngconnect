@@ -20,24 +20,34 @@ interface Testimonial {
 }
 
 export function Testimonials() {
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 5000 })]);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // We initialize Embla later to conditionally set loop based on testimonials length
+  const [emblaRef, emblaApi] = useEmblaCarousel(
+    { loop: testimonials.length > 1 }, 
+    [Autoplay({ delay: 5000 })]
+  );
+
   const fetchTestimonials = async () => {
-    // Only fetch approved testimonials that we have consent to publish
-    const { data, error } = await supabase
-      .from('testimonials')
-      .select('id, name, city, overall_rating, experience, profile_image_url, package_name, fleet_name')
-      .eq('status', 'approved')
-      .eq('consent_to_publish', true)
-      .order('created_at', { ascending: false });
-      
-    if (!error && data) {
-      setTestimonials(data);
+    try {
+      const { data, error } = await supabase
+        .from('testimonials')
+        .select('id, name, city, overall_rating, experience, profile_image_url, package_name, fleet_name, created_at, status, is_approved')
+        .or('status.eq.approved,is_approved.eq.true')
+        .order('created_at', { ascending: false });
+        
+      if (!error && data) {
+        setTestimonials(data);
+      } else if (error) {
+        console.error('Error fetching testimonials:', error);
+      }
+    } catch (err) {
+      console.error('Failed to fetch testimonials:', err);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   useEffect(() => {
@@ -50,7 +60,7 @@ export function Testimonials() {
   const onSelect = useCallback(() => {
     if (!emblaApi) return;
     setSelectedIndex(emblaApi.selectedScrollSnap());
-  }, [emblaApi, setSelectedIndex]);
+  }, [emblaApi]);
 
   useEffect(() => {
     if (!emblaApi) return;

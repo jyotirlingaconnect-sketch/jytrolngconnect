@@ -15,7 +15,7 @@ export default async function TestimonialsPage() {
   const { data: testimonials } = await supabase
     .from("testimonials")
     .select("*")
-    .eq("is_approved", true)
+    .or("status.eq.approved,is_approved.eq.true")
     .order("created_at", { ascending: false });
 
   const items = (testimonials && testimonials.length > 0) ? testimonials : [

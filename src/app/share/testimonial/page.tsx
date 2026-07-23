@@ -289,9 +289,6 @@ export default function TestimonialSubmissionPage() {
                 </div>
               </div>
             </div>
-
-
-
             {/* 3. Service Rating */}
             <div className="bg-surface rounded-2xl p-6 md:p-8 shadow-sm border border-border">
               <h2 className="text-xl font-display font-bold text-ink mb-6 flex items-center gap-2">
