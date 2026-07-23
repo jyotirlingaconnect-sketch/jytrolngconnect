@@ -4,8 +4,9 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
+import { Trash2, MailCheck, MailX } from "lucide-react";
 import { toast } from "sonner";
+import { updateBookingStatusAction } from "@/app/actions/booking";
 
 interface Booking {
   id: string;
@@ -20,6 +21,8 @@ interface Booking {
   no_of_passengers?: number;
   message?: string;
   status: "pending" | "confirmed" | "completed" | "cancelled";
+  email_sent?: boolean;
+  admin_notification_sent?: boolean;
 }
 
 export default function AdminBookingsPage() {
@@ -38,9 +41,9 @@ export default function AdminBookingsPage() {
     fetchBookings();
   }, []);
 
-  const updateStatus = async (id: string, status: string) => {
-    const { error } = await supabase.from("bookings").update({ status }).eq("id", id);
-    if (error) toast.error(error.message);
+  const updateStatus = async (bk: Booking, status: string) => {
+    const result = await updateBookingStatusAction(bk.id, status, bk);
+    if (!result.success) toast.error(result.error);
     else {
       toast.success(`Booking status updated to ${status}`);
       fetchBookings();
@@ -107,11 +110,11 @@ export default function AdminBookingsPage() {
                         </div>
                       )}
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 space-y-2">
                       <select 
                         value={bk.status}
-                        onChange={(e) => updateStatus(bk.id, e.target.value)}
-                        className={`text-xs font-medium px-2 py-1 rounded-full outline-none border-none cursor-pointer ${
+                        onChange={(e) => updateStatus(bk, e.target.value)}
+                        className={`block text-xs font-medium px-2 py-1 rounded-full outline-none border-none cursor-pointer ${
                           bk.status === 'pending' ? 'bg-orange-500/10 text-orange-600' :
                           bk.status === 'confirmed' ? 'bg-blue-500/10 text-blue-600' :
                           bk.status === 'completed' ? 'bg-green-500/10 text-green-600' :
@@ -123,6 +126,23 @@ export default function AdminBookingsPage() {
                         <option value="completed">Completed</option>
                         <option value="cancelled">Cancelled</option>
                       </select>
+                      
+                      <div className="flex flex-col gap-1 mt-2">
+                        {bk.email_sent ? (
+                          <span className="inline-flex items-center gap-1 text-[10px] text-green-600 bg-green-500/10 px-2 py-0.5 rounded-full w-max">
+                            <MailCheck size={12} /> Customer Email Sent
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 text-[10px] text-orange-600 bg-orange-500/10 px-2 py-0.5 rounded-full w-max">
+                            <MailX size={12} /> Customer Email Pending/Failed
+                          </span>
+                        )}
+                        {bk.admin_notification_sent && (
+                          <span className="inline-flex items-center gap-1 text-[10px] text-blue-600 bg-blue-500/10 px-2 py-0.5 rounded-full w-max">
+                            <MailCheck size={12} /> Admin Notified
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="px-6 py-4 text-right space-x-2">
                       <Button variant="ghost" size="icon" onClick={() => handleDelete(bk.id)} className="text-error hover:text-error hover:bg-error/10">

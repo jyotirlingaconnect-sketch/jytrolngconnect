@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { createTestimonialAction } from "@/app/actions/testimonial";
 
 const testimonialSchema = z.object({
   name: z.string().min(2, "Full Name is required"),
@@ -151,36 +152,14 @@ export default function TestimonialSubmissionPage() {
         status: 'pending'
       };
 
-      // Since we map `name` to `name` in the schema and DB, it aligns.
-      // Make sure we include location mapping if needed, but DB now has `city`.
-      const { error } = await supabase.from('testimonials').insert([
-        {
-          name: payload.name,
-          email: payload.email,
-          phone: payload.phone,
-          city: payload.city,
-          location: payload.city, // fallback for legacy
-          package_name: payload.package_name,
-          fleet_name: payload.fleet_name,
-          travel_date: payload.travel_date || null,
-          overall_rating: payload.overall_rating,
-          rating: payload.overall_rating, // fallback for legacy
-          driver_rating: payload.driver_rating,
-          vehicle_rating: payload.vehicle_rating,
-          support_rating: payload.support_rating,
-          darshan_rating: payload.darshan_rating,
-          experience: payload.experience,
-          message: payload.experience, // fallback for legacy
-          recommendation: payload.recommendation,
-          consent_to_publish: payload.consent_to_publish,
-          status: payload.status,
-          profile_image_url: payload.profile_image_url,
-          image_url: payload.profile_image_url, // fallback for legacy
-          gallery_images: payload.gallery_images
-        }
-      ]);
+      const result = await createTestimonialAction({
+        customer_name: payload.name,
+        rating: payload.overall_rating,
+        review_text: payload.experience,
+        package_name: payload.package_name || null,
+      });
 
-      if (error) throw error;
+      if (!result.success) throw new Error(result.error);
       
       setIsSuccess(true);
       window.scrollTo({ top: 0, behavior: 'smooth' });

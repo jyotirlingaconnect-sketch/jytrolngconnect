@@ -29,7 +29,7 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
-
+import { createBookingAction } from "@/app/actions/booking";
 const OmCanvas = dynamic(() => import("@/components/history/OmCanvas"), { ssr: false });
 
 // Zod validation schema (preserved backend rules exactly)
@@ -212,29 +212,27 @@ function BookingForm() {
         }
       }
 
-      const { error } = await supabase.from("bookings").insert([
-        {
-          full_name: data.full_name,
-          phone: data.phone,
-          email: data.email || null,
-          travel_date: data.travel_date,
-          no_of_passengers: parseInt(data.no_of_passengers, 10),
-          vehicle_preference: data.vehicle_preference,
-          pickup_location: data.pickup_location,
-          drop_location: data.drop_location,
-          message: data.message || null,
-          status: "pending",
-          user_id: (session?.user as any)?.id || null,
-          user_email: session?.user?.email || data.email || null,
-        },
-      ]);
+      const result = await createBookingAction({
+        full_name: data.full_name,
+        phone: data.phone,
+        email: data.email || null,
+        travel_date: data.travel_date,
+        no_of_passengers: data.no_of_passengers,
+        vehicle_preference: data.vehicle_preference,
+        pickup_location: data.pickup_location,
+        drop_location: data.drop_location,
+        message: data.message || null,
+        user_id: (session?.user as any)?.id || null,
+        user_email: session?.user?.email || data.email || null,
+        package_name: packageParam || "",
+      });
 
-      if (error) throw error;
+      if (!result.success) throw new Error(result.error);
       
       toast.success("Booking request submitted! We will confirm your yatra shortly.");
       reset();
-    } catch {
-      toast.error("Failed to submit booking. Please try again.");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to submit booking. Please try again.");
     } finally {
       setIsSubmitting(false);
     }

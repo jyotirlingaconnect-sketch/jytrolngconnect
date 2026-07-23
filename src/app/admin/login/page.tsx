@@ -61,7 +61,7 @@ export default function AdminLoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                placeholder="admin@jyotirlingconnect.com"
+                placeholder="admin"
               />
             </div>
             

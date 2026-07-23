@@ -12,6 +12,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
+import { createContactAction } from "@/app/actions/contact";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import LottieAnimation from "@/components/LottieAnimation";
@@ -114,18 +115,20 @@ export default function ContactClient({ contactInfo }: ContactClientProps) {
   const onSubmit = async (data: ContactFormValues) => {
     setIsSubmitting(true);
     try {
-      const { error } = await supabase.from("bookings").insert([{
-        full_name: data.full_name,
+      const result = await createContactAction({
+        name: data.full_name,
         phone: data.phone,
-        email: data.email || null,
-        message: `Subject: ${data.subject}\nDate: ${data.travel_date}\nPassengers: ${data.passengers}\n\n${data.message}`,
-        status: "pending",
-      }]);
-      if (error) throw error;
+        email: data.email,
+        subject: data.subject,
+        travel_date: data.travel_date,
+        passengers: data.passengers,
+        message: data.message
+      });
+      if (!result.success) throw new Error(result.error);
       toast.success("Enquiry sent successfully! We will contact you soon.");
       reset();
-    } catch {
-      toast.error("Failed to send enquiry. Please try again or call us.");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to send enquiry. Please try again or call us.");
     } finally {
       setIsSubmitting(false);
     }
