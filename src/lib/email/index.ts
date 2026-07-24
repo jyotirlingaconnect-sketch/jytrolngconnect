@@ -32,7 +32,7 @@ export function getSenderEmail(): string {
 
 export function getAdminEmail(): string {
   const envAdmin = process.env.ADMIN_EMAIL?.trim().replace(/^["']|["']$/g, '');
-  return envAdmin || 'support@jyotirlingconnect.com';
+  return envAdmin || 'jyotirlingaconnect@gmail.com';
 }
 
 // Backwards compatibility exports

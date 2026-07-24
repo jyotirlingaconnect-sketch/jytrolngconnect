@@ -23,20 +23,10 @@ export async function sendEmail({
   const recipients = Array.isArray(to) ? to.filter(Boolean) : [to];
   const recipientStr = recipients.join(', ');
 
-  console.log(`[DEBUG_TRACE] Function: sendEmail() | Booking ID: ${bookingId || 'N/A'} | Recipients: ${recipientStr} | Step: Inside sendEmail() entry`);
-  console.log(`[EMAIL] 🚀 Initiating email send`, {
-    emailType,
-    recipient: recipientStr,
-    subject,
-    bookingId: bookingId || 'N/A',
-  });
-
   // Step 1: Explicitly render the React template to HTML to catch compilation errors early
   let htmlContent = '';
   try {
-    console.log(`[EMAIL] 🎨 Rendering React template for ${emailType}...`);
     htmlContent = await render(react);
-    console.log(`[EMAIL] 🎨 Template rendered successfully. Length: ${htmlContent.length} chars`);
   } catch (renderError: any) {
     console.error(`[EMAIL ERROR] ❌ React template rendering failed for ${emailType}:`, {
       message: renderError?.message || renderError,
@@ -90,21 +80,19 @@ export async function sendEmail({
   while (attempt < retries) {
     attempt++;
     try {
-      console.log(`[EMAIL] Attempt ${attempt}/${retries} to send to ${recipientStr}...`);
+      if (attempt > 1) {
+        console.log(`[EMAIL] Retry attempt ${attempt}/${retries} to send to ${recipientStr}...`);
+      }
 
-      console.log(`[DEBUG_TRACE] Function: sendEmail() | Booking ID: ${bookingId || 'N/A'} | Step: Before resend.emails.send()`);
       const response = await resendClient.emails.send({
         from: sender,
         to: recipients,
         subject,
         html: htmlContent, // PASS HTML NOT REACT
       });
-      console.log(`[DEBUG_TRACE] Function: sendEmail() | Booking ID: ${bookingId || 'N/A'} | Step: After resend.emails.send()`);
-      console.log(`[DEBUG_TRACE] Resend API Complete Response:`, JSON.stringify(response, null, 2));
 
       if (response.error) {
         console.error(`[EMAIL ERROR] Resend API returned error on attempt ${attempt}:`, response.error);
-        console.error(`[DEBUG_TRACE] Resend Inspection: error message=${response.error.message} | name=${response.error.name}`);
         const errorMessage = response.error.message || 'Resend API returned an error';
         throw new Error(errorMessage);
       }
@@ -117,7 +105,6 @@ export async function sendEmail({
       });
 
       // Log success in database
-      console.log(`[DEBUG_TRACE] Function: sendEmail() | Booking ID: ${bookingId || 'N/A'} | Step: Before logging to email_logs`);
       await logEmail({
         recipient: recipientStr,
         emailType,
@@ -130,7 +117,6 @@ export async function sendEmail({
       // Update booking status in database
       if (bookingId) {
         await updateBookingEmailStatus(bookingId, emailType, true, null);
-        console.log(`[DEBUG_TRACE] Function: sendEmail() | Booking ID: ${bookingId || 'N/A'} | Step: After updating booking email status`);
       }
 
       return { success: true, data: responseData };
@@ -140,13 +126,6 @@ export async function sendEmail({
         message: error?.message || error,
         stack: error?.stack,
         cause: error?.cause,
-      });
-      console.error(`[DEBUG_TRACE] Resend Exception caught:`, {
-        message: error?.message,
-        stack: error?.stack,
-        cause: error?.cause,
-        response: error?.response,
-        status: error?.status || error?.statusCode || 'Unknown',
       });
 
       if (attempt < retries) {
@@ -160,7 +139,6 @@ export async function sendEmail({
   const finalErrorMsg = lastError?.message || 'Email delivery failed after max retries';
 
   // Log final failure in database
-  console.log(`[DEBUG_TRACE] Function: sendEmail() | Booking ID: ${bookingId || 'N/A'} | Step: Before logging failure to email_logs`);
   await logEmail({
     recipient: recipientStr,
     emailType,
@@ -173,7 +151,6 @@ export async function sendEmail({
   // Record failure in booking record
   if (bookingId) {
     await updateBookingEmailStatus(bookingId, emailType, false, finalErrorMsg);
-    console.log(`[DEBUG_TRACE] Function: sendEmail() | Booking ID: ${bookingId || 'N/A'} | Step: After updating booking email status (failure)`);
   }
 
   return { success: false, error: lastError || new Error(finalErrorMsg) };
@@ -201,8 +178,6 @@ async function logEmail(data: {
 
     if (error) {
       console.error('[EMAIL SYSTEM LOG ERROR] Failed to insert email_log into Supabase:', error);
-    } else {
-      console.log('[EMAIL SYSTEM LOG] Email log saved to database.');
     }
   } catch (err) {
     console.error('[EMAIL SYSTEM LOG ERROR] Exception while logging email:', err);
@@ -239,8 +214,6 @@ async function updateBookingEmailStatus(
       const { error } = await supabaseAdmin.from('bookings').update(updates).eq('id', bookingId);
       if (error) {
         console.error('[EMAIL SYSTEM UPDATE ERROR] Failed to update booking email status:', error);
-      } else {
-        console.log('[EMAIL SYSTEM UPDATE] Booking email status updated in database.');
       }
     }
   } catch (err) {

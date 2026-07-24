@@ -25,10 +25,7 @@ export async function createBookingAction(formData: any) {
       adminEmail,
     });
 
-    console.log(`[DEBUG_TRACE] Function: createBookingAction() | Booking ID: ${bookingReference} | Customer Email: ${customerEmail} | Admin Email: ${adminEmail} | Step: createBookingAction() entry`);
-
     // 1. Insert into Supabase
-    console.log(`[DEBUG_TRACE] Function: createBookingAction() | Booking ID: ${bookingReference} | Step: Before Supabase insert`);
     const { error: insertError } = await supabaseAdmin.from('bookings').insert([
       {
         id: bookingId,
@@ -53,11 +50,9 @@ export async function createBookingAction(formData: any) {
       return { success: false, error: 'Failed to create booking in database' };
     }
 
-    console.log(`[DEBUG_TRACE] Function: createBookingAction() | Booking ID: ${bookingReference} | Step: After Supabase insert`);
     console.log(`[BOOKING ACTION] Booking saved to database. Starting emails execution...`);
 
     // 2. Prepare email tasks and await them so serverless functions don't terminate prematurely
-    console.log(`[DEBUG_TRACE] Function: createBookingAction() | Booking ID: ${bookingReference} | Step: Before creating email promises`);
     const emailPromises: Promise<any>[] = [];
 
     if (customerEmail) {
@@ -86,7 +81,7 @@ export async function createBookingAction(formData: any) {
       emailPromises.push(
         sendEmail({
           to: adminEmail,
-          subject: `New Booking Received: ${formData.full_name}`,
+          subject: `🔔 New Booking Received – Jyotirling Connect`,
           react: React.createElement(AdminBookingNotification, {
             customerName: formData.full_name,
             phoneNumber: formData.phone,
@@ -108,22 +103,11 @@ export async function createBookingAction(formData: any) {
 
     // MANDATORY: Await all email promises to complete before returning
     const results = await Promise.allSettled(emailPromises);
-    console.log(`[DEBUG_TRACE] Function: createBookingAction() | Booking ID: ${bookingReference} | Step: After Promise.allSettled()`);
-    results.forEach((res, index) => {
-      if (res.status === 'fulfilled') {
-        console.log(`[DEBUG_TRACE] Promise ${index + 1}: fulfilled | Returned value:`, res.value);
-      } else {
-        console.error(`[DEBUG_TRACE] Promise ${index + 1}: rejected | Rejection reason:`, res.reason);
-      }
-    });
-
     console.log(`[BOOKING ACTION] Email execution finished. Results:`, results);
 
-    console.log(`[DEBUG_TRACE] Function: createBookingAction() | Booking ID: ${bookingReference} | Step: Before returning from createBookingAction()`);
     return { success: true, bookingId: bookingId, bookingReference };
   } catch (error: any) {
     console.error('[BOOKING ACTION ERROR] Unhandled exception:', error);
-    console.error(`[DEBUG_TRACE] Exception in createBookingAction():`, error);
     return { success: false, error: error?.message || 'Internal server error' };
   }
 }
@@ -228,7 +212,7 @@ export async function retryBookingEmailAction(bookingId: string, emailType: 'cus
 
       const result = await sendEmail({
         to: adminEmail,
-        subject: `[Retry Notification] Booking: ${booking.full_name}`,
+        subject: `🔔 New Booking Received – Jyotirling Connect`,
         react: React.createElement(AdminBookingNotification, {
           customerName: booking.full_name,
           phoneNumber: booking.phone,
