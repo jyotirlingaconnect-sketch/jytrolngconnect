@@ -204,6 +204,7 @@ function BookingForm() {
   const watchedFields = watch();
 
   const onSubmit = async (data: BookingFormValues) => {
+    console.log(`[DEBUG_TRACE] Booking form submit triggered. Email: ${data.email || 'None'} | Step: handleSubmit() execution.`);
     setIsSubmitting(true);
     try {
       if (status === "authenticated" && session?.user?.email) {
@@ -212,6 +213,7 @@ function BookingForm() {
         }
       }
 
+      console.log(`[DEBUG_TRACE] Before calling createBookingAction(). Payload ready.`);
       const result = await createBookingAction({
         full_name: data.full_name,
         phone: data.phone,
@@ -226,12 +228,14 @@ function BookingForm() {
         user_email: session?.user?.email || data.email || null,
         package_name: packageParam || "",
       });
+      console.log(`[DEBUG_TRACE] After createBookingAction(). Result:`, result);
 
       if (!result.success) throw new Error(result.error);
       
       toast.success("Booking request submitted! We will confirm your yatra shortly.");
       reset();
     } catch (err: any) {
+      console.error(`[DEBUG_TRACE] Exception inside onSubmit:`, err);
       toast.error(err.message || "Failed to submit booking. Please try again.");
     } finally {
       setIsSubmitting(false);
