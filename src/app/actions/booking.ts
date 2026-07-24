@@ -2,7 +2,7 @@
 
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
 import { sendEmail } from '@/lib/email/sendEmail';
-import { ADMIN_EMAIL } from '@/lib/email';
+import { getAdminEmail } from '@/lib/email';
 import { BookingConfirmation } from '@/lib/email/templates/BookingConfirmation';
 import { AdminBookingNotification } from '@/lib/email/templates/AdminBookingNotification';
 import { BookingConfirmed } from '@/lib/email/templates/BookingConfirmed';
@@ -14,16 +14,25 @@ import { v4 as uuidv4 } from 'uuid';
 export async function createBookingAction(formData: any) {
   try {
     const bookingId = uuidv4();
-    const bookingReference = `JC-${bookingId.substring(0, 8)}`;
-    
+    const bookingReference = `JC-${bookingId.substring(0, 8).toUpperCase()}`;
+    const customerEmail = formData.email || formData.user_email;
+    const supportPhone = '+91 98765 43210';
+    const adminEmail = getAdminEmail();
+
+    console.log(`[BOOKING ACTION] Creating new booking: ${bookingReference}`, {
+      full_name: formData.full_name,
+      customerEmail,
+      adminEmail,
+    });
+
     // 1. Insert into Supabase
-    const { error } = await supabaseAdmin.from('bookings').insert([
+    const { error: insertError } = await supabaseAdmin.from('bookings').insert([
       {
         id: bookingId,
         booking_reference: bookingReference,
         full_name: formData.full_name,
         phone: formData.phone,
-        email: formData.email || null,
+        email: customerEmail || null,
         travel_date: formData.travel_date,
         no_of_passengers: parseInt(formData.no_of_passengers, 10),
         vehicle_preference: formData.vehicle_preference,
@@ -33,18 +42,18 @@ export async function createBookingAction(formData: any) {
         status: 'pending',
         user_id: formData.user_id || null,
         user_email: formData.user_email || null,
-      }
+      },
     ]);
 
-    if (error) {
-      console.error('Error inserting booking:', error);
+    if (insertError) {
+      console.error('[BOOKING ACTION ERROR] Database insert failed:', insertError);
       return { success: false, error: 'Failed to create booking in database' };
     }
 
-    // 2. Fire and forget emails safely
-    const emailPromises = [];
-    const customerEmail = formData.email || formData.user_email;
-    const supportPhone = '+91 98765 43210';
+    console.log(`[BOOKING ACTION] Booking saved to database. Starting emails execution...`);
+
+    // 2. Prepare email tasks and await them so serverless functions don't terminate prematurely
+    const emailPromises: Promise<any>[] = [];
 
     if (customerEmail) {
       emailPromises.push(
@@ -54,7 +63,7 @@ export async function createBookingAction(formData: any) {
           react: React.createElement(BookingConfirmation, {
             customerName: formData.full_name,
             bookingId: bookingReference,
-            packageType: formData.package_name || '', 
+            packageType: formData.package_name || '',
             fleet: formData.vehicle_preference || '',
             journeyDate: formData.travel_date,
             pickupLocation: formData.pickup_location,
@@ -68,36 +77,38 @@ export async function createBookingAction(formData: any) {
       );
     }
 
-    emailPromises.push(
-      sendEmail({
-        to: ADMIN_EMAIL,
-        subject: `New Booking Received: ${formData.full_name}`,
-        react: React.createElement(AdminBookingNotification, {
-          customerName: formData.full_name,
-          phoneNumber: formData.phone,
-          email: customerEmail || '',
-          packageType: formData.package_name || '',
-          fleet: formData.vehicle_preference || '',
-          pickupLocation: formData.pickup_location,
-          travelDate: formData.travel_date,
-          passengerCount: parseInt(formData.no_of_passengers, 10),
-          bookingTime: new Date().toISOString(),
-          bookingId: bookingReference,
-          message: formData.message || '',
-        }),
-        emailType: 'admin_notification',
-        bookingId: bookingId,
-      })
-    );
+    if (adminEmail) {
+      emailPromises.push(
+        sendEmail({
+          to: adminEmail,
+          subject: `New Booking Received: ${formData.full_name}`,
+          react: React.createElement(AdminBookingNotification, {
+            customerName: formData.full_name,
+            phoneNumber: formData.phone,
+            email: customerEmail || 'N/A',
+            packageType: formData.package_name || '',
+            fleet: formData.vehicle_preference || '',
+            pickupLocation: formData.pickup_location,
+            travelDate: formData.travel_date,
+            passengerCount: parseInt(formData.no_of_passengers, 10),
+            bookingTime: new Date().toISOString(),
+            bookingId: bookingReference,
+            message: formData.message || '',
+          }),
+          emailType: 'admin_notification',
+          bookingId: bookingId,
+        })
+      );
+    }
 
-    Promise.allSettled(emailPromises).then(results => {
-      console.log('Email sending completed for booking', bookingId);
-    });
+    // MANDATORY: Await all email promises to complete before returning
+    const results = await Promise.allSettled(emailPromises);
+    console.log(`[BOOKING ACTION] Email execution finished. Results:`, results);
 
-    return { success: true, bookingId: bookingId };
+    return { success: true, bookingId: bookingId, bookingReference };
   } catch (error: any) {
-    console.error('Unhandled error in createBookingAction:', error);
-    return { success: false, error: 'Internal server error' };
+    console.error('[BOOKING ACTION ERROR] Unhandled exception:', error);
+    return { success: false, error: error?.message || 'Internal server error' };
   }
 }
 
@@ -133,8 +144,7 @@ export async function updateBookingStatusAction(bookingId: string, newStatus: st
       }
 
       if (emailComponent) {
-        // Fire and forget or await, we'll await so the admin gets feedback eventually or just let it run.
-        sendEmail({
+        await sendEmail({
           to: targetEmail,
           subject,
           react: emailComponent,
@@ -145,9 +155,88 @@ export async function updateBookingStatusAction(bookingId: string, newStatus: st
     }
 
     revalidatePath('/admin/bookings');
+    revalidatePath(`/admin/bookings/${bookingId}`);
     return { success: true };
   } catch (error: any) {
-    console.error('Error in updateBookingStatusAction:', error);
+    console.error('[STATUS UPDATE ACTION ERROR]:', error);
     return { success: false, error: error.message };
+  }
+}
+
+export async function retryBookingEmailAction(bookingId: string, emailType: 'customer' | 'admin') {
+  try {
+    const { data: booking, error } = await supabaseAdmin
+      .from('bookings')
+      .select('*')
+      .eq('id', bookingId)
+      .single();
+
+    if (error || !booking) {
+      return { success: false, error: 'Booking not found' };
+    }
+
+    const bookingReference = booking.booking_reference || `JC-${booking.id.substring(0, 8).toUpperCase()}`;
+    const customerEmail = booking.email || booking.user_email;
+    const supportPhone = '+91 98765 43210';
+    const adminEmail = getAdminEmail();
+
+    if (emailType === 'customer') {
+      if (!customerEmail) {
+        return { success: false, error: 'Customer email address is missing' };
+      }
+
+      const result = await sendEmail({
+        to: customerEmail,
+        subject: `Booking Request Received - Jyotirling Connect`,
+        react: React.createElement(BookingConfirmation, {
+          customerName: booking.full_name,
+          bookingId: bookingReference,
+          packageType: booking.package_name || '',
+          fleet: booking.vehicle_preference || '',
+          journeyDate: booking.travel_date,
+          pickupLocation: booking.pickup_location,
+          passengers: booking.no_of_passengers || 1,
+          bookingStatus: booking.status || 'pending',
+          supportContact: supportPhone,
+        }),
+        emailType: 'booking_confirmation',
+        bookingId: booking.id,
+      });
+
+      revalidatePath(`/admin/bookings/${bookingId}`);
+      return result;
+    } else if (emailType === 'admin') {
+      if (!adminEmail) {
+        return { success: false, error: 'Admin email address is missing' };
+      }
+
+      const result = await sendEmail({
+        to: adminEmail,
+        subject: `[Retry Notification] Booking: ${booking.full_name}`,
+        react: React.createElement(AdminBookingNotification, {
+          customerName: booking.full_name,
+          phoneNumber: booking.phone,
+          email: customerEmail || 'N/A',
+          packageType: booking.package_name || '',
+          fleet: booking.vehicle_preference || '',
+          pickupLocation: booking.pickup_location,
+          travelDate: booking.travel_date,
+          passengerCount: booking.no_of_passengers || 1,
+          bookingTime: booking.created_at,
+          bookingId: bookingReference,
+          message: booking.message || '',
+        }),
+        emailType: 'admin_notification',
+        bookingId: booking.id,
+      });
+
+      revalidatePath(`/admin/bookings/${bookingId}`);
+      return result;
+    }
+
+    return { success: false, error: 'Invalid email type' };
+  } catch (error: any) {
+    console.error('[RETRY EMAIL ACTION ERROR]:', error);
+    return { success: false, error: error?.message || 'Failed to retry email' };
   }
 }

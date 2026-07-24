@@ -7,12 +7,12 @@ import { motion } from "framer-motion";
 import {
   ArrowLeft, User, Phone, Mail, MapPin, Calendar, Car, Users,
   MessageSquare, Clock, CheckCircle, XCircle, AlertCircle,
-  MailCheck, MailX, Trash2, FileText, TrendingUp,
+  MailCheck, MailX, Trash2, FileText, TrendingUp, RefreshCw, AlertTriangle,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
-import { updateBookingStatusAction } from "@/app/actions/booking";
+import { updateBookingStatusAction, retryBookingEmailAction } from "@/app/actions/booking";
 import { toast } from "sonner";
 import Link from "next/link";
 
@@ -36,6 +36,7 @@ interface Booking {
   admin_notification_sent?: boolean;
   confirmation_sent_at?: string;
   admin_notification_sent_at?: string;
+  last_email_error?: string;
   package_id?: string;
 }
 
@@ -84,6 +85,30 @@ export default function BookingDetailPage() {
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const [savingNotes, setSavingNotes] = useState(false);
   const [adminNotes, setAdminNotes] = useState("");
+  const [retryingCustomerEmail, setRetryingCustomerEmail] = useState(false);
+  const [retryingAdminEmail, setRetryingAdminEmail] = useState(false);
+
+  const handleRetryEmail = async (emailType: "customer" | "admin") => {
+    if (!booking) return;
+    if (emailType === "customer") setRetryingCustomerEmail(true);
+    else setRetryingAdminEmail(true);
+
+    const toastId = toast.loading(`Sending ${emailType} email...`);
+    try {
+      const result = await retryBookingEmailAction(booking.id, emailType);
+      if (result.success) {
+        toast.success(`${emailType === "customer" ? "Customer" : "Admin"} email sent successfully!`, { id: toastId });
+        await fetchBooking();
+      } else {
+        toast.error(`Failed to send email: ${result.error || "Unknown error"}`, { id: toastId });
+      }
+    } catch (err: any) {
+      toast.error(`Error: ${err?.message || "Failed to trigger email retry"}`, { id: toastId });
+    } finally {
+      if (emailType === "customer") setRetryingCustomerEmail(false);
+      else setRetryingAdminEmail(false);
+    }
+  };
 
   const fetchBooking = async () => {
     const { data, error } = await supabase
@@ -372,36 +397,87 @@ export default function BookingDetailPage() {
             </CardContent>
           </Card>
 
-          {/* Email Status */}
+          {/* Email Status & Delivery Control */}
           <Card className="bg-surface/50 backdrop-blur-xl border-border/50 rounded-3xl shadow-sm overflow-hidden">
             <CardHeader className="p-6 border-b border-border/50">
               <CardTitle className="text-base font-display font-bold text-ink flex items-center gap-2">
                 <Mail size={16} className="text-accent-primary" />
-                Email Status
+                Email Delivery Status
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-6 space-y-3">
-              <div className={`flex items-center gap-3 px-3 py-2.5 rounded-xl border text-xs font-semibold ${
-                booking.email_sent
-                  ? "bg-green-500/10 border-green-500/20 text-green-600"
-                  : "bg-orange-500/10 border-orange-500/20 text-orange-600"
-              }`}>
-                {booking.email_sent ? <MailCheck size={14} /> : <MailX size={14} />}
-                {booking.email_sent ? "Confirmation Sent to Customer" : "Confirmation Not Sent"}
+            <CardContent className="p-6 space-y-4">
+              {/* Customer Email Status */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-ink-muted">Customer Confirmation</span>
+                  {booking.confirmation_sent_at && (
+                    <span className="text-[10px] text-ink-muted">
+                      {format(new Date(booking.confirmation_sent_at), "dd MMM, hh:mm a")}
+                    </span>
+                  )}
+                </div>
+                <div className={`flex items-center justify-between px-3 py-2.5 rounded-xl border text-xs font-semibold ${
+                  booking.email_sent
+                    ? "bg-green-500/10 border-green-500/20 text-green-600"
+                    : "bg-orange-500/10 border-orange-500/20 text-orange-600"
+                }`}>
+                  <div className="flex items-center gap-2">
+                    {booking.email_sent ? <MailCheck size={14} /> : <MailX size={14} />}
+                    {booking.email_sent ? "Confirmation Sent" : "Not Sent"}
+                  </div>
+                  <button
+                    onClick={() => handleRetryEmail("customer")}
+                    disabled={retryingCustomerEmail}
+                    className="inline-flex items-center gap-1 text-[11px] font-medium underline text-ink hover:text-accent-primary disabled:opacity-50"
+                  >
+                    <RefreshCw size={11} className={retryingCustomerEmail ? "animate-spin" : ""} />
+                    {retryingCustomerEmail ? "Sending..." : "Resend"}
+                  </button>
+                </div>
               </div>
-              {booking.confirmation_sent_at && (
-                <p className="text-[10px] text-ink-muted px-1">
-                  Sent {format(new Date(booking.confirmation_sent_at), "dd MMM, hh:mm a")}
-                </p>
+
+              {/* Admin Email Status */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-ink-muted">Admin Notification</span>
+                  {booking.admin_notification_sent_at && (
+                    <span className="text-[10px] text-ink-muted">
+                      {format(new Date(booking.admin_notification_sent_at), "dd MMM, hh:mm a")}
+                    </span>
+                  )}
+                </div>
+                <div className={`flex items-center justify-between px-3 py-2.5 rounded-xl border text-xs font-semibold ${
+                  booking.admin_notification_sent
+                    ? "bg-blue-500/10 border-blue-500/20 text-blue-600"
+                    : "bg-surface border-border/50 text-ink-muted"
+                }`}>
+                  <div className="flex items-center gap-2">
+                    {booking.admin_notification_sent ? <MailCheck size={14} /> : <MailX size={14} />}
+                    {booking.admin_notification_sent ? "Admin Notified" : "Not Notified"}
+                  </div>
+                  <button
+                    onClick={() => handleRetryEmail("admin")}
+                    disabled={retryingAdminEmail}
+                    className="inline-flex items-center gap-1 text-[11px] font-medium underline text-ink hover:text-accent-primary disabled:opacity-50"
+                  >
+                    <RefreshCw size={11} className={retryingAdminEmail ? "animate-spin" : ""} />
+                    {retryingAdminEmail ? "Sending..." : "Resend"}
+                  </button>
+                </div>
+              </div>
+
+              {/* Last Error Banner */}
+              {booking.last_email_error && (
+                <div className="p-3 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-500 text-xs space-y-1">
+                  <div className="flex items-center gap-1.5 font-bold">
+                    <AlertTriangle size={13} />
+                    Last Email Error
+                  </div>
+                  <p className="text-[11px] leading-relaxed break-words font-mono">
+                    {booking.last_email_error}
+                  </p>
+                </div>
               )}
-              <div className={`flex items-center gap-3 px-3 py-2.5 rounded-xl border text-xs font-semibold ${
-                booking.admin_notification_sent
-                  ? "bg-blue-500/10 border-blue-500/20 text-blue-600"
-                  : "bg-surface border-border/50 text-ink-muted"
-              }`}>
-                {booking.admin_notification_sent ? <MailCheck size={14} /> : <MailX size={14} />}
-                {booking.admin_notification_sent ? "Admin Notified" : "Admin Not Notified"}
-              </div>
             </CardContent>
           </Card>
 
