@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { AuthProviders } from "@/components/auth/Providers";
 import { Toaster } from "sonner";
 import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 
 const poppins = Poppins({
@@ -112,6 +113,7 @@ export default function RootLayout({
           </AuthProviders>
           <Toaster richColors position="top-right" />
           <Analytics />
+          <SpeedInsights />
         </ThemeProvider>
       </body>
     </html>
