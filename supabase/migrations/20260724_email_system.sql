@@ -30,8 +30,11 @@ CREATE TABLE IF NOT EXISTS public.email_logs (
     created_at        TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Enable RLS and setup admin access policy
+-- Enable RLS and setup access policies
 ALTER TABLE public.email_logs ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "Admin all access email_logs" ON public.email_logs;
+DROP POLICY IF EXISTS "Allow public insert to email_logs" ON public.email_logs;
+
+CREATE POLICY "Allow public insert to email_logs" ON public.email_logs FOR INSERT TO public WITH CHECK (true);
 CREATE POLICY "Admin all access email_logs" ON public.email_logs FOR ALL USING (auth.role() = 'authenticated');

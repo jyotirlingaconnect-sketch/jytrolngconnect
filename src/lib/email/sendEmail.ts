@@ -1,11 +1,12 @@
 import { getResendClient, getSenderEmail } from './index';
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
 import React from 'react';
+import { render } from '@react-email/render';
 
 export interface SendEmailParams {
   to: string | string[];
   subject: string;
-  react: React.ReactNode;
+  react: React.ReactElement;
   emailType: string;
   bookingId?: string;
   retries?: number;
@@ -28,6 +29,35 @@ export async function sendEmail({
     subject,
     bookingId: bookingId || 'N/A',
   });
+
+  // Step 1: Explicitly render the React template to HTML to catch compilation errors early
+  let htmlContent = '';
+  try {
+    console.log(`[EMAIL] 🎨 Rendering React template for ${emailType}...`);
+    htmlContent = await render(react);
+    console.log(`[EMAIL] 🎨 Template rendered successfully. Length: ${htmlContent.length} chars`);
+  } catch (renderError: any) {
+    console.error(`[EMAIL ERROR] ❌ React template rendering failed for ${emailType}:`, {
+      message: renderError?.message || renderError,
+      stack: renderError?.stack,
+    });
+    
+    // Log the rendering failure immediately
+    const errorMsg = `Template Render Error: ${renderError?.message || 'Unknown'}`;
+    await logEmail({
+      recipient: recipientStr,
+      emailType,
+      subject,
+      status: 'failed',
+      errorMessage: errorMsg,
+      bookingId,
+    });
+    if (bookingId) {
+      await updateBookingEmailStatus(bookingId, emailType, false, errorMsg);
+    }
+    
+    return { success: false, error: new Error(errorMsg) };
+  }
 
   const resendClient = getResendClient();
   const sender = getSenderEmail();
@@ -65,7 +95,7 @@ export async function sendEmail({
         from: sender,
         to: recipients,
         subject,
-        react,
+        html: htmlContent, // PASS HTML NOT REACT
       });
 
       if (response.error) {
