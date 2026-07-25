@@ -103,6 +103,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* Preload first frame for instant hero render */}
+        <link rel="preload" as="image" href="/frames/frame_000.webp" fetchPriority="high" />
+      </head>
       <body
         className={`${poppins.variable} ${furonto.variable} antialiased min-h-[100dvh] flex flex-col overflow-x-hidden`}
         suppressHydrationWarning

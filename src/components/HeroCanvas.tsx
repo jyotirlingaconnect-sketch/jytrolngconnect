@@ -1,9 +1,11 @@
 "use client";
+
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { cn } from "@/lib/utils";
 import { ProtectedAction } from "@/components/auth/ProtectedAction";
+import { useFrameSequence, getFrame, shouldSkipAnimation } from "@/hooks/useFrameSequence";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -12,17 +14,24 @@ const FRAME_COUNT = 240;
 export function HeroCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [imagesLoaded, setImagesLoaded] = useState(0);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const [skipAnimation, setSkipAnimation] = useState(false);
   
-  const imagesRef = useRef<HTMLImageElement[]>([]);
   const frameIndexRef = useRef({ frame: 0 });
   const textRef = useRef<HTMLDivElement>(null);
+
+  // Use shared frame sequence loader (loads once for entire app)
+  const { isInitialBatchReady } = useFrameSequence({
+    enabled: !skipAnimation && !prefersReducedMotion,
+  });
 
   useEffect(() => {
     // Check reduced motion preference
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     setPrefersReducedMotion(mediaQuery.matches);
+    
+    // Check if device/connection suggests skipping animation
+    setSkipAnimation(shouldSkipAnimation());
     
     const updateMotionPreference = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches);
     mediaQuery.addEventListener("change", updateMotionPreference);
@@ -30,38 +39,8 @@ export function HeroCanvas() {
   }, []);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    // Load images into refs (instantaneous because GlobalPreloader cached them)
-    const loadImages = async () => {
-      let loaded = 0;
-      const promises = Array.from({ length: FRAME_COUNT }).map((_, i) => {
-        return new Promise((resolve) => {
-          const img = new Image();
-          const numStr = String(i).padStart(3, "0");
-          img.src = `/frames/frame_${numStr}.webp`;
-          
-          img.onload = () => {
-            loaded++;
-            setImagesLoaded(loaded);
-            resolve(img);
-          };
-          img.onerror = () => {
-            loaded++;
-            setImagesLoaded(loaded);
-            resolve(null);
-          };
-          imagesRef.current[i] = img;
-        });
-      });
-      await Promise.all(promises);
-    };
-
-    loadImages();
-  }, []);
-
-  useEffect(() => {
-    if (imagesLoaded < FRAME_COUNT || prefersReducedMotion) return;
+    // Don't setup scroll animation until initial batch is ready
+    if (!isInitialBatchReady || prefersReducedMotion || skipAnimation) return;
 
     const canvas = canvasRef.current;
     const container = containerRef.current;
@@ -72,7 +51,7 @@ export function HeroCanvas() {
 
     // Handle Resize
     const resizeCanvas = () => {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2); // Cap DPR at 2 for performance
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
       const rect = container.getBoundingClientRect();
       
       canvas.width = rect.width * dpr;
@@ -83,9 +62,10 @@ export function HeroCanvas() {
     };
 
     const renderFrame = (index: number) => {
-      if (!imagesRef.current[index] || !imagesRef.current[index].complete) return;
+      // Use getFrame with fallback to nearest loaded frame
+      const img = getFrame(index);
+      if (!img) return;
       
-      const img = imagesRef.current[index];
       const canvasWidth = container.clientWidth;
       const canvasHeight = container.clientHeight;
       
@@ -105,12 +85,10 @@ export function HeroCanvas() {
     const st = ScrollTrigger.create({
       trigger: container,
       start: "top top",
-      end: "+=3000", // Scroll distance
+      end: "+=3000",
       pin: true,
       onUpdate: (self) => {
-        // Calculate frame index based on scroll progress
         let frameIndex = Math.floor(self.progress * (FRAME_COUNT - 1));
-        // Ensure within bounds
         frameIndex = Math.max(0, Math.min(frameIndex, FRAME_COUNT - 1));
         
         if (frameIndexRef.current.frame !== frameIndex) {
@@ -132,13 +110,14 @@ export function HeroCanvas() {
       window.removeEventListener("resize", resizeCanvas);
       st.kill();
     };
-  }, [imagesLoaded, prefersReducedMotion]);
+  }, [isInitialBatchReady, prefersReducedMotion, skipAnimation]);
 
-  const isLoading = imagesLoaded < FRAME_COUNT;
+  // Show static image on mobile/slow connections or reduced motion
+  const showStatic = prefersReducedMotion || skipAnimation;
 
   return (
     <div ref={containerRef} className="relative w-full h-[85dvh] sm:h-[90dvh] md:h-[100dvh] overflow-hidden bg-bg">
-      {prefersReducedMotion ? (
+      {showStatic ? (
         <div 
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: `url(/frames/frame_000.webp)` }}
@@ -148,7 +127,7 @@ export function HeroCanvas() {
           ref={canvasRef}
           className={cn(
             "absolute inset-0 w-full h-full object-cover transition-opacity duration-1000",
-            isLoading ? "opacity-0" : "opacity-100"
+            isInitialBatchReady ? "opacity-100" : "opacity-0"
           )}
           style={{ display: "block" }}
         />
@@ -157,7 +136,7 @@ export function HeroCanvas() {
       {/* Overlay gradient for text legibility */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60 z-0 pointer-events-none" />
 
-      {/* Hero Content positioned statically inside the pinned container */}
+      {/* Hero Content */}
       <div ref={textRef} className="absolute inset-0 flex flex-col items-center justify-center z-10 text-center px-4 sm:px-6 transition-transform duration-75">
         <h1 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-3 sm:mb-4 md:mb-6 drop-shadow-lg opacity-90 transition-opacity leading-tight">
           A Journey of Devotion

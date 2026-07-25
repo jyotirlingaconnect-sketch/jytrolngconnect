@@ -4,6 +4,12 @@ import dns from "node:dns";
 dns.setDefaultResultOrder("ipv4first");
 
 const nextConfig: NextConfig = {
+  // Allows testing the dev server from other devices on your LAN
+  // (e.g. http://192.168.1.4:3000 from your phone/iPad).
+  // Add any other LAN IPs you test from to this list.
+  // This has NO effect on production — dev-only setting.
+  allowedDevOrigins: ["192.168.1.4"],
+
   images: {
     dangerouslyAllowSVG: true,
     contentDispositionType: "attachment",
