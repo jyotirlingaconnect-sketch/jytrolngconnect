@@ -1,24 +1,31 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { cn } from "@/lib/utils";
 import { ProtectedAction } from "@/components/auth/ProtectedAction";
-import { useFrameSequence, getFrame, shouldSkipAnimation } from "@/hooks/useFrameSequence";
+import { useFrameSequence, getFrame, shouldSkipAnimation, isMobileDevice } from "@/hooks/useFrameSequence";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const FRAME_COUNT = 240;
+// Responsive scroll distances based on viewport
+const DESKTOP_SCROLL_DISTANCE = 3000;
+const MOBILE_SCROLL_DISTANCE = 2000; // Shorter for mobile to feel more intentional
 
 export function HeroCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [skipAnimation, setSkipAnimation] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   
   const frameIndexRef = useRef({ frame: 0 });
   const textRef = useRef<HTMLDivElement>(null);
+  const scrollTriggerRef = useRef<ScrollTrigger | null>(null);
+  const resizeTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
+  const lastRenderFrameRef = useRef<number>(-1);
 
   // Use shared frame sequence loader (loads once for entire app)
   const { isInitialBatchReady } = useFrameSequence({
@@ -30,12 +37,60 @@ export function HeroCanvas() {
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     setPrefersReducedMotion(mediaQuery.matches);
     
-    // Check if device/connection suggests skipping animation
+    // Check if connection suggests skipping animation (NOT viewport)
     setSkipAnimation(shouldSkipAnimation());
+    
+    // Check if we're on mobile for optimizations
+    setIsMobile(isMobileDevice());
     
     const updateMotionPreference = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches);
     mediaQuery.addEventListener("change", updateMotionPreference);
     return () => mediaQuery.removeEventListener("change", updateMotionPreference);
+  }, []);
+
+  // Enable GSAP normalizeScroll for mobile to smooth out iOS address bar behavior
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    
+    // Only apply normalizeScroll on mobile devices
+    // This prevents iOS Safari address bar from causing pin jumps
+    // Based on established GSAP documentation for iOS Safari pin behavior
+    if (isMobileDevice()) {
+      ScrollTrigger.normalizeScroll(true);
+      
+      return () => {
+        ScrollTrigger.normalizeScroll(false);
+      };
+    }
+  }, []);
+
+  // Memoized render function with throttling for mobile
+  const renderFrame = useCallback((index: number) => {
+    // Throttle redundant renders — don't redraw same frame
+    if (lastRenderFrameRef.current === index) return;
+    lastRenderFrameRef.current = index;
+    
+    const canvas = canvasRef.current;
+    const container = containerRef.current;
+    if (!canvas || !container) return;
+    
+    const context = canvas.getContext("2d");
+    if (!context) return;
+    
+    // Use getFrame with fallback to nearest loaded frame
+    const img = getFrame(index);
+    if (!img) return;
+    
+    const canvasWidth = container.clientWidth;
+    const canvasHeight = container.clientHeight;
+    
+    // Cover logic (like object-fit: cover)
+    const scale = Math.max(canvasWidth / img.width, canvasHeight / img.height);
+    const x = (canvasWidth / 2) - (img.width / 2) * scale;
+    const y = (canvasHeight / 2) - (img.height / 2) * scale;
+    
+    context.clearRect(0, 0, canvasWidth, canvasHeight);
+    context.drawImage(img, x, y, img.width * scale, img.height * scale);
   }, []);
 
   useEffect(() => {
@@ -49,9 +104,20 @@ export function HeroCanvas() {
     const context = canvas.getContext("2d");
     if (!context) return;
 
-    // Handle Resize
+    // Mobile-specific DPR capping for performance
+    // Lower DPR on mobile reduces GPU/CPU load during scroll
+    // Visual difference is negligible on small screens during motion
+    const getMobileDPR = () => {
+      if (isMobile) {
+        // Cap at 1.5 on mobile instead of 2 for better performance
+        return Math.min(window.devicePixelRatio || 1, 1.5);
+      }
+      return Math.min(window.devicePixelRatio || 1, 2);
+    };
+
+    // Handle Resize with debouncing for iOS address bar rapid-fire resizes
     const resizeCanvas = () => {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const dpr = getMobileDPR();
       const rect = container.getBoundingClientRect();
       
       canvas.width = rect.width * dpr;
@@ -61,38 +127,51 @@ export function HeroCanvas() {
       renderFrame(frameIndexRef.current.frame);
     };
 
-    const renderFrame = (index: number) => {
-      // Use getFrame with fallback to nearest loaded frame
-      const img = getFrame(index);
-      if (!img) return;
+    // Debounced refresh for iOS address bar show/hide
+    // iOS Safari fires rapid resize events during momentum scroll
+    // Debouncing prevents layout thrashing and jumps
+    const debouncedRefresh = () => {
+      if (resizeTimeoutRef.current) {
+        clearTimeout(resizeTimeoutRef.current);
+      }
       
-      const canvasWidth = container.clientWidth;
-      const canvasHeight = container.clientHeight;
-      
-      // Cover logic (like object-fit: cover)
-      const scale = Math.max(canvasWidth / img.width, canvasHeight / img.height);
-      const x = (canvasWidth / 2) - (img.width / 2) * scale;
-      const y = (canvasHeight / 2) - (img.height / 2) * scale;
-      
-      context.clearRect(0, 0, canvasWidth, canvasHeight);
-      context.drawImage(img, x, y, img.width * scale, img.height * scale);
+      resizeTimeoutRef.current = setTimeout(() => {
+        if (scrollTriggerRef.current) {
+          ScrollTrigger.refresh();
+        }
+      }, 150); // 150ms debounce for iOS address bar transitions
     };
 
-    window.addEventListener("resize", resizeCanvas);
+    const handleResize = () => {
+      resizeCanvas();
+      // Only debounced refresh on mobile to handle address bar
+      if (isMobile) {
+        debouncedRefresh();
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
     resizeCanvas();
 
-    // Setup ScrollTrigger
+    // Responsive scroll distance based on viewport
+    const scrollDistance = isMobile ? MOBILE_SCROLL_DISTANCE : DESKTOP_SCROLL_DISTANCE;
+
+    // Setup ScrollTrigger with mobile-optimized config
     const st = ScrollTrigger.create({
       trigger: container,
       start: "top top",
-      end: "+=3000",
+      end: `+=${scrollDistance}`, // Responsive based on device
       pin: true,
+      // anticipatePin: iOS Safari may recalculate during address bar transitions
+      // normalizeScroll (enabled above) should prevent most issues
+      anticipatePin: isMobile ? 1 : 0, // Small anticipation on mobile helps with momentum scroll
       onUpdate: (self) => {
         let frameIndex = Math.floor(self.progress * (FRAME_COUNT - 1));
         frameIndex = Math.max(0, Math.min(frameIndex, FRAME_COUNT - 1));
         
         if (frameIndexRef.current.frame !== frameIndex) {
           frameIndexRef.current.frame = frameIndex;
+          // requestAnimationFrame ensures smooth rendering synced with browser paint
           requestAnimationFrame(() => renderFrame(frameIndex));
         }
 
@@ -106,13 +185,20 @@ export function HeroCanvas() {
       },
     });
 
-    return () => {
-      window.removeEventListener("resize", resizeCanvas);
-      st.kill();
-    };
-  }, [isInitialBatchReady, prefersReducedMotion, skipAnimation]);
+    scrollTriggerRef.current = st;
 
-  // Show static image on mobile/slow connections or reduced motion
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      if (resizeTimeoutRef.current) {
+        clearTimeout(resizeTimeoutRef.current);
+      }
+      st.kill();
+      scrollTriggerRef.current = null;
+    };
+  }, [isInitialBatchReady, prefersReducedMotion, skipAnimation, isMobile, renderFrame]);
+
+  // Show static image on slow connections or reduced motion
+  // Mobile now gets the animation (unless connection is slow)
   const showStatic = prefersReducedMotion || skipAnimation;
 
   return (

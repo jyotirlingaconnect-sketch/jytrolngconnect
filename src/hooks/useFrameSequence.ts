@@ -225,18 +225,24 @@ export function getFrame(index: number): HTMLImageElement | null {
 
 /**
  * Check if device/connection suggests skipping animation
+ * NOW ONLY checks connection quality, NOT viewport width
  */
 export function shouldSkipAnimation(): boolean {
   if (typeof window === "undefined") return false;
 
-  // Check viewport width (mobile)
-  const isMobile = window.innerWidth < 768;
-
-  // Check connection quality
+  // Check connection quality only (saveData or slow connection)
   const connection = (navigator as any).connection || (navigator as any).mozConnection || (navigator as any).webkitConnection;
   const isSlow = connection && 
     (connection.saveData || 
      ['slow-2g', '2g', '3g'].includes(connection.effectiveType));
 
-  return isMobile || isSlow;
+  return !!isSlow;
+}
+
+/**
+ * Detect if we're on a mobile device (for mobile-specific optimizations)
+ */
+export function isMobileDevice(): boolean {
+  if (typeof window === "undefined") return false;
+  return window.innerWidth < 768;
 }
