@@ -414,24 +414,44 @@ export function FleetForm({ initialData }: FleetFormProps) {
                 <h3 className="text-sm font-medium text-ink">Gallery Images</h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {galleryImages.map((url, idx) => (
-                    <div key={idx} className="relative aspect-square rounded-lg overflow-hidden border border-border group">
-                      <img src={url} alt={`Gallery ${idx}`} className="w-full h-full object-cover" />
-                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                        <button 
+                    <div key={idx} className="flex flex-col">
+                      <div className="relative aspect-square rounded-lg overflow-hidden border border-border group">
+                        <img src={url} alt={`Gallery ${idx}`} className="w-full h-full object-cover" />
+                        {/* Desktop hover overlay */}
+                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity hidden md:flex items-center justify-center gap-2 pointer-events-none group-hover:pointer-events-auto">
+                          <button
+                            type="button"
+                            onClick={() => makeCoverImage(url)}
+                            className="p-1.5 bg-surface text-ink rounded hover:text-accent-primary transition-colors"
+                            title="Make Cover"
+                          >
+                            <Star size={16} />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => removeGalleryImage(url)}
+                            className="p-1.5 bg-surface text-error rounded hover:bg-error hover:text-white transition-colors"
+                            title="Remove"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </div>
+                      {/* Mobile always-visible action row */}
+                      <div className="md:hidden flex gap-1 mt-1">
+                        <button
                           type="button"
                           onClick={() => makeCoverImage(url)}
-                          className="p-1.5 bg-surface text-ink rounded hover:text-accent-primary transition-colors"
-                          title="Make Cover"
+                          className="flex-1 flex items-center justify-center gap-1 py-1.5 rounded border border-border text-xs text-ink-muted hover:text-accent-primary transition-colors"
                         >
-                          <Star size={16} />
+                          <Star size={12} /> Cover
                         </button>
-                        <button 
+                        <button
                           type="button"
                           onClick={() => removeGalleryImage(url)}
-                          className="p-1.5 bg-surface text-error rounded hover:bg-error hover:text-white transition-colors"
-                          title="Remove"
+                          className="flex-1 flex items-center justify-center gap-1 py-1.5 rounded border border-error/30 text-xs text-error hover:bg-error/10 transition-colors"
                         >
-                          <Trash2 size={16} />
+                          <Trash2 size={12} /> Remove
                         </button>
                       </div>
                     </div>

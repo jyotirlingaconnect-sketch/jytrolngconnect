@@ -41,12 +41,12 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto">
+    <div className="w-full max-w-md mx-auto px-2">
       <div className="text-center mb-8">
         <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-accent-primary/10 text-accent-primary mb-4">
           <Lock size={32} />
         </div>
-        <h1 className="text-3xl font-display font-bold text-ink mb-2">Admin Access</h1>
+        <h1 className="text-2xl md:text-3xl font-display font-bold text-ink mb-2">Admin Access</h1>
         <p className="text-ink-muted">Sign in to manage Jyotirling Connect</p>
       </div>
 

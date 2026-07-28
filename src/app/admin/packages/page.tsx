@@ -635,7 +635,7 @@ function PackageForm({
       </div>
 
       {/* Progress Navigation */}
-      <div className="sticky top-[72px] z-20 bg-surface/80 backdrop-blur-md border border-border rounded-2xl p-1 mb-8 shadow-sm overflow-x-auto no-scrollbar">
+      <div className="sticky top-[56px] md:top-[72px] z-20 bg-surface/80 backdrop-blur-md border border-border rounded-2xl p-1 mb-8 shadow-sm overflow-x-auto no-scrollbar">
         <div className="flex items-center gap-1 min-w-max">
           {SECTIONS.map((sec) => (
             <button
@@ -888,8 +888,8 @@ function PackageForm({
         </SectionCard>
       </form>
 
-      {/* Sticky Bottom Save Bar */}
-      <div className="fixed bottom-0 left-0 md:left-64 right-0 bg-surface/80 backdrop-blur-lg border-t border-border p-4 z-50 flex items-center justify-between shadow-[0_-4px_24px_rgba(0,0,0,0.05)]">
+      {/* Sticky Bottom Save Bar — on mobile: left-0 (full width); on md+: left-64 to clear the 256px sidebar */}
+      <div className="fixed bottom-0 left-0 md:left-64 right-0 bg-surface/80 backdrop-blur-lg border-t border-border p-4 z-30 flex items-center justify-between shadow-[0_-4px_24px_rgba(0,0,0,0.05)]">
         <div className="flex items-center gap-3">
           <button type="button" onClick={onCancel}
             className="px-6 py-2.5 rounded-xl border border-border text-ink-muted hover:text-ink hover:bg-surface transition-all text-sm font-medium">
@@ -927,13 +927,14 @@ function PackageForm({
 
 function StatCard({ label, value, icon: Icon, color }: { label: string; value: number; icon: any; color: string }) {
   return (
-    <div className="flex items-center gap-4 p-4 rounded-2xl border border-border bg-surface/40 backdrop-blur-sm">
-      <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center shrink-0", color)}>
-        <Icon size={18} className="text-surface" />
+    <div className="flex items-center gap-2 sm:gap-4 p-3 sm:p-4 rounded-2xl border border-border bg-surface/40 backdrop-blur-sm">
+      <div className={cn("w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center shrink-0", color)}>
+        <Icon size={15} className="text-surface sm:hidden" />
+        <Icon size={18} className="text-surface hidden sm:block" />
       </div>
-      <div>
-        <div className="text-2xl font-bold text-ink">{value}</div>
-        <div className="text-xs text-ink-muted">{label}</div>
+      <div className="min-w-0">
+        <div className="text-lg sm:text-2xl font-bold text-ink leading-none">{value}</div>
+        <div className="text-[10px] sm:text-xs text-ink-muted leading-tight mt-0.5 truncate">{label}</div>
       </div>
     </div>
   );
@@ -1078,7 +1079,6 @@ export default function AdminPackagesPage() {
         </div>
       )}
 
-      {/* Search + Filters */}
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
         <div className="relative flex-1">
           <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-muted" />
@@ -1089,43 +1089,156 @@ export default function AdminPackagesPage() {
             className="w-full h-11 rounded-xl border border-border bg-surface/60 pl-10 pr-4 text-sm text-ink placeholder:text-ink-muted/60 focus:outline-none focus:ring-2 focus:ring-accent-primary/40 focus:border-accent-primary transition-all"
           />
         </div>
-        <select
-          value={filterVehicle}
-          onChange={e => setFilterVehicle(e.target.value)}
-          className="h-11 rounded-xl border border-border bg-surface/60 px-3.5 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-accent-primary/40 transition-all"
-        >
-          <option value="">All Vehicles</option>
-          {VEHICLE_TYPES.map(v => <option key={v.id} value={v.id}>{v.label}</option>)}
-        </select>
-        <select
-          value={filterStatus}
-          onChange={e => setFilterStatus(e.target.value)}
-          className="h-11 rounded-xl border border-border bg-surface/60 px-3.5 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-accent-primary/40 transition-all"
-        >
-          <option value="">All Status</option>
-          <option value="available">Available</option>
-          <option value="unavailable">Unavailable</option>
-          <option value="popular">Popular</option>
-          <option value="featured">Featured</option>
-        </select>
-        <select
-          value={sortBy}
-          onChange={e => setSortBy(e.target.value)}
-          className="h-11 rounded-xl border border-border bg-surface/60 px-3.5 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-accent-primary/40 transition-all"
-        >
-          <option value="newest">Newest First</option>
-          <option value="oldest">Oldest First</option>
-          <option value="price_high">Highest Price</option>
-          <option value="price_low">Lowest Price</option>
-        </select>
-        <button onClick={fetchPackages}
-          className="h-11 px-4 rounded-xl border border-border text-ink-muted hover:text-accent-primary hover:border-accent-primary transition-all flex items-center gap-2 text-sm whitespace-nowrap">
-          <RefreshCw size={14} />
-        </button>
+        {/* Filters row: wrap into 2 cols on mobile, inline on sm+ */}
+        <div className="grid grid-cols-2 sm:flex gap-3">
+          <select
+            value={filterVehicle}
+            onChange={e => setFilterVehicle(e.target.value)}
+            className="w-full h-11 rounded-xl border border-border bg-surface/60 px-3 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-accent-primary/40 transition-all"
+          >
+            <option value="">All Vehicles</option>
+            {VEHICLE_TYPES.map(v => <option key={v.id} value={v.id}>{v.label}</option>)}
+          </select>
+          <select
+            value={filterStatus}
+            onChange={e => setFilterStatus(e.target.value)}
+            className="w-full h-11 rounded-xl border border-border bg-surface/60 px-3 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-accent-primary/40 transition-all"
+          >
+            <option value="">All Status</option>
+            <option value="available">Available</option>
+            <option value="unavailable">Unavailable</option>
+            <option value="popular">Popular</option>
+            <option value="featured">Featured</option>
+          </select>
+          <select
+            value={sortBy}
+            onChange={e => setSortBy(e.target.value)}
+            className="w-full h-11 rounded-xl border border-border bg-surface/60 px-3 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-accent-primary/40 transition-all"
+          >
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+            <option value="price_high">Highest Price</option>
+            <option value="price_low">Lowest Price</option>
+          </select>
+          <button onClick={fetchPackages}
+            className="h-11 px-4 rounded-xl border border-border text-ink-muted hover:text-accent-primary hover:border-accent-primary transition-all flex items-center justify-center gap-2 text-sm whitespace-nowrap">
+            <RefreshCw size={14} />
+          </button>
+        </div>
       </div>
 
-      {/* Table */}
-      <div className="rounded-2xl border border-border overflow-hidden shadow-sm">
+      {/* ── Mobile Card List (below md) ── */}
+      <div className="md:hidden space-y-3">
+        {loading ? (
+          <div className="flex flex-col items-center gap-3 text-ink-muted py-16">
+            <Loader2 size={24} className="animate-spin text-accent-primary" />
+            <span className="text-sm">Loading packages…</span>
+          </div>
+        ) : filtered.length === 0 ? (
+          <EmptyState onAdd={openCreate} />
+        ) : (
+          filtered.map((pkg, i) => (
+            <motion.div
+              key={pkg.id}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.03 }}
+              className="rounded-2xl border border-border bg-surface/60 overflow-hidden shadow-sm"
+            >
+              {/* Card header: image + title + badges */}
+              <div className="flex items-start gap-3 p-4">
+                <div className="w-16 h-14 rounded-xl overflow-hidden border border-border bg-surface flex-shrink-0">
+                  {pkg.cover_image || pkg.images?.[0] ? (
+                    <img src={pkg.cover_image || pkg.images?.[0]} alt={pkg.title} className="w-full h-full object-cover" onError={e => (e.currentTarget.style.display = "none")} />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-accent-primary/10">
+                      <Mountain size={20} className="text-accent-primary/50" />
+                    </div>
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="font-semibold text-ink text-sm leading-snug mb-1">{pkg.title}</div>
+                  <div className="flex flex-wrap gap-1">
+                    {pkg.is_popular && (
+                      <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-accent-secondary/20 text-accent-secondary text-[10px] font-medium">
+                        <Flame size={8} /> Popular
+                      </span>
+                    )}
+                    {pkg.is_featured && (
+                      <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-error/20 text-error text-[10px] font-medium">
+                        <Award size={8} /> Featured
+                      </span>
+                    )}
+                    {pkg.is_recommended && (
+                      <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-accent-primary/20 text-accent-primary text-[10px] font-medium">
+                        <BadgeCheck size={8} /> Recommended
+                      </span>
+                    )}
+                    {pkg.is_available ? (
+                      <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-success/15 text-success text-[10px] font-medium">
+                        <CircleCheck size={8} /> Active
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-ink-muted/15 text-ink-muted text-[10px] font-medium">
+                        <EyeOff size={8} /> Hidden
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Journey + price row */}
+              <div className="flex items-center justify-between px-4 pb-3 gap-2">
+                <div className="text-xs text-ink-muted space-y-0.5 min-w-0">
+                  {pkg.route && <div className="flex items-center gap-1 truncate"><MapPin size={10} className="text-accent-primary shrink-0" /><span className="truncate">{pkg.route}</span></div>}
+                  {(pkg.days || pkg.nights) && (
+                    <div className="flex items-center gap-1">
+                      <Calendar size={10} className="text-accent-primary" />
+                      {pkg.days ? `${pkg.days}D` : ""}{pkg.nights ? `/${pkg.nights}N` : ""}
+                      {pkg.vehicle_type && <span className="ml-1">• {pkg.vehicle_type}{pkg.is_ac ? " (AC)" : ""}</span>}
+                    </div>
+                  )}
+                </div>
+                <div className="text-right shrink-0">
+                  <div className="font-bold text-accent-primary text-sm">₹{(pkg.price || 0).toLocaleString()}</div>
+                  <div className="text-[10px] text-ink-muted">Starting from</div>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex items-center gap-2 px-4 pb-4">
+                <button
+                  onClick={() => openEdit(pkg)}
+                  className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl border border-border text-ink-muted hover:text-accent-primary hover:border-accent-primary transition-all text-xs font-medium"
+                >
+                  <Pencil size={13} /> Edit
+                </button>
+                <button
+                  onClick={() => handleDelete(pkg.id)}
+                  className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl border border-error/30 text-error hover:bg-error/10 transition-all text-xs font-medium"
+                >
+                  <Trash2 size={13} /> Delete
+                </button>
+              </div>
+            </motion.div>
+          ))
+        )}
+        {/* Footer */}
+        {!loading && filtered.length > 0 && (
+          <div className="py-2 text-xs text-ink-muted text-center">
+            Showing {filtered.length} of {packages.length} packages
+            {(search || filterVehicle || filterStatus) && (
+              <button onClick={() => { setSearch(""); setFilterVehicle(""); setFilterStatus(""); }}
+                className="ml-3 text-accent-primary hover:underline">
+                Clear filters
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* ── Desktop Table (md+) ── */}
+      <div className="hidden md:block rounded-2xl border border-border overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>

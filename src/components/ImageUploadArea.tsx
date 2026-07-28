@@ -313,7 +313,8 @@ export function ImageUploadArea({
                 }}
               />
               
-              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2">
+              {/* Desktop: hover overlay */}
+              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden md:flex items-center justify-center gap-2 pointer-events-none group-hover:pointer-events-auto">
                 <button
                   type="button"
                   onClick={() => handleRemoveImage(url)}
@@ -323,6 +324,15 @@ export function ImageUploadArea({
                   <X size={16} />
                 </button>
               </div>
+              {/* Mobile: always-visible remove button */}
+              <button
+                type="button"
+                onClick={() => handleRemoveImage(url)}
+                className="md:hidden absolute top-1 right-1 w-7 h-7 rounded-full bg-error text-white flex items-center justify-center shadow-md"
+                title="Remove Image"
+              >
+                <X size={13} />
+              </button>
             </div>
           ))}
         </div>

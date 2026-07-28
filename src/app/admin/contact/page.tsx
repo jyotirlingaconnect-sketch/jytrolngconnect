@@ -70,7 +70,7 @@ export default function AdminContactInfoPage() {
   return (
     <div className="max-w-2xl">
       <div className="mb-8">
-        <h1 className="text-3xl font-display font-bold text-ink mb-2">Contact Information</h1>
+        <h1 className="text-2xl md:text-3xl font-display font-bold text-ink mb-2">Contact Information</h1>
         <p className="text-ink-muted">Manage the contact details shown on the website</p>
       </div>
 

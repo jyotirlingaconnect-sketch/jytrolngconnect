@@ -36,32 +36,33 @@ export function TodaySchedule({ bookings }: TodayScheduleProps) {
         ) : (
           <div className="divide-y divide-border/50">
             {todaysTrips.map((trip) => (
-              <div key={trip.id} className="p-6 hover:bg-bg/50 transition-colors flex flex-col gap-3">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h4 className="font-semibold text-ink">{trip.full_name}</h4>
-                    <div className="flex items-center gap-4 mt-1 text-sm text-ink-muted">
+              <div key={trip.id} className="p-4 sm:p-6 hover:bg-bg/50 transition-colors flex flex-col gap-3">
+                <div className="flex justify-between items-start gap-2">
+                  <div className="min-w-0">
+                    <h4 className="font-semibold text-ink truncate">{trip.full_name}</h4>
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-sm text-ink-muted">
                       <span className="flex items-center gap-1">
                         <Clock size={14} /> Morning
                       </span>
-                      <span className="flex items-center gap-1">
-                        <MapPin size={14} /> {trip.pickup_location || "Ujjain"}
+                      <span className="flex items-center gap-1 min-w-0">
+                        <MapPin size={14} className="shrink-0" />
+                        <span className="truncate">{trip.pickup_location || "Ujjain"}</span>
                       </span>
                     </div>
                   </div>
-                  <span className={`px-2 py-0.5 rounded-full text-xs font-semibold uppercase ${
+                  <span className={`px-2 py-0.5 rounded-full text-xs font-semibold uppercase shrink-0 ${
                     trip.status === 'confirmed' ? 'bg-blue-500/10 text-blue-600' : 'bg-green-500/10 text-green-600'
                   }`}>
                     {trip.status}
                   </span>
                 </div>
                 
-                <div className="flex items-center justify-between text-sm p-3 bg-bg border border-border/50 rounded-xl">
-                  <div>
+                <div className="flex items-center justify-between text-sm p-3 bg-bg border border-border/50 rounded-xl gap-2">
+                  <div className="min-w-0">
                     <p className="text-xs text-ink-muted">Vehicle</p>
-                    <p className="font-medium text-ink">{trip.vehicle_preference || "Assigned by Admin"}</p>
+                    <p className="font-medium text-ink truncate">{trip.vehicle_preference || "Assigned by Admin"}</p>
                   </div>
-                  <div className="text-right">
+                  <div className="text-right shrink-0">
                     <p className="text-xs text-ink-muted">Passengers</p>
                     <p className="font-medium text-ink">{trip.no_of_passengers || 2} Pax</p>
                   </div>

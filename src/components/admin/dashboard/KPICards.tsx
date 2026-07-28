@@ -115,30 +115,31 @@ export function KPICards({ stats }: { stats: DashboardStats }) {
   };
 
   return (
-    <motion.div 
+    <motion.div
       variants={container}
       initial="hidden"
       animate="show"
-      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
+      className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6"
     >
       {kpiData.map((kpi, idx) => (
         <motion.div key={idx} variants={item}>
           <Card className="overflow-hidden bg-surface/50 backdrop-blur-xl border-border/50 hover:shadow-xl hover:border-accent-primary/30 transition-all duration-300 group rounded-3xl h-full">
-            <CardContent className="p-6">
-              <div className="flex justify-between items-start mb-4">
-                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${kpi.bg} ${kpi.color} group-hover:scale-110 transition-transform duration-300`}>
-                  <kpi.icon size={28} />
+            <CardContent className="p-3 sm:p-6">
+              <div className="flex justify-between items-start mb-2 sm:mb-4">
+                <div className={`w-9 h-9 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl flex items-center justify-center ${kpi.bg} ${kpi.color} group-hover:scale-110 transition-transform duration-300`}>
+                  <kpi.icon size={18} className="sm:hidden" />
+                  <kpi.icon size={28} className="hidden sm:block" />
                 </div>
-                <div className="flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full bg-bg border border-border/50 text-ink-muted">
-                  <TrendingUp size={14} className={kpi.trendColor} />
+                <div className="flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-full bg-bg border border-border/50 text-ink-muted">
+                  <TrendingUp size={12} className={kpi.trendColor} />
                 </div>
               </div>
               <div>
-                <h3 className="text-4xl font-display font-bold text-ink mb-1 group-hover:text-accent-primary transition-colors">
+                <h3 className="text-2xl sm:text-4xl font-display font-bold text-ink mb-1 group-hover:text-accent-primary transition-colors">
                   <CountUp end={kpi.value} duration={2} separator="," />
                 </h3>
-                <p className="text-sm font-semibold text-ink-muted">{kpi.title}</p>
-                <p className={`text-xs mt-2 font-medium ${kpi.trendColor}`}>
+                <p className="text-xs sm:text-sm font-semibold text-ink-muted leading-tight">{kpi.title}</p>
+                <p className={`text-[10px] sm:text-xs mt-1.5 font-medium ${kpi.trendColor} hidden sm:block`}>
                   {kpi.trend}
                 </p>
               </div>

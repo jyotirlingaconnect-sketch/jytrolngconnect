@@ -112,7 +112,7 @@ export default function AdminSettingsPage() {
   return (
     <div className="max-w-4xl">
       <div className="mb-8">
-        <h1 className="text-3xl font-display font-bold text-ink mb-2">Website Settings</h1>
+        <h1 className="text-2xl md:text-3xl font-display font-bold text-ink mb-2">Website Settings</h1>
         <p className="text-ink-muted">Manage global website configuration and contact details</p>
       </div>
 

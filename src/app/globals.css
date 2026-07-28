@@ -106,6 +106,15 @@
     min-width: 48px;
     min-height: 48px;
   }
+
+  /* Hide scrollbar while keeping scroll functionality */
+  .no-scrollbar {
+    scrollbar-width: none;       /* Firefox */
+    -ms-overflow-style: none;    /* IE 10+ */
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;               /* Chrome / Safari / Edge */
+  }
 }
 @keyframes flicker {
   0%, 100% { transform: scale(1) rotate(0deg); opacity: 1; }

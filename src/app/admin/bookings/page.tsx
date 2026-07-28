@@ -60,16 +60,124 @@ export default function AdminBookingsPage() {
     }
   };
 
+  const statusClass = (status: string) =>
+    `block text-xs font-medium px-2 py-1 rounded-full outline-none border-none cursor-pointer w-full ${
+      status === "pending" ? "bg-orange-500/10 text-orange-600" :
+      status === "confirmed" ? "bg-blue-500/10 text-blue-600" :
+      status === "completed" ? "bg-green-500/10 text-green-600" :
+      "bg-red-500/10 text-red-600"
+    }`;
+
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-3xl font-display font-bold text-ink mb-2">Bookings & Enquiries</h1>
-          <p className="text-ink-muted">Manage customer bookings and contact requests</p>
-        </div>
+      {/* ── Page Header ───────────────────────────────────────────────── */}
+      <div className="mb-8">
+        <h1 className="text-2xl md:text-3xl font-display font-bold text-ink mb-2">
+          Bookings &amp; Enquiries
+        </h1>
+        <p className="text-ink-muted">Manage customer bookings and contact requests</p>
       </div>
 
-      <Card>
+      {/* ════════════════════════════════════════════════
+          MOBILE CARD VIEW  (below md)
+      ════════════════════════════════════════════════ */}
+      <div className="md:hidden space-y-4">
+        {loading ? (
+          <div className="py-12 text-center text-ink-muted">Loading...</div>
+        ) : bookings.length === 0 ? (
+          <div className="py-12 text-center text-ink-muted bg-surface rounded-xl border border-border border-dashed">
+            No bookings found
+          </div>
+        ) : (
+          bookings.map((bk) => (
+            <Card key={bk.id} className="overflow-hidden">
+              {/* Card header: customer */}
+              <div className="p-4 border-b border-border">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <div className="font-semibold text-ink">{bk.full_name}</div>
+                    <div className="text-sm text-ink-muted mt-0.5">{bk.phone}</div>
+                    {bk.email && <div className="text-xs text-ink-muted">{bk.email}</div>}
+                    <div className="text-[10px] text-ink-muted mt-1">
+                      {new Date(bk.created_at).toLocaleString()}
+                    </div>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handleDelete(bk.id)}
+                    className="text-error hover:text-error hover:bg-error/10 shrink-0"
+                  >
+                    <Trash2 size={16} />
+                  </Button>
+                </div>
+              </div>
+
+              {/* Journey info */}
+              <div className="px-4 py-3 border-b border-border bg-bg/40">
+                {bk.travel_date ? (
+                  <>
+                    <div className="text-sm font-medium text-ink">
+                      {new Date(bk.travel_date).toLocaleDateString()}
+                    </div>
+                    <div className="text-xs text-ink-muted mt-0.5">
+                      {bk.pickup_location} → {bk.drop_location}
+                    </div>
+                    <div className="text-xs text-ink-muted">
+                      {bk.vehicle_preference} • {bk.no_of_passengers} pax
+                    </div>
+                  </>
+                ) : (
+                  <span className="text-sm text-ink-muted italic">General Enquiry</span>
+                )}
+                {bk.message && (
+                  <div className="mt-2 p-2 bg-surface rounded text-xs text-ink line-clamp-2">
+                    {bk.message}
+                  </div>
+                )}
+              </div>
+
+              {/* Status + email badges + actions */}
+              <div className="px-4 py-3 space-y-3">
+                {/* Status dropdown — full width, easy to tap */}
+                <select
+                  value={bk.status}
+                  onChange={(e) => updateStatus(bk, e.target.value)}
+                  className={statusClass(bk.status)}
+                >
+                  <option value="pending">Pending</option>
+                  <option value="confirmed">Confirmed</option>
+                  <option value="completed">Completed</option>
+                  <option value="cancelled">Cancelled</option>
+                </select>
+
+                {/* Email badges */}
+                <div className="flex flex-wrap gap-1.5">
+                  {bk.email_sent ? (
+                    <span className="inline-flex items-center gap-1 text-[10px] text-green-600 bg-green-500/10 px-2 py-0.5 rounded-full">
+                      <MailCheck size={12} /> Customer Email Sent
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 text-[10px] text-orange-600 bg-orange-500/10 px-2 py-0.5 rounded-full">
+                      <MailX size={12} /> Customer Email Pending/Failed
+                    </span>
+                  )}
+                  {bk.admin_notification_sent && (
+                    <span className="inline-flex items-center gap-1 text-[10px] text-blue-600 bg-blue-500/10 px-2 py-0.5 rounded-full">
+                      <MailCheck size={12} /> Admin Notified
+                    </span>
+                  )}
+                </div>
+              </div>
+            </Card>
+          ))
+        )}
+      </div>
+
+      {/* ════════════════════════════════════════════════
+          DESKTOP TABLE VIEW  (md+)
+      ════════════════════════════════════════════════ */}
+      <Card className="hidden md:block">
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left">
             <thead className="bg-surface border-b border-border text-ink font-medium">
@@ -111,14 +219,14 @@ export default function AdminBookingsPage() {
                       )}
                     </td>
                     <td className="px-6 py-4 space-y-2">
-                      <select 
+                      <select
                         value={bk.status}
                         onChange={(e) => updateStatus(bk, e.target.value)}
                         className={`block text-xs font-medium px-2 py-1 rounded-full outline-none border-none cursor-pointer ${
-                          bk.status === 'pending' ? 'bg-orange-500/10 text-orange-600' :
-                          bk.status === 'confirmed' ? 'bg-blue-500/10 text-blue-600' :
-                          bk.status === 'completed' ? 'bg-green-500/10 text-green-600' :
-                          'bg-red-500/10 text-red-600'
+                          bk.status === "pending" ? "bg-orange-500/10 text-orange-600" :
+                          bk.status === "confirmed" ? "bg-blue-500/10 text-blue-600" :
+                          bk.status === "completed" ? "bg-green-500/10 text-green-600" :
+                          "bg-red-500/10 text-red-600"
                         }`}
                       >
                         <option value="pending">Pending</option>
@@ -126,7 +234,7 @@ export default function AdminBookingsPage() {
                         <option value="completed">Completed</option>
                         <option value="cancelled">Cancelled</option>
                       </select>
-                      
+
                       <div className="flex flex-col gap-1 mt-2">
                         {bk.email_sent ? (
                           <span className="inline-flex items-center gap-1 text-[10px] text-green-600 bg-green-500/10 px-2 py-0.5 rounded-full w-max">

@@ -95,15 +95,15 @@ export default function AdminTestimonialsPage() {
 
   return (
     <div>
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
+      <div className="flex flex-col gap-4 mb-8">
         <div>
-          <h1 className="text-3xl font-display font-bold text-ink mb-2">Testimonials</h1>
+          <h1 className="text-2xl md:text-3xl font-display font-bold text-ink mb-2">Testimonials</h1>
           <p className="text-ink-muted">Manage pilgrim reviews, approve testimonials, and moderate content</p>
         </div>
-        <div className="flex bg-surface border border-border rounded-lg overflow-hidden shrink-0">
+        <div className="flex bg-surface border border-border rounded-lg overflow-hidden shrink-0 self-start flex-wrap">
           {(['all', 'pending', 'approved', 'rejected'] as const).map(f => (
-            <button 
-              key={f} 
+            <button
+              key={f}
               onClick={() => setStatusFilter(f)}
               className={`px-4 py-2 text-sm font-medium transition-colors ${statusFilter === f ? 'bg-accent-primary text-white' : 'text-ink hover:bg-bg'}`}
             >

@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { format } from "date-fns";
-import { 
-  Phone, CheckCircle, XCircle, MoreVertical, Edit, FileText, User
+import {
+  Phone, CheckCircle, XCircle, FileText
 } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { supabase } from "@/lib/supabase";
@@ -25,7 +25,7 @@ export function RecentBookingsTable({ bookings, onUpdate }: RecentBookingsTableP
         .from("bookings")
         .update({ status: newStatus })
         .eq("id", id);
-        
+
       if (error) throw error;
       toast.success(`Booking status updated to ${newStatus}`);
       onUpdate();
@@ -45,16 +45,103 @@ export function RecentBookingsTable({ bookings, onUpdate }: RecentBookingsTableP
       .substring(0, 2);
   };
 
+  const statusBadge = (status: string) => (
+    <span className={`px-2 py-0.5 rounded-full text-xs font-semibold capitalize ${
+      status === "pending" ? "bg-orange-500/10 text-orange-600 border border-orange-500/20" :
+      status === "confirmed" ? "bg-blue-500/10 text-blue-600 border border-blue-500/20" :
+      status === "completed" ? "bg-green-500/10 text-green-600 border border-green-500/20" :
+      "bg-red-500/10 text-red-600 border border-red-500/20"
+    }`}>
+      {status}
+    </span>
+  );
+
   return (
     <Card className="bg-surface/50 backdrop-blur-xl border-border/50 rounded-3xl shadow-sm overflow-hidden">
-      <CardHeader className="p-6 border-b border-border/50 flex flex-row items-center justify-between">
-        <CardTitle className="text-xl font-display font-bold text-ink">Recent Bookings</CardTitle>
+      <CardHeader className="p-4 sm:p-6 border-b border-border/50 flex flex-row items-center justify-between">
+        <CardTitle className="text-lg sm:text-xl font-display font-bold text-ink">Recent Bookings</CardTitle>
         <Link href="/admin/bookings" className="text-sm font-medium text-accent-primary hover:underline">
           View All
         </Link>
       </CardHeader>
       <CardContent className="p-0">
-        <div className="overflow-x-auto">
+
+        {/* ── Mobile Card List (below md) ── */}
+        <div className="md:hidden divide-y divide-border/50">
+          {bookings.length === 0 ? (
+            <div className="px-4 py-10 text-center text-ink-muted text-sm">
+              No recent bookings found.
+            </div>
+          ) : (
+            bookings.slice(0, 10).map((bk) => (
+              <div key={bk.id} className="p-4 space-y-3">
+                {/* Customer + status */}
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-9 h-9 rounded-full bg-accent-primary/10 text-accent-primary flex items-center justify-center font-bold text-xs shrink-0">
+                      {getInitials(bk.full_name)}
+                    </div>
+                    <div className="min-w-0">
+                      <div className="font-medium text-ink text-sm leading-tight">{bk.full_name}</div>
+                      <div className="text-xs text-ink-muted flex items-center gap-1 mt-0.5">
+                        <Phone size={10} /> {bk.phone}
+                      </div>
+                    </div>
+                  </div>
+                  {statusBadge(bk.status)}
+                </div>
+
+                {/* Journey info */}
+                <div className="text-xs text-ink-muted">
+                  {bk.travel_date
+                    ? <span>{format(new Date(bk.travel_date), "MMM dd, yyyy")} &bull; {bk.no_of_passengers ? `${bk.no_of_passengers} pax` : ""} {bk.vehicle_preference || ""}</span>
+                    : <span className="italic">General Enquiry</span>
+                  }
+                </div>
+
+                {/* Action buttons — always visible on mobile */}
+                <div className="flex items-center gap-2">
+                  <a
+                    href={`tel:${bk.phone}`}
+                    className="flex-1 flex items-center justify-center gap-1.5 min-h-[40px] bg-surface border border-border/80 text-ink-muted hover:text-green-500 hover:border-green-500/50 rounded-lg transition-colors text-xs font-medium"
+                  >
+                    <Phone size={14} /> Call
+                  </a>
+
+                  {bk.status === "pending" && (
+                    <button
+                      onClick={() => updateStatus(bk.id, "confirmed")}
+                      disabled={updatingId === bk.id}
+                      className="flex-1 flex items-center justify-center gap-1.5 min-h-[40px] bg-surface border border-border/80 text-ink-muted hover:text-blue-500 hover:border-blue-500/50 rounded-lg transition-colors text-xs font-medium disabled:opacity-50"
+                    >
+                      <CheckCircle size={14} /> Confirm
+                    </button>
+                  )}
+
+                  {(bk.status === "pending" || bk.status === "confirmed") && (
+                    <button
+                      onClick={() => updateStatus(bk.id, "cancelled")}
+                      disabled={updatingId === bk.id}
+                      className="flex-1 flex items-center justify-center gap-1.5 min-h-[40px] bg-surface border border-border/80 text-ink-muted hover:text-red-500 hover:border-red-500/50 rounded-lg transition-colors text-xs font-medium disabled:opacity-50"
+                    >
+                      <XCircle size={14} /> Cancel
+                    </button>
+                  )}
+
+                  <Link
+                    href={`/admin/bookings/${bk.id}`}
+                    className="flex-1 flex items-center justify-center gap-1.5 min-h-[40px] bg-surface border border-border/80 text-ink-muted hover:text-accent-primary hover:border-accent-primary/50 rounded-lg transition-colors text-xs font-medium"
+                  >
+                    <FileText size={14} /> View
+                  </Link>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* ── Desktop Table (md+) ── */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-left text-sm whitespace-nowrap">
             <thead className="bg-bg/50 border-b border-border/50 text-ink-muted">
               <tr>
@@ -110,28 +197,21 @@ export function RecentBookingsTable({ bookings, onUpdate }: RecentBookingsTableP
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`px-2.5 py-1 rounded-full text-xs font-semibold capitalize ${
-                        bk.status === 'pending' ? 'bg-orange-500/10 text-orange-600 border border-orange-500/20' :
-                        bk.status === 'confirmed' ? 'bg-blue-500/10 text-blue-600 border border-blue-500/20' :
-                        bk.status === 'completed' ? 'bg-green-500/10 text-green-600 border border-green-500/20' :
-                        'bg-red-500/10 text-red-600 border border-red-500/20'
-                      }`}>
-                        {bk.status}
-                      </span>
+                      {statusBadge(bk.status)}
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
-                        <a 
+                      <div className="flex items-center justify-end gap-2">
+                        <a
                           href={`tel:${bk.phone}`}
                           className="p-2 bg-surface border border-border/80 text-ink-muted hover:text-green-500 hover:border-green-500/50 rounded-lg transition-colors"
                           title="Call Customer"
                         >
                           <Phone size={16} />
                         </a>
-                        
-                        {bk.status === 'pending' && (
-                          <button 
-                            onClick={() => updateStatus(bk.id, 'confirmed')}
+
+                        {bk.status === "pending" && (
+                          <button
+                            onClick={() => updateStatus(bk.id, "confirmed")}
                             disabled={updatingId === bk.id}
                             className="p-2 bg-surface border border-border/80 text-ink-muted hover:text-blue-500 hover:border-blue-500/50 rounded-lg transition-colors disabled:opacity-50"
                             title="Confirm Booking"
@@ -139,10 +219,10 @@ export function RecentBookingsTable({ bookings, onUpdate }: RecentBookingsTableP
                             <CheckCircle size={16} />
                           </button>
                         )}
-                        
-                        {(bk.status === 'pending' || bk.status === 'confirmed') && (
-                          <button 
-                            onClick={() => updateStatus(bk.id, 'cancelled')}
+
+                        {(bk.status === "pending" || bk.status === "confirmed") && (
+                          <button
+                            onClick={() => updateStatus(bk.id, "cancelled")}
                             disabled={updatingId === bk.id}
                             className="p-2 bg-surface border border-border/80 text-ink-muted hover:text-red-500 hover:border-red-500/50 rounded-lg transition-colors disabled:opacity-50"
                             title="Cancel Booking"
@@ -150,8 +230,8 @@ export function RecentBookingsTable({ bookings, onUpdate }: RecentBookingsTableP
                             <XCircle size={16} />
                           </button>
                         )}
-                        
-                        <Link 
+
+                        <Link
                           href={`/admin/bookings/${bk.id}`}
                           className="p-2 bg-surface border border-border/80 text-ink-muted hover:text-accent-primary hover:border-accent-primary/50 rounded-lg transition-colors"
                           title="View Details"
@@ -166,6 +246,7 @@ export function RecentBookingsTable({ bookings, onUpdate }: RecentBookingsTableP
             </tbody>
           </table>
         </div>
+
       </CardContent>
     </Card>
   );
