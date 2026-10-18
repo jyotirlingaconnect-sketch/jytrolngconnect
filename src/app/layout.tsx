@@ -37,11 +37,11 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Jyotirling Connect | Premium Pilgrimage Travel",
+    default: "Ujjain to Omkareshwar Taxi & Jyotirlinga Tour Packages | Jyotirling Connect",
     template: "%s | Jyotirling Connect",
   },
   description:
-    "Premium devotional bus and taxi services for pilgrims traveling between Mahakaleshwar and Omkareshwar Jyotirlinga. Book your spiritual yatra with experienced, verified drivers.",
+    "Private AC taxi, Innova Crysta and tempo traveller from Ujjain to Omkareshwar, Maheshwar, Mandu and Indore. Jyotirlinga day trips and tour packages with per-vehicle prices.",
   keywords: [
     "Jyotirling Connect",
     "Mahakaleshwar",
@@ -71,15 +71,15 @@ export const metadata: Metadata = {
     locale: "en_IN",
     url: siteUrl,
     siteName: "Jyotirling Connect",
-    title: "Jyotirling Connect | Premium Pilgrimage Travel",
+    title: "Ujjain to Omkareshwar Taxi & Jyotirlinga Tour Packages | Jyotirling Connect",
     description:
-      "Premium devotional bus and taxi services for pilgrims traveling between Mahakaleshwar and Omkareshwar Jyotirlinga. Book your yatra today.",
+      "Private AC taxi, Innova Crysta and tempo traveller from Ujjain to Omkareshwar, Maheshwar, Mandu and Indore.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Jyotirling Connect | Premium Pilgrimage Travel",
+    title: "Ujjain to Omkareshwar Taxi & Jyotirlinga Tour Packages | Jyotirling Connect",
     description:
-      "Premium devotional bus and taxi services for pilgrims traveling between Mahakaleshwar and Omkareshwar Jyotirlinga.",
+      "Private AC taxi, Innova Crysta and tempo traveller from Ujjain to Omkareshwar, Maheshwar, Mandu and Indore.",
   },
   manifest: "/site.webmanifest",
 };

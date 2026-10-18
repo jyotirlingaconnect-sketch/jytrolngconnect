@@ -1,27 +1,16 @@
 import { ImageResponse } from "next/og";
-import { supabase } from "@/lib/supabase";
 import { OgCard, loadOgFonts, ogSize } from "@/lib/og";
+import { getAvailablePackages, vehiclePrice } from "@/lib/packages";
 
 export const alt = "Jyotirling Connect tour packages — Ujjain, Omkareshwar & Maheshwar";
 export const size = ogSize;
 export const contentType = "image/png";
 export const revalidate = 3600;
 
-type PriceRow = {
-  discount_price: number | null;
-  per_person_price: number | null;
-  price: number | null;
-};
-
 export default async function Image() {
-  const { data } = await supabase
-    .from("packages")
-    .select("*")
-    .eq("is_available", true);
-
-  const prices = ((data ?? []) as PriceRow[])
-    .map((pkg) => pkg.discount_price || pkg.per_person_price || pkg.price)
-    .filter((price): price is number => typeof price === "number" && price > 0);
+  const prices = (await getAvailablePackages())
+    .map(vehiclePrice)
+    .filter((price): price is number => price !== null);
   const lowest = prices.length > 0 ? Math.min(...prices) : null;
 
   return new ImageResponse(

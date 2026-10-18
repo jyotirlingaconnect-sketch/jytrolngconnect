@@ -15,22 +15,34 @@ import { TrustSection } from "@/components/home/TrustSection";
 import { FAQPreview } from "@/components/home/FAQPreview";
 import { CTASection } from "@/components/home/CTASection";
 import { GlobalPreloader } from "@/components/GlobalPreloader";
+import { homeFaqs } from "@/lib/faqs";
+import { JsonLd, businessJsonLd, faqJsonLd, websiteJsonLd } from "@/lib/jsonLd";
+
+const homeTitle = "Ujjain to Omkareshwar Taxi & Jyotirlinga Tour Packages | Jyotirling Connect";
+const homeDescription =
+  "Private AC taxi, Innova Crysta and tempo traveller from Ujjain to Omkareshwar, Maheshwar, Mandu and Indore. Jyotirlinga day trips and tour packages with per-vehicle prices.";
 
 export const metadata: Metadata = {
+  title: { absolute: homeTitle },
+  description: homeDescription,
   alternates: {
     canonical: "/",
   },
   openGraph: {
-    title: "Jyotirling Connect | Premium Pilgrimage Travel",
-    description:
-      "Book premium devotional travel between Mahakaleshwar (Ujjain) and Omkareshwar Jyotirlinga. Verified drivers, comfortable vehicles, and a divine experience.",
+    title: homeTitle,
+    description: homeDescription,
     url: "/",
+  },
+  twitter: {
+    title: homeTitle,
+    description: homeDescription,
   },
 };
 
 export default function Home() {
   return (
     <GlobalPreloader>
+      <JsonLd data={[businessJsonLd, websiteJsonLd, faqJsonLd(homeFaqs)]} />
       <Navbar />
       <main className="flex min-h-[100dvh] flex-col w-full overflow-x-hidden bg-[var(--bg)]">
         {/* Scroll Scrub Hero Canvas (UNTOUCHED) */}

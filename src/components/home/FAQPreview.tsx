@@ -4,25 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Minus } from "lucide-react";
 import Link from "next/link";
-
-const faqs = [
-  {
-    question: "Is the vehicle private or shared?",
-    answer: "All our bookings are for private vehicles. You and your family will have the entire vehicle to yourselves for maximum comfort and privacy."
-  },
-  {
-    question: "Are toll and parking charges included?",
-    answer: "Yes, our premium packages include all toll taxes, state taxes, and parking fees. There are absolutely no hidden charges during your journey."
-  },
-  {
-    question: "Can we request stops during the journey?",
-    answer: "Absolutely. Your comfort is our priority. You can request reasonable stops for food, tea, or rest during the journey without any extra charges."
-  },
-  {
-    question: "How do you ensure vehicle hygiene?",
-    answer: "Every vehicle undergoes a deep cleaning and sanitization process before each trip. Our drivers also maintain strict hygiene standards throughout the journey."
-  }
-];
+import { homeFaqs as faqs } from "@/lib/faqs";
 
 export function FAQPreview() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
@@ -86,7 +68,7 @@ export function FAQPreview() {
         </div>
 
         <div className="mt-12 text-center">
-          <Link href="/faq" className="text-accent-primary font-bold hover:underline inline-flex items-center gap-2">
+          <Link href="/contact" className="text-accent-primary font-bold hover:underline inline-flex items-center gap-2">
             View All FAQs
           </Link>
         </div>

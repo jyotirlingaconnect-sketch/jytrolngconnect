@@ -63,9 +63,9 @@ export function FleetClient() {
               <span className="text-sm font-semibold text-accent-primary uppercase tracking-wider">Premium Pilgrimage Fleet</span>
             </div>
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold text-ink mb-6 leading-tight">
-              Travel in Comfort, <br />
+              Taxi, Innova &amp; Tempo Traveller <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-primary to-accent-secondary">
-                Safety & Luxury
+                in Ujjain
               </span>
             </h1>
             <p className="text-lg md:text-xl text-ink-muted leading-relaxed mb-10 max-w-xl">

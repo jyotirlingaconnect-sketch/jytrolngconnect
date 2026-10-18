@@ -224,9 +224,12 @@ export function HeroCanvas() {
 
       {/* Hero Content */}
       <div ref={textRef} className="absolute inset-0 flex flex-col items-center justify-center z-10 text-center px-4 sm:px-6 transition-transform duration-75">
-        <h1 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-3 sm:mb-4 md:mb-6 drop-shadow-lg opacity-90 transition-opacity leading-tight">
-          A Journey of Devotion
+        <h1 className="mb-2 sm:mb-3 text-xs sm:text-sm md:text-base font-semibold uppercase tracking-[0.18em] text-[#FDEBD3] drop-shadow-md">
+          Ujjain to Omkareshwar Taxi &amp; Jyotirlinga Yatra
         </h1>
+        <p className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-3 sm:mb-4 md:mb-6 drop-shadow-lg opacity-90 transition-opacity leading-tight">
+          A Journey of Devotion
+        </p>
         <p className="text-sm sm:text-base md:text-lg lg:text-xl text-[#FDEBD3] max-w-xs sm:max-w-lg md:max-w-2xl mb-6 md:mb-10 drop-shadow-md">
           Experience a divine pilgrimage from Mahakaleshwar to Omkareshwar with our premium, comfortable, and trusted travel services.
         </p>

@@ -2,6 +2,7 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Shield, Clock, Heart, Map } from "lucide-react";
+import { JsonLd, breadcrumbJsonLd } from "@/lib/jsonLd";
 
 export const metadata = {
   title: "Why Choose Us for Your Jyotirlinga Yatra",
@@ -35,6 +36,12 @@ export default function WhyUsPage() {
 
   return (
     <>
+      <JsonLd
+        data={breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Why Us", path: "/why-us" },
+        ])}
+      />
       <Navbar />
       <main className="flex min-h-[100dvh] flex-col pt-24 pb-16 bg-bg">
         <div className="container mx-auto px-4 md:px-6 max-w-4xl">

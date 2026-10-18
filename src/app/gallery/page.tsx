@@ -7,7 +7,8 @@ import { GalleryClient } from "./GalleryClient";
 
 export const metadata = {
   title: "Mahakaleshwar & Omkareshwar Yatra Gallery",
-  description: "View our gallery of the sacred journey between Mahakaleshwar and Omkareshwar Jyotirlinga.",
+  description:
+    "Photos from our pilgrim trips: Mahakaleshwar in Ujjain, Omkareshwar Jyotirlinga, the Narmada ghats at Maheshwar, and the taxis and tempo travellers we use.",
   alternates: { canonical: "/gallery" },
 };
 

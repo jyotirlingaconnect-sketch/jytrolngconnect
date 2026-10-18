@@ -16,6 +16,7 @@ import { createContactAction } from "@/app/actions/contact";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import LottieAnimation from "@/components/LottieAnimation";
+import { contactFaqs } from "@/lib/faqs";
 
 const contactSchema = z.object({
   full_name: z.string().min(2, "Name is required"),
@@ -40,24 +41,7 @@ interface ContactClientProps {
   contactInfo: ContactInfo | null;
 }
 
-const faqs = [
-  {
-    question: "How do I book a pilgrimage package?",
-    answer: "You can book directly through our website by selecting a package, or you can contact our 24/7 support team via phone or WhatsApp to customize your journey."
-  },
-  {
-    question: "How can I get VIP Darshan assistance?",
-    answer: "We arrange VIP Darshan tickets for Mahakaleshwar and Omkareshwar as part of our premium packages. Please mention this requirement when booking."
-  },
-  {
-    question: "Can I customize my travel package?",
-    answer: "Absolutely! We specialize in tailor-made itineraries. Let us know your preferences, group size, and dates, and we will craft the perfect sacred journey for you."
-  },
-  {
-    question: "What vehicles are available for the journey?",
-    answer: "We offer a premium fleet including luxury sedans, comfortable SUVs (Innova Crysta), and spacious tempo travellers for larger families and groups."
-  }
-];
+const faqs = contactFaqs;
 
 const trustFeatures = [
   { title: "VIP Darshan Assistance", desc: "Seamless temple entry", icon: Star },
