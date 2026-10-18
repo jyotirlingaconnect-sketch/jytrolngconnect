@@ -2,9 +2,10 @@ import ContactClient from "./ContactClient";
 import { supabase } from "@/lib/supabase";
 
 export const metadata = {
-  title: "Contact Us | Jyotirling Connect",
+  title: "Contact Us – Book Ujjain & Omkareshwar Taxi",
   description:
     "Get in touch with Jyotirling Connect for your premium spiritual journey between Mahakaleshwar and Omkareshwar.",
+  alternates: { canonical: "/contact" },
 };
 
 // Next.js Revalidation (optional, but good for settings that change rarely)

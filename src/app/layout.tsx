@@ -74,24 +74,12 @@ export const metadata: Metadata = {
     title: "Jyotirling Connect | Premium Pilgrimage Travel",
     description:
       "Premium devotional bus and taxi services for pilgrims traveling between Mahakaleshwar and Omkareshwar Jyotirlinga. Book your yatra today.",
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "Jyotirling Connect — Premium Pilgrimage Travel",
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Jyotirling Connect | Premium Pilgrimage Travel",
     description:
       "Premium devotional bus and taxi services for pilgrims traveling between Mahakaleshwar and Omkareshwar Jyotirlinga.",
-    images: ["/og-image.png"],
-  },
-  alternates: {
-    canonical: siteUrl,
   },
   manifest: "/site.webmanifest",
 };

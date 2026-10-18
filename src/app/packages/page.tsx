@@ -9,8 +9,9 @@ import Link from "next/link";
 import Image from "next/image";
 
 export const metadata = {
-  title: "Packages | Jyotirling Connect",
+  title: "Ujjain, Omkareshwar & Maheshwar Tour Packages",
   description: "Browse our travel packages for Jyotirlinga Yatra.",
+  alternates: { canonical: "/packages" },
 };
 
 export const revalidate = 60;

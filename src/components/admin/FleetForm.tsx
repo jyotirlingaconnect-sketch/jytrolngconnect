@@ -6,7 +6,7 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { supabase } from "@/lib/supabase";
-import { upload } from "@vercel/blob/client";
+import { uploadAdminImageAction } from "@/app/actions/upload";
 import { 
   Save, 
   X, 
@@ -116,19 +116,11 @@ export function FleetForm({ initialData }: FleetFormProps) {
       const files = Array.from(e.target.files);
       const newUrls: string[] = [];
       
-      // Get the current session to pass the auth token to the Vercel Blob api route
-      const { data: { session } } = await supabase.auth.getSession();
-      const token = session?.access_token;
-
       for (const file of files) {
-        // We use @vercel/blob/client for client-side uploads. 
-        // We assume /api/upload route exists and allows admin uploads.
-        const blob = await upload(file.name, file, {
-          access: 'public',
-          handleUploadUrl: '/api/upload',
-          clientPayload: JSON.stringify({ token }),
-        });
-        newUrls.push(blob.url);
+        const formData = new FormData();
+        formData.append("file", file);
+        const url = await uploadAdminImageAction(formData);
+        newUrls.push(url);
       }
 
       if (!coverImage && newUrls.length > 0) {

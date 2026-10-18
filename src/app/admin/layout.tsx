@@ -1,7 +1,10 @@
 import { AdminLayout } from "@/components/AdminLayout";
 
 export const metadata = {
-  title: "Admin Dashboard | Jyotirling Connect",
+  title: {
+    default: "Admin Dashboard",
+    template: "%s | Admin | Jyotirling Connect",
+  },
 };
 
 export default function Layout({ children }: { children: React.ReactNode }) {

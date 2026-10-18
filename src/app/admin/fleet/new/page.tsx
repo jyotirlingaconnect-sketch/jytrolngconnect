@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
 export const metadata = {
-  title: "Add New Fleet | Admin | Jyotirling Connect",
+  title: "Add New Fleet",
 };
 
 export default function NewFleetPage() {

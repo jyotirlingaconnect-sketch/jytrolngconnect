@@ -10,6 +10,8 @@ import { BookingCancelled } from '@/lib/email/templates/BookingCancelled';
 import React from 'react';
 import { revalidatePath } from 'next/cache';
 import { v4 as uuidv4 } from 'uuid';
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
 
 export async function createBookingAction(formData: any) {
   try {
@@ -113,6 +115,11 @@ export async function createBookingAction(formData: any) {
 }
 
 export async function updateBookingStatusAction(bookingId: string, newStatus: string, customerData: any) {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    return { success: false, error: 'Unauthorized: Admin access required' };
+  }
+
   try {
     const { error } = await supabaseAdmin.from('bookings').update({ status: newStatus }).eq('id', bookingId);
     if (error) throw error;

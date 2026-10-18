@@ -4,7 +4,7 @@ import { Footer } from "@/components/Footer";
 import { HistoryClient } from "./HistoryClient";
 
 export const metadata: Metadata = {
-  title: "History & Heritage | Jyotirling Connect",
+  title: "Mahakaleshwar & Omkareshwar History",
   description: "Discover the rich historical background, ancient mythology, and spiritual significance of the sacred destinations on our Jyotirlinga Yatra.",
   openGraph: {
     title: "History & Heritage | Jyotirling Connect",
@@ -12,6 +12,7 @@ export const metadata: Metadata = {
     url: "/history",
     type: "website",
   },
+  alternates: { canonical: "/history" },
 };
 
 export default function HistoryPage() {

@@ -2,8 +2,9 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 
 export const metadata = {
-  title: "Privacy Policy | Jyotirling Connect",
+  title: "Privacy Policy",
   description: "Privacy policy and data handling practices for Jyotirling Connect.",
+  alternates: { canonical: "/privacy-policy" },
 };
 
 export default function PrivacyPolicyPage() {

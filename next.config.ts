@@ -11,9 +11,6 @@ const nextConfig: NextConfig = {
   allowedDevOrigins: ["192.168.1.4"],
 
   images: {
-    dangerouslyAllowSVG: true,
-    contentDispositionType: "attachment",
-    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
     remotePatterns: [
       {
         protocol: "https",

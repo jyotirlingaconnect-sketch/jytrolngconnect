@@ -635,7 +635,7 @@ function PackageForm({
       </div>
 
       {/* Progress Navigation */}
-      <div className="sticky top-[56px] md:top-[72px] z-20 bg-surface/80 backdrop-blur-md border border-border rounded-2xl p-1 mb-8 shadow-sm overflow-x-auto no-scrollbar">
+      <div className="sticky top-0 z-20 bg-surface/80 backdrop-blur-md border border-border rounded-2xl p-1 mb-8 shadow-sm overflow-x-auto no-scrollbar mx-[-8px] px-2 md:mx-0 md:px-1">
         <div className="flex items-center gap-1 min-w-max">
           {SECTIONS.map((sec) => (
             <button

@@ -4,8 +4,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Shield, Clock, Heart, Map } from "lucide-react";
 
 export const metadata = {
-  title: "Why Us | Jyotirling Connect",
+  title: "Why Choose Us for Your Jyotirlinga Yatra",
   description: "Learn why Jyotirling Connect is the most trusted travel agency for the Mahakaleshwar to Omkareshwar Jyotirlinga yatra.",
+  alternates: { canonical: "/why-us" },
 };
 
 export default function WhyUsPage() {

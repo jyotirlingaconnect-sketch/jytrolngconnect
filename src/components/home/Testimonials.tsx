@@ -67,6 +67,10 @@ export function Testimonials() {
     onSelect();
     emblaApi.on("select", onSelect);
     emblaApi.on("reInit", onSelect);
+    return () => {
+      emblaApi.off("select", onSelect);
+      emblaApi.off("reInit", onSelect);
+    };
   }, [emblaApi, onSelect]);
 
   if (loading) return null; // Or a skeleton loader

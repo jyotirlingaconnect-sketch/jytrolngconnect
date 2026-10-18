@@ -2,9 +2,10 @@ import TermsClient, { type TermsClientProps } from "@/app/terms-conditions/Terms
 import { supabase } from "@/lib/supabase";
 
 export const metadata = {
-  title: "Terms & Conditions | Jyotirling Connect",
+  title: "Terms & Conditions",
   description:
     "Read the terms and conditions for booking your premium pilgrimage journey with Jyotirling Connect.",
+  alternates: { canonical: "/terms-conditions" },
 };
 
 export const revalidate = 60;

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
@@ -5,8 +6,9 @@ import { supabase } from "@/lib/supabase";
 import { Star } from "lucide-react";
 
 export const metadata = {
-  title: "Testimonials | Jyotirling Connect",
+  title: "Pilgrim Reviews & Testimonials",
   description: "Read what our pilgrims say about their Jyotirlinga Yatra experience with us.",
+  alternates: { canonical: "/testimonials" },
 };
 
 export const revalidate = 60;
@@ -18,29 +20,7 @@ export default async function TestimonialsPage() {
     .or("status.eq.approved,is_approved.eq.true")
     .order("created_at", { ascending: false });
 
-  const items = (testimonials && testimonials.length > 0) ? testimonials : [
-    {
-      id: "1",
-      name: "Rajesh Sharma",
-      location: "Mumbai, Maharashtra",
-      message: "The journey was exceptionally smooth. Our driver was very polite and knew exactly what time we needed to reach for the Bhasma Aarti. Highly recommended for any family traveling with elders.",
-      rating: 5,
-    },
-    {
-      id: "2",
-      name: "Sneha Patel",
-      location: "Ahmedabad, Gujarat",
-      message: "Very clean Innova and punctual service. We booked a round trip from Indore Airport to Ujjain and Omkareshwar. The whole process was transparent and stress-free.",
-      rating: 5,
-    },
-    {
-      id: "3",
-      name: "Anil Kumar",
-      location: "Delhi",
-      message: "Atithi Devo Bhava is truly practiced here. The team was responsive on WhatsApp even late at night when our train got delayed. A divine experience made comfortable.",
-      rating: 4,
-    },
-  ];
+  const items = testimonials ?? [];
 
   return (
     <>
@@ -56,6 +36,22 @@ export default async function TestimonialsPage() {
             </p>
           </div>
 
+          {items.length === 0 ? (
+            <div className="text-center max-w-xl mx-auto py-16 px-6 rounded-3xl border border-border bg-surface">
+              <h2 className="text-2xl font-display font-bold text-ink mb-3">
+                Be the first to share your experience
+              </h2>
+              <p className="text-ink-muted mb-8">
+                Travelled with us? Your story helps other pilgrims plan their journey.
+              </p>
+              <Link
+                href="/share/testimonial"
+                className="inline-flex items-center justify-center min-h-[44px] px-6 rounded-full bg-accent-primary text-white font-semibold hover:opacity-90 transition-opacity focus-visible:ring-2 focus-visible:ring-accent-primary focus-visible:ring-offset-2 focus-visible:outline-none"
+              >
+                Share your experience
+              </Link>
+            </div>
+          ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {items.map((testimonial) => (
               <Card key={testimonial.id} className="h-full flex flex-col">
@@ -65,12 +61,12 @@ export default async function TestimonialsPage() {
                       <Star
                         key={i}
                         size={18}
-                        className={i < (testimonial.rating || 5) ? "fill-current" : "text-border fill-transparent"}
+                        className={i < (testimonial.overall_rating || testimonial.rating || 5) ? "fill-current" : "text-border fill-transparent"}
                       />
                     ))}
                   </div>
                   <p className="text-ink italic leading-relaxed mb-8 flex-grow">
-                    &ldquo;{testimonial.message}&rdquo;
+                    &ldquo;{testimonial.experience || testimonial.message}&rdquo;
                   </p>
                   <div className="flex items-center gap-4 mt-auto">
                     <div className="w-10 h-10 rounded-full bg-accent-primary/10 flex items-center justify-center text-accent-primary font-bold">
@@ -78,8 +74,8 @@ export default async function TestimonialsPage() {
                     </div>
                     <div>
                       <h4 className="font-bold text-ink text-sm">{testimonial.name}</h4>
-                      {testimonial.location && (
-                        <p className="text-xs text-ink-muted">{testimonial.location}</p>
+                      {(testimonial.city || testimonial.location) && (
+                        <p className="text-xs text-ink-muted">{testimonial.city || testimonial.location}</p>
                       )}
                     </div>
                   </div>
@@ -87,6 +83,7 @@ export default async function TestimonialsPage() {
               </Card>
             ))}
           </div>
+          )}
         </div>
       </main>
       <Footer />

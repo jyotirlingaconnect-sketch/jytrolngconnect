@@ -5,7 +5,7 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { motion } from "framer-motion";
-import { upload } from "@vercel/blob/client";
+import { uploadPublicImageAction } from "@/app/actions/upload";
 import { supabase } from "@/lib/supabase";
 import { 
   Camera, UploadCloud, Star, Heart, CheckCircle2, Info, 
@@ -129,20 +129,17 @@ export default function TestimonialSubmissionPage() {
     try {
       let profile_image_url = "";
       if (profileImage) {
-        const blob = await upload(profileImage.name, profileImage, {
-          access: 'public',
-          handleUploadUrl: '/api/upload/public',
-        });
-        profile_image_url = blob.url;
+        const formData = new FormData();
+        formData.append("file", profileImage);
+        profile_image_url = await uploadPublicImageAction(formData);
       }
 
       const gallery_images: string[] = [];
       for (const file of galleryFiles) {
-        const blob = await upload(file.name, file, {
-          access: 'public',
-          handleUploadUrl: '/api/upload/public',
-        });
-        gallery_images.push(blob.url);
+        const formData = new FormData();
+        formData.append("file", file);
+        const url = await uploadPublicImageAction(formData);
+        gallery_images.push(url);
       }
 
       const payload = {

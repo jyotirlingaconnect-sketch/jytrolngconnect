@@ -110,13 +110,13 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
         <div className="flex items-center gap-3">
           <ThemeToggle />
           <button
-            onClick={() => setIsMobileOpen(prev => !prev)}
+            onClick={() => setIsMobileOpen(true)}
             className="w-10 h-10 flex items-center justify-center rounded-lg text-ink hover:bg-bg transition-colors"
-            aria-label={isMobileOpen ? "Close navigation menu" : "Open navigation menu"}
+            aria-label="Open navigation menu"
             aria-expanded={isMobileOpen}
             aria-controls="mobile-nav-drawer"
           >
-            {isMobileOpen ? <X size={22} /> : <Menu size={22} />}
+            <Menu size={22} />
           </button>
         </div>
       </header>
@@ -147,10 +147,21 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
         )}
         aria-label="Sidebar navigation"
       >
-        {/* Sidebar brand — desktop only (mobile has topbar) */}
-        <div className="hidden md:flex items-center justify-between p-6 border-b border-border shrink-0">
+        {/* Sidebar brand and close button */}
+        <div className="flex items-center justify-between p-4 md:p-6 border-b border-border shrink-0">
           <div className="font-display font-bold text-xl text-accent-primary">Admin Panel</div>
-          <ThemeToggle />
+          <div className="flex items-center gap-2">
+            <div className="hidden md:block">
+              <ThemeToggle />
+            </div>
+            <button
+              onClick={closeMobile}
+              className="md:hidden w-8 h-8 flex items-center justify-center rounded-lg text-ink hover:bg-bg transition-colors"
+              aria-label="Close navigation menu"
+            >
+              <X size={20} />
+            </button>
+          </div>
         </div>
 
         {/* Nav list — scrollable if items overflow */}

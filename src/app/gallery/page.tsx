@@ -6,8 +6,9 @@ import Image from "next/image";
 import { GalleryClient } from "./GalleryClient";
 
 export const metadata = {
-  title: "Gallery | Jyotirling Connect",
+  title: "Mahakaleshwar & Omkareshwar Yatra Gallery",
   description: "View our gallery of the sacred journey between Mahakaleshwar and Omkareshwar Jyotirlinga.",
+  alternates: { canonical: "/gallery" },
 };
 
 export const revalidate = 60;
