@@ -42,3 +42,6 @@ next-env.d.ts
 
 # react-doctor debug output
 doctor_output.txt
+
+# leftover temp files from scripts/optimize-frames.mjs
+*.tmp

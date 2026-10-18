@@ -13,7 +13,7 @@
  */
 
 import sharp from "sharp";
-import { readdir, stat } from "fs/promises";
+import { copyFile, readdir, rm, stat } from "fs/promises";
 import { join } from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
@@ -51,37 +51,47 @@ async function optimizeFrame(filePath) {
   const shouldResize = metadata.width > MAX_WIDTH;
 
   const tmpPath = filePath + ".tmp";
-  
-  await image
-    .resize(shouldResize ? { width: MAX_WIDTH, withoutEnlargement: true } : undefined)
-    .webp({
-      quality: WEBP_QUALITY,
-      effort: 6, // Higher effort = better compression (0-6)
-      smartSubsample: true,
-    })
-    .toFile(tmpPath);
 
-  // Copy tmp to final location (Windows workaround for locked files)
-  const fs = await import("fs/promises");
-  const { copyFile, unlink } = fs;
-  
-  let retries = 5;
-  while (retries > 0) {
-    try {
-      // Copy over the original file
-      await copyFile(tmpPath, filePath);
-      // Remove tmp file
-      await unlink(tmpPath);
-      break;
-    } catch (e) {
-      retries--;
-      if (retries === 0) {
-        console.error(`Failed to replace ${filePath}:`, e.message);
-        throw e;
+  try {
+    await image
+      .resize(shouldResize ? { width: MAX_WIDTH, withoutEnlargement: true } : undefined)
+      .webp({
+        quality: WEBP_QUALITY,
+        effort: 6, // Higher effort = better compression (0-6)
+        smartSubsample: true,
+      })
+      .toFile(tmpPath);
+
+    // Copy tmp over the original (Windows workaround for locked files)
+    let retries = 5;
+    while (retries > 0) {
+      try {
+        await copyFile(tmpPath, filePath);
+        break;
+      } catch (e) {
+        retries--;
+        if (retries === 0) {
+          console.error(`Failed to replace ${filePath}:`, e.message);
+          throw e;
+        }
+        // Wait progressively longer on each retry
+        await new Promise(resolve => setTimeout(resolve, 300 * (6 - retries)));
       }
-      // Wait progressively longer on each retry
-      await new Promise(resolve => setTimeout(resolve, 300 * (6 - retries)));
     }
+  } finally {
+    // Always remove the tmp file, even if encoding or copying failed
+    await rm(tmpPath, { force: true, maxRetries: 5, retryDelay: 300 });
+  }
+}
+
+// Safety net: public/ is deployed as-is, so never leave .tmp files behind
+async function removeTmpFiles() {
+  const leftovers = (await readdir(FRAMES_DIR)).filter((f) => f.endsWith(".tmp"));
+  for (const file of leftovers) {
+    await rm(join(FRAMES_DIR, file), { force: true, maxRetries: 5, retryDelay: 300 });
+  }
+  if (leftovers.length > 0) {
+    console.log(`🧹 Removed ${leftovers.length} leftover .tmp file(s)`);
   }
 }
 
@@ -134,7 +144,9 @@ async function main() {
   console.log("🎉 Optimization complete!");
 }
 
-main().catch((err) => {
-  console.error("❌ Error:", err.message);
-  process.exit(1);
-});
+main()
+  .catch((err) => {
+    console.error("❌ Error:", err.message);
+    process.exitCode = 1;
+  })
+  .finally(removeTmpFiles);
