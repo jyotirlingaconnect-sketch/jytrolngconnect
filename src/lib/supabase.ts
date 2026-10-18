@@ -4,3 +4,8 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://dummy.supab
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "dummy_key";
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+export async function getAdminAccessToken() {
+  const { data: { session } } = await supabase.auth.getSession();
+  return session?.access_token;
+}

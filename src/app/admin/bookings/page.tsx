@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { supabase, getAdminAccessToken } from "@/lib/supabase";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Trash2, MailCheck, MailX } from "lucide-react";
@@ -42,7 +42,7 @@ export default function AdminBookingsPage() {
   }, []);
 
   const updateStatus = async (bk: Booking, status: string) => {
-    const result = await updateBookingStatusAction(bk.id, status, bk);
+    const result = await updateBookingStatusAction(await getAdminAccessToken(), bk.id, status);
     if (!result.success) toast.error(result.error);
     else {
       toast.success(`Booking status updated to ${status}`);

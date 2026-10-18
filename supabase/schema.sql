@@ -296,8 +296,8 @@ CREATE POLICY "Public read access to gallery"          ON public.gallery        
 DROP POLICY IF EXISTS "Public read access to testimonials"     ON public.testimonials;
 CREATE POLICY "Public read access to testimonials"     ON public.testimonials     FOR SELECT USING (is_approved = true OR status = 'approved');
 
+-- Testimonials are inserted server-side via the service role; no public insert policy.
 DROP POLICY IF EXISTS "Public insert access to testimonials"   ON public.testimonials;
-CREATE POLICY "Public insert access to testimonials"   ON public.testimonials     FOR INSERT WITH CHECK (true);
 
 DROP POLICY IF EXISTS "Public read access to contact_info"     ON public.contact_info;
 CREATE POLICY "Public read access to contact_info"     ON public.contact_info     FOR SELECT USING (true);
@@ -308,9 +308,8 @@ CREATE POLICY "Public read access to website_settings" ON public.website_setting
 DROP POLICY IF EXISTS "Public read access to fleet"            ON public.fleet;
 CREATE POLICY "Public read access to fleet"            ON public.fleet            FOR SELECT USING (show_on_website = true);
 
--- Public can insert bookings (guest checkout + signed-in)
+-- Bookings are inserted server-side via the service role (createBookingAction); no public insert policy.
 DROP POLICY IF EXISTS "Public insert access to bookings"       ON public.bookings;
-CREATE POLICY "Public insert access to bookings"       ON public.bookings         FOR INSERT WITH CHECK (true);
 
 -- Users table: public access needed for NextAuth sign-in / profile read
 DROP POLICY IF EXISTS "Public access to users for auth"        ON public.users;

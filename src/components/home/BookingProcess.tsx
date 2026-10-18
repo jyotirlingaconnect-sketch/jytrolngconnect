@@ -58,11 +58,11 @@ export function BookingProcess() {
           {/* Connector Line Desktop */}
           <div className="hidden lg:block absolute top-12 left-[10%] right-[10%] h-0.5 bg-border/50">
             <motion.div 
-              initial={{ width: 0 }}
-              whileInView={{ width: "100%" }}
+              initial={{ scaleX: 0 }}
+              whileInView={{ scaleX: 1 }}
               viewport={{ once: true }}
               transition={{ duration: 1.5, ease: "easeInOut" }}
-              className="absolute top-0 left-0 h-full bg-gradient-to-r from-accent-primary via-accent-secondary to-accent-primary"
+              className="absolute top-0 left-0 h-full w-full origin-left bg-gradient-to-r from-accent-primary via-accent-secondary to-accent-primary"
             />
           </div>
 

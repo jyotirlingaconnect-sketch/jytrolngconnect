@@ -114,9 +114,9 @@ export function Preloader({ isLoading, progress = 0 }: PreloaderProps) {
             {/* Progress Indicator */}
             <div className="w-full max-w-[240px] h-[2px] bg-border/80 rounded-full overflow-hidden relative backdrop-blur-sm">
               <motion.div 
-                className="absolute top-0 left-0 bottom-0 bg-gradient-to-r from-accent-secondary via-accent-primary to-accent-primary rounded-full shadow-[0_0_10px_rgba(166,58,30,0.6)]"
-                initial={{ width: "0%" }}
-                animate={{ width: `${progress}%` }}
+                className="absolute top-0 left-0 bottom-0 w-full origin-left bg-gradient-to-r from-accent-secondary via-accent-primary to-accent-primary rounded-full shadow-[0_0_10px_rgba(166,58,30,0.6)]"
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: progress / 100 }}
                 transition={{ duration: 0.3, ease: "easeOut" }}
               />
             </div>

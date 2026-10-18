@@ -10,8 +10,7 @@ import { BookingCancelled } from '@/lib/email/templates/BookingCancelled';
 import React from 'react';
 import { revalidatePath } from 'next/cache';
 import { v4 as uuidv4 } from 'uuid';
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth";
+import { requireAdmin } from '@/lib/adminAuth';
 
 export async function createBookingAction(formData: any) {
   try {
@@ -114,14 +113,27 @@ export async function createBookingAction(formData: any) {
   }
 }
 
-export async function updateBookingStatusAction(bookingId: string, newStatus: string, customerData: any) {
-  const session = await getServerSession(authOptions);
-  if (!session) {
+const BOOKING_STATUSES = ['pending', 'confirmed', 'completed', 'cancelled'];
+
+export async function updateBookingStatusAction(accessToken: string | undefined, bookingId: string, newStatus: string) {
+  try {
+    await requireAdmin(accessToken);
+  } catch {
     return { success: false, error: 'Unauthorized: Admin access required' };
   }
 
+  if (!BOOKING_STATUSES.includes(newStatus)) {
+    return { success: false, error: 'Invalid booking status' };
+  }
+
   try {
-    const { error } = await supabaseAdmin.from('bookings').update({ status: newStatus }).eq('id', bookingId);
+    // Read customer details from the database rather than trusting client-supplied data
+    const { data: customerData, error } = await supabaseAdmin
+      .from('bookings')
+      .update({ status: newStatus })
+      .eq('id', bookingId)
+      .select('*')
+      .single();
     if (error) throw error;
 
     const targetEmail = customerData.email || customerData.user_email;
@@ -135,7 +147,7 @@ export async function updateBookingStatusAction(bookingId: string, newStatus: st
         emailComponent = React.createElement(BookingConfirmed, {
           customerName: customerData.full_name,
           bookingId: customerData.booking_reference || customerData.id.substring(0, 8),
-          packageType: customerData.packageType || '',
+          packageType: customerData.package_name || '',
           fleet: customerData.vehicle_preference || '',
           journeyDate: customerData.travel_date,
           pickupLocation: customerData.pickup_location,
@@ -170,7 +182,13 @@ export async function updateBookingStatusAction(bookingId: string, newStatus: st
   }
 }
 
-export async function retryBookingEmailAction(bookingId: string, emailType: 'customer' | 'admin') {
+export async function retryBookingEmailAction(accessToken: string | undefined, bookingId: string, emailType: 'customer' | 'admin') {
+  try {
+    await requireAdmin(accessToken);
+  } catch {
+    return { success: false, error: 'Unauthorized: Admin access required' };
+  }
+
   try {
     const { data: booking, error } = await supabaseAdmin
       .from('bookings')

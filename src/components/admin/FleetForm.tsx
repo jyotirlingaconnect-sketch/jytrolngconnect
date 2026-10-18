@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { supabase } from "@/lib/supabase";
+import { supabase, getAdminAccessToken } from "@/lib/supabase";
 import { uploadAdminImageAction } from "@/app/actions/upload";
 import { 
   Save, 
@@ -115,11 +115,12 @@ export function FleetForm({ initialData }: FleetFormProps) {
     try {
       const files = Array.from(e.target.files);
       const newUrls: string[] = [];
+      const accessToken = await getAdminAccessToken();
       
       for (const file of files) {
         const formData = new FormData();
         formData.append("file", file);
-        const url = await uploadAdminImageAction(formData);
+        const url = await uploadAdminImageAction(accessToken, formData);
         newUrls.push(url);
       }
 

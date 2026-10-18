@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/lib/supabase";
+import { supabase, getAdminAccessToken } from "@/lib/supabase";
 import { updateBookingStatusAction, retryBookingEmailAction } from "@/app/actions/booking";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -95,7 +95,7 @@ export default function BookingDetailPage() {
 
     const toastId = toast.loading(`Sending ${emailType} email...`);
     try {
-      const result = await retryBookingEmailAction(booking.id, emailType);
+      const result = await retryBookingEmailAction(await getAdminAccessToken(), booking.id, emailType);
       if (result.success) {
         toast.success(`${emailType === "customer" ? "Customer" : "Admin"} email sent successfully!`, { id: toastId });
         await fetchBooking();
@@ -143,7 +143,7 @@ export default function BookingDetailPage() {
   const handleStatusChange = async (newStatus: string) => {
     if (!booking) return;
     setUpdatingStatus(true);
-    const result = await updateBookingStatusAction(booking.id, newStatus, booking);
+    const result = await updateBookingStatusAction(await getAdminAccessToken(), booking.id, newStatus);
     if (result.success) {
       toast.success(`Status updated to ${newStatus}`);
       fetchBooking();
